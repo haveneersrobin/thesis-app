@@ -2,7 +2,7 @@ import React from "react";
 import { Text, View } from "react-native";
 import { createStackNavigator } from "react-navigation";
 import styled from "styled-components";
-import ArtistSelectionScreen from "./screens/ArtistSelectionScreen";
+// import ArtistSelectionScreen from "./screens/ArtistSelectionScreen";
 import Button from "./components/Button";
 import { LinearGradient, AppLoading } from "expo";
 import { Entypo } from "@expo/vector-icons";
@@ -69,8 +69,7 @@ class HomeScreen extends React.Component {
 
 export default createStackNavigator(
   {
-    Home: { screen: HomeScreen },
-    ArtistSelection: { screen: ArtistSelectionScreen }
+    Home: { screen: HomeScreen }
   },
   {
     initialRouteName: "Home",
