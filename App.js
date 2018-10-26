@@ -3,7 +3,7 @@ import { createStackNavigator } from "react-navigation";
 import { AppLoading } from "expo";
 import { Font } from "expo";
 import HomeScreen from "./screens/HomeScreen";
-import { Provider as PaperProvider } from "react-native-paper";
+import PickArtistScreen from "./screens/PickArtistScreen";
 
 function cacheFonts(fonts) {
   return fonts.map(font => Font.loadAsync(font));
@@ -32,17 +32,14 @@ export default class App extends React.Component {
         />
       );
     }
-    return (
-      <PaperProvider>
-        <RootStack />
-      </PaperProvider>
-    );
+    return <RootStack />;
   }
 }
 
 const RootStack = createStackNavigator(
   {
-    Home: { screen: HomeScreen }
+    Home: { screen: HomeScreen },
+    PickArtist: { screen: PickArtistScreen }
   },
   {
     initialRouteName: "Home",

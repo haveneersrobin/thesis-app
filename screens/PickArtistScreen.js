@@ -1,9 +1,8 @@
 import React from "react";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import styled from "styled-components";
-import Button from "../components/Button";
+
 import { LinearGradient } from "expo";
-import { Entypo } from "@expo/vector-icons";
 
 const StyledView = styled(View)`
   flex: 1;
@@ -14,7 +13,7 @@ const StyledView = styled(View)`
   margin-bottom: 140;
 `;
 
-class HomeScreen extends React.Component {
+class PickArtistScreen extends React.Component {
   render() {
     return (
       <LinearGradient
@@ -30,17 +29,11 @@ class HomeScreen extends React.Component {
         colors={["#8360C3", "rgba(46, 191, 145, 0.4)"]}
       >
         <StyledView>
-          <Button
-            bgColor={"#23CF5F"}
-            text={"Log in with Spotify"}
-            onPress={() => this.props.navigation.navigate("PickArtist")}
-          >
-            <Entypo name="spotify-with-circle" size={24} color="white" />
-          </Button>
+          <Text>Hello</Text>
         </StyledView>
       </LinearGradient>
     );
   }
 }
 
-export default HomeScreen;
+export default PickArtistScreen;

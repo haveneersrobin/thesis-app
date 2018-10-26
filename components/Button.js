@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, TouchableNativeFeedback } from "react-native";
 import { MyText } from "../styles";
 import styled from "styled-components";
 import Ripple from "react-native-material-ripple";
@@ -21,12 +21,20 @@ const ButtonText = styled(MyText)`
 
 const Button = props => {
   return (
-    <Ripple rippleContainerBorderRadius={40} rippleColor={"rgb(255, 255, 255)"}>
-      <ButtonView bgColor={props.bgColor}>
-        {props.children}
-        <ButtonText> {props.text} </ButtonText>
-      </ButtonView>
-    </Ripple>
+    <View style={{ borderRadius: 40 }} elevation={1}>
+      <TouchableNativeFeedback
+        background={TouchableNativeFeedback.Ripple(
+          "rgba(255,255,255,0.8)",
+          true
+        )}
+        onPress={props.onPress}
+      >
+        <ButtonView bgColor={props.bgColor}>
+          {props.children}
+          <ButtonText> {props.text} </ButtonText>
+        </ButtonView>
+      </TouchableNativeFeedback>
+    </View>
   );
 };
 
