@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text } from "react-native";
 import { MyText } from "../styles";
 import styled from "styled-components";
+import Ripple from "react-native-material-ripple";
 
 const ButtonView = styled(View)`
   flex-direction: row;
@@ -20,10 +21,12 @@ const ButtonText = styled(MyText)`
 
 const Button = props => {
   return (
-    <ButtonView bgColor={props.bgColor}>
-      {props.children}
-      <ButtonText> {props.text} </ButtonText>
-    </ButtonView>
+    <Ripple rippleContainerBorderRadius={40} rippleColor={"rgb(255, 255, 255)"}>
+      <ButtonView bgColor={props.bgColor}>
+        {props.children}
+        <ButtonText> {props.text} </ButtonText>
+      </ButtonView>
+    </Ripple>
   );
 };
 
