@@ -1,9 +1,15 @@
 import React from "react";
 import { View } from "react-native";
-import styled from "styled-components";
-import Button from "../components/Button";
-import { LinearGradient } from "expo";
+import { LinearGradient, AuthSession } from "expo";
 import { Entypo } from "@expo/vector-icons";
+import styled from "styled-components";
+import querystring from "querystring";
+import Button from "../components/Button";
+import { Buffer } from "buffer";
+import axios from "axios";
+
+var SPOTIFY_CLIENT_ID = "b2ff1c99b3fc459ca733f35ee9f3e068"; // Your client id
+var SPOTIFY_CLIENT_SECRET = "cd4e85fd594644fe87df109a814adac1"; // Your secret
 
 const StyledView = styled(View)`
   flex: 1;
@@ -15,6 +21,77 @@ const StyledView = styled(View)`
 `;
 
 class HomeScreen extends React.Component {
+  state = {
+    userInfo: null,
+    acces_token: null,
+    refresh_token: null,
+    error: null,
+    didError: false
+  };
+
+  handleSpotifyLogin = async () => {
+    let redirectUrl = AuthSession.getRedirectUrl();
+    console.log("redir" + redirectUrl);
+    var scope = "user-read-private user-read-email user-top-read";
+    let results = await AuthSession.startAsync({
+      authUrl:
+        "https://accounts.spotify.com/authorize?" +
+        querystring.stringify({
+          response_type: "code",
+          client_id: SPOTIFY_CLIENT_ID,
+          scope: scope,
+          redirect_uri: redirectUrl
+        })
+    });
+    if (results.type !== "success") {
+      this.setState({ didError: true });
+    } else {
+      var body = {
+        code: results.params.code,
+        redirect_uri: redirectUrl,
+        grant_type: "authorization_code"
+      };
+
+      var headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization:
+          "Basic " +
+          new Buffer(SPOTIFY_CLIENT_ID + ":" + SPOTIFY_CLIENT_SECRET).toString(
+            "base64"
+          )
+      };
+
+      axios
+        .post(
+          "https://accounts.spotify.com/api/token",
+          querystring.stringify(body),
+          { headers: headers }
+        )
+        .then(response => {
+          console.log(response.data.access_token);
+          console.log(response.data.refresh_token);
+          this.setState({
+            acces_token: response.data.access_token,
+            refresh_token: response.data.refresh_token
+          });
+        })
+        .then(() => this.getTopArtist())
+        .catch(error => {
+          this.setState({ error });
+        });
+    }
+  };
+
+  getTopArtist() {
+    axios
+      .get("https://api.spotify.com/v1/me/top/artists", {
+        headers: {
+          Authorization: "Bearer " + this.state.acces_token
+        }
+      })
+      .then(response => console.log("top" + response.data.items[0].name));
+  }
+
   render() {
     return (
       <LinearGradient
@@ -33,7 +110,7 @@ class HomeScreen extends React.Component {
           <Button
             bgColor={"#23CF5F"}
             text={"Log in with Spotify"}
-            onPress={() => this.props.navigation.navigate("PickArtist")}
+            onPress={this.handleSpotifyLogin}
           >
             <Entypo name="spotify-with-circle" size={24} color="white" />
           </Button>
