@@ -31,7 +31,6 @@ class HomeScreen extends React.Component {
 
   handleSpotifyLogin = async () => {
     let redirectUrl = AuthSession.getRedirectUrl();
-    console.log("redir" + redirectUrl);
     var scope = "user-read-private user-read-email user-top-read";
     let results = await AuthSession.startAsync({
       authUrl:
@@ -68,8 +67,6 @@ class HomeScreen extends React.Component {
           { headers: headers }
         )
         .then(response => {
-          console.log(response.data.access_token);
-          console.log(response.data.refresh_token);
           this.setState({
             acces_token: response.data.access_token,
             refresh_token: response.data.refresh_token
@@ -89,7 +86,25 @@ class HomeScreen extends React.Component {
           Authorization: "Bearer " + this.state.acces_token
         }
       })
-      .then(response => console.log("top" + response.data.items[0].name));
+      .then(response => {
+        const filtered = response.data.items.map(item =>
+          Object.keys(item)
+            .filter(key => ["external_urls", "name", "images"].includes(key))
+            .reduce((obj, key) => {
+              obj[key] = item[key];
+              return obj;
+            }, {})
+        );
+
+        const onlySmallImages = filtered.forEach(item => {
+          console.log(item.images[0]);
+          if (item) {
+            item.images = item.images.slice(-2, -1);
+          }
+        });
+        console.log(onlySmallImages);
+      })
+      .catch(error => this.setState({ error }));
   }
 
   render() {
