@@ -1,15 +1,11 @@
-import React from "react";
-import { View } from "react-native";
-import { LinearGradient, AuthSession } from "expo";
+import React, { Component } from "react";
+import { View, Text } from "react-native";
+import { LinearGradient } from "expo";
 import { Entypo } from "@expo/vector-icons";
 import styled from "styled-components";
-import querystring from "querystring";
 import Button from "../components/Button";
-import { Buffer } from "buffer";
 import axios from "axios";
-
-var SPOTIFY_CLIENT_ID = "b2ff1c99b3fc459ca733f35ee9f3e068"; // Your client id
-var SPOTIFY_CLIENT_SECRET = "cd4e85fd594644fe87df109a814adac1"; // Your secret
+import { handleSpotifyLogin as login, getAccessToken } from "../api";
 
 const StyledView = styled(View)`
   flex: 1;
@@ -20,89 +16,56 @@ const StyledView = styled(View)`
   margin-bottom: 140;
 `;
 
-class HomeScreen extends React.Component {
-  state = {
-    userInfo: null,
-    acces_token: null,
-    refresh_token: null,
-    error: null,
-    didError: false
-  };
+class HomeScreen extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      userInfo: null,
+      access_token: null,
+      refresh_token: null,
+      error: null,
+      didError: false
+    };
 
-  handleSpotifyLogin = async () => {
-    let redirectUrl = AuthSession.getRedirectUrl();
-    var scope = "user-read-private user-read-email user-top-read";
-    let results = await AuthSession.startAsync({
-      authUrl:
-        "https://accounts.spotify.com/authorize?" +
-        querystring.stringify({
-          response_type: "code",
-          client_id: SPOTIFY_CLIENT_ID,
-          scope: scope,
-          redirect_uri: redirectUrl
-        })
-    });
-    if (results.type !== "success") {
-      this.setState({ didError: true });
-    } else {
-      var body = {
-        code: results.params.code,
-        redirect_uri: redirectUrl,
-        grant_type: "authorization_code"
-      };
+    this.handleSpotifyLogin = this.handleSpotifyLogin.bind(this);
+    this.getTopArtist = this.getTopArtist.bind(this);
+  }
 
-      var headers = {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Authorization:
-          "Basic " +
-          new Buffer(SPOTIFY_CLIENT_ID + ":" + SPOTIFY_CLIENT_SECRET).toString(
-            "base64"
-          )
-      };
-
-      axios
-        .post(
-          "https://accounts.spotify.com/api/token",
-          querystring.stringify(body),
-          { headers: headers }
-        )
-        .then(response => {
-          this.setState({
-            acces_token: response.data.access_token,
-            refresh_token: response.data.refresh_token
-          });
-        })
-        .then(() => this.getTopArtist())
-        .catch(error => {
-          this.setState({ error });
+  handleSpotifyLogin() {
+    login().then(result => {
+      if (result.type === "error") {
+        this.setState({ didError: true, error: result.errorCode });
+      } else if (result.type === "success") {
+        this.getTopArtist();
+      } else {
+        this.setState({
+          didError: true,
+          error: "An unknown error has occured! :("
         });
-    }
-  };
+      }
+    });
+  }
 
   getTopArtist() {
+    getAccessToken();
+
     axios
       .get("https://api.spotify.com/v1/me/top/artists", {
         headers: {
-          Authorization: "Bearer " + this.state.acces_token
+          Authorization: "Bearer " + this.state.access_token
         }
       })
       .then(response => {
         const filtered = response.data.items.map(item =>
           Object.keys(item)
-            .filter(key => ["external_urls", "name", "images"].includes(key))
+            .filter(key =>
+              ["external_urls", "name", "images", "id"].includes(key)
+            )
             .reduce((obj, key) => {
               obj[key] = item[key];
               return obj;
             }, {})
         );
-
-        const onlySmallImages = filtered.forEach(item => {
-          console.log(item.images[0]);
-          if (item) {
-            item.images = item.images.slice(-2, -1);
-          }
-        });
-        console.log(onlySmallImages);
       })
       .catch(error => this.setState({ error }));
   }
@@ -125,10 +88,11 @@ class HomeScreen extends React.Component {
           <Button
             bgColor={"#23CF5F"}
             text={"Log in with Spotify"}
-            onPress={this.handleSpotifyLogin}
+            onPress={e => this.handleSpotifyLogin(e)}
           >
             <Entypo name="spotify-with-circle" size={24} color="white" />
           </Button>
+          {this.state.didError && <Text>{this.state.error}</Text>}
         </StyledView>
       </LinearGradient>
     );
