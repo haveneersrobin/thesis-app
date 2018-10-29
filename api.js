@@ -19,11 +19,10 @@ const HEADERS = {
 
 export const getAccessToken = async () => {
   var accessToken = JSON.parse(await SecureStore.getItemAsync("access_token"));
-  if (moment(accessToken.expires) < moment()) {
+  if (moment(accessToken.expires) > moment()) {
     return accessToken.token;
   } else {
     var refreshToken = await SecureStore.getItemAsync("refresh_token");
-    console.log("refresh!" + refreshToken);
     const body = {
       refresh_token: refreshToken,
       grant_type: "refresh_token"

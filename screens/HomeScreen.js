@@ -20,9 +20,7 @@ class HomeScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userInfo: null,
-      access_token: null,
-      refresh_token: null,
+      artists: null,
       error: null,
       didError: false
     };
@@ -47,27 +45,34 @@ class HomeScreen extends Component {
   }
 
   getTopArtist() {
-    getAccessToken();
-
-    axios
-      .get("https://api.spotify.com/v1/me/top/artists", {
-        headers: {
-          Authorization: "Bearer " + this.state.access_token
-        }
-      })
-      .then(response => {
-        const filtered = response.data.items.map(item =>
-          Object.keys(item)
-            .filter(key =>
-              ["external_urls", "name", "images", "id"].includes(key)
-            )
-            .reduce((obj, key) => {
-              obj[key] = item[key];
-              return obj;
-            }, {})
-        );
-      })
-      .catch(error => this.setState({ error }));
+    getAccessToken().then(accessToken => {
+      axios
+        .get("https://api.spotify.com/v1/me/top/artists", {
+          headers: {
+            Authorization: "Bearer " + accessToken
+          }
+        })
+        .then(response => {
+          const filtered = response.data.items.map(item =>
+            Object.keys(item)
+              .filter(key =>
+                ["external_urls", "name", "images", "id"].includes(key)
+              )
+              .reduce((obj, key) => {
+                obj[key] = item[key];
+                return obj;
+              }, {})
+          );
+          this.setState({ artists: filtered }, () =>
+            this.props.navigation.navigate("PickArtist", {
+              artists: this.state.artists
+            })
+          );
+        })
+        .catch(error => {
+          this.setState({ error });
+        });
+    });
   }
 
   render() {

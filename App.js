@@ -17,7 +17,8 @@ export default class App extends React.Component {
   async _loadAssetsAsync() {
     const fontAssets = cacheFonts([
       { droid: require("./assets/fonts/DroidSans.ttf") },
-      { "droid-bold": require("./assets/fonts/DroidSans-Bold.ttf") }
+      { "droid-bold": require("./assets/fonts/DroidSans-Bold.ttf") },
+      { "roboto-black": require("./assets/fonts/Roboto-Black.ttf") }
     ]);
     await Promise.all([...fontAssets]);
   }
