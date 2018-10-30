@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, TouchableWithoutFeedback } from "react-native";
 import styled from "styled-components";
 
 import { MyText } from "../styles";
@@ -15,10 +15,12 @@ const ChipView = styled(View)`
   background-color: #cae7b9;
   border-radius: 80;
   padding: 4px 5px;
-  margin-top: 10;
-  margin-bottom: 10;
-  margin-right: 5;
-  margin-left: 5;
+
+  margin-top: ${props => (props.selected ? 10 : 12)};
+  margin-bottom: ${props => (props.selected ? 10 : 12)};
+  margin-left: ${props => (props.selected ? 5 : 7)};
+  margin-right: ${props => (props.selected ? 5 : 7)};
+  ${props => props.selected && `border: 2px solid #23CF5F}`};
 `;
 
 const ArtistText = styled(MyText)`
@@ -32,13 +34,22 @@ const ArtistText = styled(MyText)`
 
 const ArtistChip = props => {
   return (
-    <ChipView>
-      <MaskedImage
-        style={{ width: 47, height: 47 }}
-        source={{ uri: props.image.url }}
-      />
-      <ArtistText>{props.name}</ArtistText>
-    </ChipView>
+    <TouchableWithoutFeedback onPress={() => props.onPress(props.id)}>
+      <ChipView
+        selected={props.selected === "true"}
+        elevation={props.selected === "true" ? 6 : 4}
+      >
+        <MaskedImage
+          style={{ width: 47, height: 47 }}
+          source={
+            props.selected
+              ? require("../assets/img/check.png")
+              : { uri: props.image.url }
+          }
+        />
+        <ArtistText>{props.name}</ArtistText>
+      </ChipView>
+    </TouchableWithoutFeedback>
   );
 };
 

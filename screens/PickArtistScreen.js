@@ -36,10 +36,18 @@ const LoadMoreText = styled(TitleText)`
 `;
 
 class PickArtistScreen extends Component {
-  state = {
-    index: 0,
-    fadeAnim: new Animated.Value(0) // init opacity 0
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      index: 0,
+      fadeAnim: new Animated.Value(0), // init opacity 0
+      selected: []
+    };
+
+    this.nextIndex = this.nextIndex.bind(this);
+    this.resetIndex = this.resetIndex.bind(this);
+    this.toggleSelection = this.toggleSelection.bind(this);
+  }
 
   nextIndex() {
     this.fadeIn();
@@ -51,6 +59,18 @@ class PickArtistScreen extends Component {
   resetIndex() {
     this.fadeIn();
     this.setState({ index: 0 });
+  }
+
+  toggleSelection(id) {
+    let selectedValues = this.state.selected || [];
+    const position = selectedValues.indexOf(id);
+    if (position === -1) {
+      selectedValues.push(id);
+    } else {
+      selectedValues.splice(position, 1);
+    }
+    console.log(selectedValues);
+    this.setState({ selected: selectedValues });
   }
 
   handleViewRef = ref => (this.view = ref);
@@ -81,7 +101,12 @@ class PickArtistScreen extends Component {
                 .slice(this.state.index, this.state.index + 6)
                 .map(artist => (
                   <ArtistChip
+                    onPress={this.toggleSelection}
+                    id={artist.id}
                     key={artist.id}
+                    selected={
+                      this.state.selected.indexOf(artist.id) !== -1 && "true"
+                    }
                     name={artist.name}
                     image={artist.images[artist.images.length - 2]}
                   />
@@ -89,13 +114,11 @@ class PickArtistScreen extends Component {
           </ArtistsView>
           <TouchableOpacity>
             {this.state.index !== 18 && (
-              <LoadMoreText onPress={() => this.nextIndex()}>
-                Load more
-              </LoadMoreText>
+              <LoadMoreText onPress={this.nextIndex}>See more</LoadMoreText>
             )}
 
             {this.state.index === 18 && (
-              <LoadMoreText onPress={() => this.resetIndex()}>
+              <LoadMoreText onPress={this.resetIndex}>
                 Back to start
               </LoadMoreText>
             )}
