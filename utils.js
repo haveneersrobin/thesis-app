@@ -29,12 +29,17 @@ export const fromRight = (duration = 300) => {
 };
 
 export const loadAssets = async () => {
-  const imageAssets = _cacheImages([require("./assets/img/check.png")]);
+  const imageAssets = _cacheImages([
+    require("./assets/img/check.png"),
+    require("./assets/img/play.png"),
+    require("./assets/img/pause.png")
+  ]);
 
   const fontAssets = _cacheFonts([
     { droid: require("./assets/fonts/DroidSans.ttf") },
     { "droid-bold": require("./assets/fonts/DroidSans-Bold.ttf") },
-    { "roboto-black": require("./assets/fonts/Roboto-Black.ttf") }
+    { "roboto-black": require("./assets/fonts/Roboto-Black.ttf") },
+    { "roboto-regular": require("./assets/fonts/Roboto-Regular.ttf") }
   ]);
   await Promise.all([...imageAssets, ...fontAssets]);
 };

@@ -1,7 +1,6 @@
 import React from "react";
-import { View, Text, Image, TouchableWithoutFeedback } from "react-native";
+import { View, Image, TouchableWithoutFeedback } from "react-native";
 import styled from "styled-components";
-
 import { MyText } from "../styles";
 
 const MaskedImage = styled(Image)`
