@@ -1,62 +1,21 @@
 import React from "react";
 import { createStackNavigator } from "react-navigation";
 import { AppLoading } from "expo";
-import { Animated, Easing } from "react-native";
-import { Font } from "expo";
 import HomeScreen from "./screens/HomeScreen";
 import PickArtistScreen from "./screens/PickArtistScreen";
-import { fromLeft } from "react-navigation-transitions";
-
-function fromRight(duration = 300) {
-  return {
-    transitionSpec: {
-      duration,
-      easing: Easing.out(Easing.poly(4)),
-      timing: Animated.timing,
-      useNativeDriver: true
-    },
-    screenInterpolator: ({ layout, position, scene }) => {
-      const { index } = scene;
-      const { initWidth } = layout;
-
-      const translateX = position.interpolate({
-        inputRange: [index - 1, index, index + 1],
-        outputRange: [initWidth, 0, 0]
-      });
-
-      const opacity = position.interpolate({
-        inputRange: [index - 1, index - 0.99, index],
-        outputRange: [0, 1, 1]
-      });
-
-      return { opacity, transform: [{ translateX }] };
-    }
-  };
-}
-
-function cacheFonts(fonts) {
-  return fonts.map(font => Font.loadAsync(font));
-}
+import SongOverviewScreen from "./screens/SongOverviewScreen";
+import { fromRight, loadAssets } from "./utils";
 
 export default class App extends React.Component {
   state = {
     isReady: false
   };
 
-  async _loadAssetsAsync() {
-    const fontAssets = cacheFonts([
-      { droid: require("./assets/fonts/DroidSans.ttf") },
-      { "droid-bold": require("./assets/fonts/DroidSans-Bold.ttf") },
-      { "roboto-black": require("./assets/fonts/Roboto-Black.ttf") }
-    ]);
-    await Promise.all([...fontAssets]);
-  }
-
   render() {
     if (!this.state.isReady) {
       return (
         <AppLoading
-          startAsync={this._loadAssetsAsync}
+          startAsync={loadAssets}
           onFinish={() => this.setState({ isReady: true })}
           onError={console.warn}
         />
@@ -80,10 +39,33 @@ const handleCustomTransition = ({ scenes }) => {
   }
 };
 
+const AfterSelection = createStackNavigator(
+  {
+    SongOverviewScreen: { screen: SongOverviewScreen }
+  },
+  {
+    initialRouteName: "SongOverviewScreen",
+    headerMode: "screen",
+    gesturesEnabled: false,
+    transitionConfig: scenes => handleCustomTransition(scenes),
+    navigationOptions: {
+      headerVisible: true,
+      headerStyle: {
+        backgroundColor: "#8360C3"
+      },
+      headerTintColor: "#fff",
+      headerTitleStyle: {
+        fontFamily: "droid-bold"
+      }
+    }
+  }
+);
+
 const RootStack = createStackNavigator(
   {
     Home: { screen: HomeScreen },
-    PickArtist: { screen: PickArtistScreen }
+    PickArtist: { screen: PickArtistScreen },
+    SongOverviewScreen: { screen: AfterSelection }
   },
   {
     initialRouteName: "Home",

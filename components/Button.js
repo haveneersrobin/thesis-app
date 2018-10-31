@@ -25,7 +25,11 @@ const ButtonText = styled(MyText)`
 
 const Button = props => {
   return (
-    <View style={{ borderRadius: 40 }} elevation={1}>
+    <View
+      style={{ borderRadius: 40 }}
+      elevation={1}
+      opacity={props.disabled === "true" ? 0.3 : 1}
+    >
       {Platform.OS === "android" && (
         <TouchableNativeFeedback
           background={TouchableNativeFeedback.Ripple(
