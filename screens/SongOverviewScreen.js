@@ -1,8 +1,21 @@
 import React, { Component } from "react";
-import { View, ScrollView, ActivityIndicator } from "react-native";
+import {
+  View,
+  ScrollView,
+  ActivityIndicator,
+  TouchableWithoutFeedback,
+  Text,
+  Dimensions,
+  Animated
+} from "react-native";
 import axios from "axios";
 import styled from "styled-components";
 import { MyText } from "../styles";
+import SlidingUpPanel from "rn-sliding-up-panel";
+import { getAccessToken } from "../api";
+import PlayCard from "../components/PlayCard";
+
+const { height } = Dimensions.get("window");
 
 const SongView = styled(View)`
   padding: 20px 10px;
@@ -18,10 +31,38 @@ const LoadingText = styled(MyText)`
   text-align: center;
 `;
 
-import { getAccessToken } from "../api";
-import PlayCard from "../components/PlayCard";
+const PanelView = styled(View)`
+  flex: 1;
+  background-color: #8360c3;
+  border-radius: 20px;
+  position: relative;
+`;
+
+const PanelHeader = styled(View)`
+  height: 50;
+  background-color: #8360c3;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+`;
+
+const Container = styled(View)`
+  flex: 1;
+  background-color: red;
+  align-items: center;
+  justify-content: center;
+`;
 
 class SongOverviewScreen extends Component {
+  static defaultProps = {
+    draggableRange: {
+      top: height / 1.2,
+      bottom: 130
+    }
+  };
+
+  _draggedValue = new Animated.Value(-120);
+
   static navigationOptions = {
     title: "Songs",
     error: null
@@ -30,23 +71,25 @@ class SongOverviewScreen extends Component {
   constructor(props) {
     super(props);
 
+    this._panel = React.createRef();
+
     this.state = {
-      /* artists: [
+      artists: [
         "0rHFi0qKLbO72s40s0DZ2h",
         "4TrraAsitQKl821DQY42cZ",
         "5Q81rlcTFh3k6DQJXPdsot",
         "1zNqDE7qDGCsyzJwohVaoX",
         "0nJaMZM8paoA5HEUTUXPqi"
-      ], */
-      artists: this.props.navigation.getParam("artists", undefined),
-      results: null
+      ],
+      //artists: this.props.navigation.getParam("artists", undefined),
+      results: null,
+      visible: false
     };
-
-    console.log(this.props.navigation.getParam("artists", undefined));
 
     this.audioPlayer = new Expo.Audio.Sound();
     this.getRecommendations = this.getRecommendations.bind(this);
     this.playSound = this.playSound.bind(this);
+    this.toggleBottomPanel = this.toggleBottomPanel.bind(this);
     this.getRecommendations();
   }
 
@@ -69,6 +112,10 @@ class SongOverviewScreen extends Component {
     });
     let res = await axios.all(ops);
     return res;
+  }
+
+  toggleBottomPanel() {
+    this.state._panel.transitionTo(30);
   }
 
   getRecommendations() {
@@ -149,6 +196,33 @@ class SongOverviewScreen extends Component {
               />
             ))}
         </ScrollView>
+        {this.state.results && (
+          <SlidingUpPanel
+            visible
+            startCollapsed
+            showBackdrop={true}
+            backdropOpacity={0.5}
+            ref={c => !this.state._panel && this.setState({ _panel: c })}
+            draggableRange={this.props.draggableRange}
+            onDrag={v => this._draggedValue.setValue(v)}
+          >
+            <PanelView>
+              <PanelHeader>
+                <MyText style={{ color: "#FFF" }}>Selected songs</MyText>
+                <TouchableWithoutFeedback
+                  onPress={() => this.toggleBottomPanel()}
+                >
+                  <View>
+                    <Text>Press</Text>
+                  </View>
+                </TouchableWithoutFeedback>
+              </PanelHeader>
+              <Container>
+                <Text>Bottom Sheet Content</Text>
+              </Container>
+            </PanelView>
+          </SlidingUpPanel>
+        )}
       </SongView>
     );
   }

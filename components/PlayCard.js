@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
 import { View, Image, Text, TouchableWithoutFeedback } from "react-native";
 import styled from "styled-components";
@@ -44,20 +45,27 @@ const TitleText = styled(CustomText)`
   font-family: "roboto-regular";
 `;
 
+const ButtonView = styled(View)`
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+`;
+
 const PlayCard = props => {
   return (
     <SongView elevation={2}>
       <TouchableWithoutFeedback onPress={() => props.onPress(props.id)}>
         <ImageView>
           <MaskedImage
-            style={{ width: 55, height: 55 }}
+            style={{ width: 65, height: 65 }}
             source={{
               uri: props.image.url || undefined
             }}
           />
           <PlayImageView>
             <Image
-              style={{ width: 40, height: 40 }}
+              style={{ width: 50, height: 50 }}
               source={
                 props.playing
                   ? require("../assets/img/pause.png")
@@ -71,6 +79,10 @@ const PlayCard = props => {
         <ArtistText>{props.artist}</ArtistText>
         <TitleText numberOfLines={1}>{props.name}</TitleText>
       </TextView>
+      <ButtonView>
+        <MaterialCommunityIcons name="thumb-up" size={24} color="#23CF5F" />
+        <MaterialCommunityIcons name="thumb-down" size={24} color="#8360C3" />
+      </ButtonView>
     </SongView>
   );
 };

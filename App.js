@@ -68,7 +68,7 @@ const RootStack = createStackNavigator(
     SongOverviewScreen: { screen: AfterSelection }
   },
   {
-    initialRouteName: "Home",
+    initialRouteName: "SongOverviewScreen",
     headerMode: "none",
     gesturesEnabled: false,
     transitionConfig: scenes => handleCustomTransition(scenes),
