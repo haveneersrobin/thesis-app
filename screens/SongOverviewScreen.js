@@ -14,6 +14,7 @@ import { MyText } from "../styles";
 import SlidingUpPanel from "rn-sliding-up-panel";
 import { getAccessToken } from "../api";
 import PlayCard from "../components/PlayCard";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 const { height } = Dimensions.get("window");
 
@@ -39,16 +40,19 @@ const PanelView = styled(View)`
 `;
 
 const PanelHeader = styled(View)`
+  flex-direction: row;
   height: 50;
   background-color: #8360c3;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   border-radius: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
 `;
 
 const Container = styled(View)`
   flex: 1;
-  background-color: red;
+  background-color: blue;
   align-items: center;
   justify-content: center;
 `;
@@ -71,8 +75,6 @@ class SongOverviewScreen extends Component {
   constructor(props) {
     super(props);
 
-    this._panel = React.createRef();
-
     this.state = {
       artists: [
         "0rHFi0qKLbO72s40s0DZ2h",
@@ -83,13 +85,15 @@ class SongOverviewScreen extends Component {
       ],
       //artists: this.props.navigation.getParam("artists", undefined),
       results: null,
-      visible: false
+      visible: false,
+      selected: []
     };
 
     this.audioPlayer = new Expo.Audio.Sound();
     this.getRecommendations = this.getRecommendations.bind(this);
     this.playSound = this.playSound.bind(this);
-    this.toggleBottomPanel = this.toggleBottomPanel.bind(this);
+
+    this.onLike = this.onLike.bind(this);
     this.getRecommendations();
   }
 
@@ -114,8 +118,13 @@ class SongOverviewScreen extends Component {
     return res;
   }
 
-  toggleBottomPanel() {
-    this.state._panel.transitionTo(30);
+  onLike(id) {
+    this.setState(prevState => {
+      const newSelected = prevState.selected;
+      newSelected.push(id);
+      console.log(newSelected);
+      return { selected: newSelected, visible: true };
+    });
   }
 
   getRecommendations() {
@@ -191,6 +200,7 @@ class SongOverviewScreen extends Component {
                 artist={track.artist}
                 name={track.name}
                 onPress={() => this.playSound(track.id, track.preview_url)}
+                onLike={() => this.onLike(track.id)}
                 image={track.image}
                 playing={this.state.playing === track.id}
               />
@@ -198,22 +208,38 @@ class SongOverviewScreen extends Component {
         </ScrollView>
         {this.state.results && (
           <SlidingUpPanel
-            visible
-            startCollapsed
-            showBackdrop={true}
-            backdropOpacity={0.5}
-            ref={c => !this.state._panel && this.setState({ _panel: c })}
+            visible={this.state.visible}
+            ref={c => (this._panel = c)}
             draggableRange={this.props.draggableRange}
-            onDrag={v => this._draggedValue.setValue(v)}
+            startCollapsed={false}
+            allowDragging={false}
           >
             <PanelView>
               <PanelHeader>
-                <MyText style={{ color: "#FFF" }}>Selected songs</MyText>
+                <MyText style={{ color: "#FFF" }}>
+                  {this.state.selected.length} songs selected
+                </MyText>
                 <TouchableWithoutFeedback
-                  onPress={() => this.toggleBottomPanel()}
+                  onPress={() =>
+                    this._panel.transitionTo({
+                      toValue: this.state.visible ? 0 : 1000,
+                      duration: 350
+                    })
+                  }
                 >
                   <View>
-                    <Text>Press</Text>
+                    <FontAwesome
+                      style={{
+                        transform: [
+                          this.state.visible
+                            ? { rotate: "180deg" }
+                            : { rotate: "0deg" }
+                        ]
+                      }}
+                      color="white"
+                      name="arrow-circle-up"
+                      size={24}
+                    />
                   </View>
                 </TouchableWithoutFeedback>
               </PanelHeader>

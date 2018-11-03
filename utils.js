@@ -1,6 +1,6 @@
 import { Animated, Easing } from "react-native";
 import { Font, Asset } from "expo";
-import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Entypo, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 
 export const fromRight = (duration = 300) => {
   return {
@@ -42,7 +42,8 @@ export const loadAssets = async () => {
     { "roboto-black": require("./assets/fonts/Roboto-Black.ttf") },
     { "roboto-regular": require("./assets/fonts/Roboto-Regular.ttf") },
     MaterialCommunityIcons.font,
-    Entypo.font
+    Entypo.font,
+    Feather.font
   ]);
   await Promise.all([...imageAssets, ...fontAssets]);
 };

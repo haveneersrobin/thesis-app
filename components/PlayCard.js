@@ -55,7 +55,7 @@ const ButtonView = styled(View)`
 const PlayCard = props => {
   return (
     <SongView elevation={2}>
-      <TouchableWithoutFeedback onPress={() => props.onPress(props.id)}>
+      <TouchableWithoutFeedback onPress={props.onPress}>
         <ImageView>
           <MaskedImage
             style={{ width: 65, height: 65 }}
@@ -77,10 +77,14 @@ const PlayCard = props => {
       </TouchableWithoutFeedback>
       <TextView>
         <ArtistText>{props.artist}</ArtistText>
-        <TitleText numberOfLines={1}>{props.name}</TitleText>
+        <TitleText numberOfLines={1} width={100}>
+          {props.name}
+        </TitleText>
       </TextView>
       <ButtonView>
-        <MaterialCommunityIcons name="thumb-up" size={24} color="#23CF5F" />
+        <TouchableWithoutFeedback onPress={props.onLike}>
+          <MaterialCommunityIcons name="thumb-up" size={24} color="#23CF5F" />
+        </TouchableWithoutFeedback>
         <MaterialCommunityIcons name="thumb-down" size={24} color="#8360C3" />
       </ButtonView>
     </SongView>
