@@ -40,7 +40,7 @@ const Button = props => {
         >
           <ButtonView bgColor={props.bgColor}>
             {props.children}
-            <ButtonText> {props.text} </ButtonText>
+            <ButtonText color={props.color}> {props.text} </ButtonText>
           </ButtonView>
         </TouchableNativeFeedback>
       )}

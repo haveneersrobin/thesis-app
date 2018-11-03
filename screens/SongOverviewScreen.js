@@ -5,18 +5,17 @@ import {
   ActivityIndicator,
   TouchableWithoutFeedback,
   Text,
-  Dimensions,
-  Animated
+  Modal
 } from "react-native";
 import axios from "axios";
 import styled from "styled-components";
 import { MyText } from "../styles";
-import SlidingUpPanel from "rn-sliding-up-panel";
 import { getAccessToken } from "../api";
 import PlayCard from "../components/PlayCard";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-
-const { height } = Dimensions.get("window");
+import Feather from "@expo/vector-icons/Feather";
+import Button from "../components/Button";
+import FeaturesSliders from "../components/FeaturesSliders";
 
 const SongView = styled(View)`
   padding: 20px 10px;
@@ -33,10 +32,12 @@ const LoadingText = styled(MyText)`
 `;
 
 const PanelView = styled(View)`
-  flex: 1;
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 200;
   background-color: #8360c3;
   border-radius: 20px;
-  position: relative;
 `;
 
 const PanelHeader = styled(View)`
@@ -57,19 +58,46 @@ const Container = styled(View)`
   justify-content: center;
 `;
 
+const SlidingUpPanel = styled(View)`
+  flex: 1;
+`;
+
+const ModalContainer = styled(View)`
+  background-color: rgba(1, 1, 1, 0.4);
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ModalContent = styled(View)`
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background-color: white;
+  border-radius: 10px;
+`;
+
+const ModalButtons = styled(View)`
+  flex-direction: row;
+`;
+
 class SongOverviewScreen extends Component {
-  static defaultProps = {
-    draggableRange: {
-      top: height / 1.2,
-      bottom: 130
-    }
-  };
-
-  _draggedValue = new Animated.Value(-120);
-
-  static navigationOptions = {
-    title: "Songs",
-    error: null
+  static navigationOptions = ({ navigation }) => {
+    return {
+      title: "Songs",
+      error: null,
+      headerRight: (
+        <TouchableWithoutFeedback onPress={navigation.getParam("toggleModal")}>
+          <Feather
+            name="sliders"
+            color="white"
+            size={24}
+            style={{ paddingRight: 20 }}
+          />
+        </TouchableWithoutFeedback>
+      )
+    };
   };
 
   constructor(props) {
@@ -86,15 +114,20 @@ class SongOverviewScreen extends Component {
       //artists: this.props.navigation.getParam("artists", undefined),
       results: null,
       visible: false,
+      modalVisible: false,
       selected: []
     };
 
     this.audioPlayer = new Expo.Audio.Sound();
     this.getRecommendations = this.getRecommendations.bind(this);
     this.playSound = this.playSound.bind(this);
-
     this.onLike = this.onLike.bind(this);
+    this.toggleModal = this.toggleModal.bind(this);
     this.getRecommendations();
+  }
+
+  componentDidMount() {
+    this.props.navigation.setParams({ toggleModal: this.toggleModal });
   }
 
   async getPreviewURL(id, accessToken) {
@@ -106,6 +139,13 @@ class SongOverviewScreen extends Component {
         Authorization: "Bearer " + accessToken
       }
     });
+  }
+
+  toggleModal() {
+    console.log("ello");
+    this.setState(prevState => ({
+      modalVisible: !prevState.modalVisible
+    }));
   }
 
   async getPreviewURLs(ids, accesToken) {
@@ -122,7 +162,6 @@ class SongOverviewScreen extends Component {
     this.setState(prevState => {
       const newSelected = prevState.selected;
       newSelected.push(id);
-      console.log(newSelected);
       return { selected: newSelected, visible: true };
     });
   }
@@ -185,6 +224,39 @@ class SongOverviewScreen extends Component {
   render() {
     return (
       <SongView>
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={this.state.modalVisible}
+          onRequestClose={() => {
+            this.setState(prevState => ({
+              modalVisible: !prevState.modalVisible
+            }));
+          }}
+          transparent={true}
+          animationType="fade"
+        >
+          <ModalContainer>
+            <ModalContent elevation={3}>
+              <Text>Hello World!</Text>
+              <FeaturesSliders />
+              <ModalButtons>
+                <Button
+                  bgColor={"white"}
+                  color={"#8360C3"}
+                  text={"Cancel"}
+                  onPress={() => {
+                    this.setState(prevState => ({
+                      modalVisible: !prevState.modalVisible
+                    }));
+                  }}
+                />
+                <Button text={"Confirm"} />
+              </ModalButtons>
+            </ModalContent>
+          </ModalContainer>
+        </Modal>
+
         <ScrollView>
           {!this.state.results && (
             <View>
@@ -207,24 +279,17 @@ class SongOverviewScreen extends Component {
             ))}
         </ScrollView>
         {this.state.results && (
-          <SlidingUpPanel
-            visible={this.state.visible}
-            ref={c => (this._panel = c)}
-            draggableRange={this.props.draggableRange}
-            startCollapsed={false}
-            allowDragging={false}
-          >
-            <PanelView>
+          <SlidingUpPanel>
+            <PanelView visible={this.state.visible}>
               <PanelHeader>
                 <MyText style={{ color: "#FFF" }}>
                   {this.state.selected.length} songs selected
                 </MyText>
                 <TouchableWithoutFeedback
                   onPress={() =>
-                    this._panel.transitionTo({
-                      toValue: this.state.visible ? 0 : 1000,
-                      duration: 350
-                    })
+                    this.setState(prevState => ({
+                      visible: !prevState.visible
+                    }))
                   }
                 >
                   <View>
