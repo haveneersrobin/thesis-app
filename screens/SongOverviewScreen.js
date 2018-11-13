@@ -5,20 +5,24 @@ import {
   ActivityIndicator,
   TouchableWithoutFeedback,
   Text,
-  Modal
+  Modal,
+  Dimensions,
+  StatusBar
 } from "react-native";
 import axios from "axios";
+import { Header } from "react-navigation";
 import styled from "styled-components";
 import { MyText } from "../styles";
 import { getAccessToken } from "../api";
 import PlayCard from "../components/PlayCard";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import Feather from "@expo/vector-icons/Feather";
+import { FontAwesome, Feather, MaterialIcons } from "@expo/vector-icons";
 import Button from "../components/Button";
 import FeaturesSliders from "../components/FeaturesSliders";
+import posed from "react-native-pose";
+
+const window = Dimensions.get("window");
 
 const SongView = styled(View)`
-  padding: 20px 10px;
   flex: 1;
   flex-direction: column;
   background-color: white;
@@ -31,35 +35,63 @@ const LoadingText = styled(MyText)`
   text-align: center;
 `;
 
-const PanelView = styled(View)`
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 200;
-  background-color: #8360c3;
-  border-radius: 20px;
-`;
-
 const PanelHeader = styled(View)`
   flex-direction: row;
   height: 50;
   background-color: #8360c3;
   align-items: center;
   justify-content: space-between;
-  border-radius: 20px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
   padding-left: 20px;
   padding-right: 20px;
 `;
 
-const Container = styled(View)`
+const Container = posed.View({
+  open: { top: (1 / 6) * window.height, delay: 0 },
+  closed: {
+    top: window.height - Header.HEIGHT - StatusBar.currentHeight - 50,
+    delay: 0
+  },
+  bounceIn: {
+    top: (8 / 10) * window.height,
+    transition: { type: "spring" }
+  },
+  bounceOut: {
+    top: window.height - Header.HEIGHT - StatusBar.currentHeight - 50
+  }
+});
+
+const StyledContainer = styled(Container)`
+  position: absolute;
+  width: ${window.width};
+  height: ${window.height -
+    Header.HEIGHT -
+    StatusBar.currentHeight -
+    (1 / 6) * window.height};
+`;
+
+const SlidingContent = styled(View)`
+  background-color: white;
+  height: ${window.height -
+    Header.HEIGHT -
+    StatusBar.currentHeight -
+    (1 / 6) * window.height -
+    50};
+`;
+
+const PosedContainer = styled(View)`
   flex: 1;
-  background-color: blue;
+  background-color: white;
   align-items: center;
   justify-content: center;
+  height: 100;
 `;
 
 const SlidingUpPanel = styled(View)`
   flex: 1;
+  z-index: 2;
+  background-color: red;
 `;
 
 const ModalContainer = styled(View)`
@@ -80,6 +112,19 @@ const ModalContent = styled(View)`
 
 const ModalButtons = styled(View)`
   flex-direction: row;
+`;
+
+const NoTracksView = styled(View)`
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  font-style: italic;
+`;
+
+const NoTracksText = styled(MyText)`
+  color: grey;
+  text-align: center;
+  font-size: 20;
 `;
 
 class SongOverviewScreen extends Component {
@@ -111,10 +156,13 @@ class SongOverviewScreen extends Component {
         "1zNqDE7qDGCsyzJwohVaoX",
         "0nJaMZM8paoA5HEUTUXPqi"
       ],
-      //artists: this.props.navigation.getParam("artists", undefined),
+      // artists: this.props.navigation.getParam("artists", undefined),
       results: null,
       visible: false,
+      pose: "closed",
       modalVisible: false,
+      bounceIn: false,
+      bounceOut: false,
       selected: []
     };
 
@@ -123,6 +171,7 @@ class SongOverviewScreen extends Component {
     this.playSound = this.playSound.bind(this);
     this.onLike = this.onLike.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
+    this.bounce = this.bounce.bind(this);
     this.getRecommendations();
   }
 
@@ -142,7 +191,6 @@ class SongOverviewScreen extends Component {
   }
 
   toggleModal() {
-    console.log("ello");
     this.setState(prevState => ({
       modalVisible: !prevState.modalVisible
     }));
@@ -158,11 +206,30 @@ class SongOverviewScreen extends Component {
     return res;
   }
 
-  onLike(id) {
-    this.setState(prevState => {
-      const newSelected = prevState.selected;
-      newSelected.push(id);
-      return { selected: newSelected, visible: true };
+  onLike(track) {
+    if (
+      !this.state.selected.some(selectedTrack => selectedTrack.id === track.id)
+    ) {
+      const first = this.state.selected.length === 0;
+      this.setState(
+        prevState => {
+          const newSelected = prevState.selected;
+          newSelected.push(track);
+          return { selected: newSelected };
+        },
+        first ? this.bounce() : () => {}
+      );
+    }
+  }
+
+  bounce() {
+    console.log("bounce");
+    this.setState({ pose: "bounceIn" }, () => {
+      setTimeout(() => {
+        this.setState({
+          pose: "bounceOut"
+        });
+      }, 400);
     });
   }
 
@@ -265,22 +332,33 @@ class SongOverviewScreen extends Component {
             </View>
           )}
           {this.state.results &&
-            this.state.results.map(track => (
+            this.state.results.map((track, idx) => (
               <PlayCard
+                index={idx}
                 key={track.id}
                 id={track.id}
                 artist={track.artist}
                 name={track.name}
                 onPress={() => this.playSound(track.id, track.preview_url)}
-                onLike={() => this.onLike(track.id)}
+                onLike={() => this.onLike(track)}
                 image={track.image}
                 playing={this.state.playing === track.id}
+                selected={this.state.selected.some(
+                  selected => selected.id === track.id
+                )}
               />
             ))}
         </ScrollView>
         {this.state.results && (
-          <SlidingUpPanel>
-            <PanelView visible={this.state.visible}>
+          <StyledContainer pose={this.state.pose}>
+            <TouchableWithoutFeedback
+              onPress={() =>
+                this.setState(prevState => ({
+                  visible: !prevState.visible,
+                  pose: prevState.visible ? "closed" : "open"
+                }))
+              }
+            >
               <PanelHeader>
                 <MyText style={{ color: "#FFF" }}>
                   {this.state.selected.length} songs selected
@@ -288,7 +366,8 @@ class SongOverviewScreen extends Component {
                 <TouchableWithoutFeedback
                   onPress={() =>
                     this.setState(prevState => ({
-                      visible: !prevState.visible
+                      visible: !prevState.visible,
+                      pose: prevState.visible ? "closed" : "open"
                     }))
                   }
                 >
@@ -308,11 +387,36 @@ class SongOverviewScreen extends Component {
                   </View>
                 </TouchableWithoutFeedback>
               </PanelHeader>
-              <Container>
-                <Text>Bottom Sheet Content</Text>
-              </Container>
-            </PanelView>
-          </SlidingUpPanel>
+            </TouchableWithoutFeedback>
+            <SlidingContent>
+              {!this.state.selected ||
+                (this.state.selected.length === 0 && (
+                  <NoTracksView>
+                    <NoTracksText> No tracks selected. </NoTracksText>
+                    <View
+                      style={{
+                        flexDirection: "row"
+                      }}
+                    >
+                      <NoTracksText> Select tracks using </NoTracksText>
+                      <MaterialIcons
+                        name="playlist-add"
+                        size={23}
+                        color="grey"
+                      />
+                    </View>
+                  </NoTracksView>
+                ))}
+
+              {this.state.selected && this.state.selected.length !== 0 && (
+                <ScrollView>
+                  {this.state.selected.map(track => (
+                    <Text>{track.name}</Text>
+                  ))}
+                </ScrollView>
+              )}
+            </SlidingContent>
+          </StyledContainer>
         )}
       </SongView>
     );

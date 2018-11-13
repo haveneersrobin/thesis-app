@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import { View, Image, Text, TouchableWithoutFeedback } from "react-native";
 import styled from "styled-components";
@@ -7,9 +7,10 @@ const SongView = styled(View)`
   flex-direction: row;
   flex-wrap: nowrap;
   border-radius: 10;
-  background-color: white;
+  background-color: ${props => (props.selected ? "#e4f3dc" : "white")};
   padding: 10px 10px;
-  margin: 5px 0px;
+  margin: 8px 16px;
+  ${props => props.first === "true" && `margin-top: 16px;`}
 `;
 
 const TextView = styled(View)`
@@ -52,9 +53,22 @@ const ButtonView = styled(View)`
   justify-content: space-between;
 `;
 
+const IconView = styled(View)`
+  padding: 3px;
+`;
+
+const CheckView = styled(IconView)`
+  background-color: #cae7b9;
+  border-radius: 50;
+`;
+
 const PlayCard = props => {
   return (
-    <SongView elevation={2}>
+    <SongView
+      elevation={2}
+      first={props.index === 0 ? "true" : "false"}
+      selected={props.selected}
+    >
       <TouchableWithoutFeedback onPress={props.onPress}>
         <ImageView>
           <MaskedImage
@@ -82,10 +96,26 @@ const PlayCard = props => {
         </TitleText>
       </TextView>
       <ButtonView>
-        <TouchableWithoutFeedback onPress={props.onLike}>
-          <MaterialCommunityIcons name="thumb-up" size={24} color="#23CF5F" />
-        </TouchableWithoutFeedback>
-        <MaterialCommunityIcons name="thumb-down" size={24} color="#8360C3" />
+        {!props.selected && (
+          <TouchableWithoutFeedback onPress={props.onLike}>
+            <IconView>
+              <MaterialIcons name="playlist-add" size={24} color="#23CF5F" />
+            </IconView>
+          </TouchableWithoutFeedback>
+        )}
+        {props.selected && (
+          <CheckView>
+            <MaterialIcons
+              name="playlist-add-check"
+              size={24}
+              color="#23CF5F"
+            />
+          </CheckView>
+        )}
+
+        <IconView>
+          <MaterialIcons name="delete-forever" size={24} color="#8360C3" />
+        </IconView>
       </ButtonView>
     </SongView>
   );
