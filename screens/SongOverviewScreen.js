@@ -160,6 +160,13 @@ class SongOverviewScreen extends Component {
         },
         first ? this.bounce() : () => {}
       );
+    } else {
+      this.setState(prevState => {
+        const newSelected = prevState.selected.filter(
+          current => track.id !== current.id
+        );
+        return { selected: newSelected };
+      });
     }
   }
 

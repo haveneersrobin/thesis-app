@@ -7,7 +7,9 @@ const SongView = styled(View)`
   flex-direction: row;
   flex-wrap: nowrap;
   border-radius: 8;
-  background-color: ${props => (props.selected ? "#d3d8fe" : "#f8f8f8")};
+  background-color: #f8f8f8;
+  border: ${props =>
+    props.selected ? "2px solid #5f6fee" : "2px solid transparent"};
   padding: 10px 10px;
   margin: 8px 16px;
   ${props => props.first === "true" && `margin-top: 16px;`}
@@ -104,13 +106,15 @@ const PlayCard = props => {
           </TouchableWithoutFeedback>
         )}
         {props.selected && (
-          <CheckView>
-            <MaterialIcons
-              name="playlist-add-check"
-              size={24}
-              color="#5f6fee"
-            />
-          </CheckView>
+          <TouchableWithoutFeedback onPress={props.onLike}>
+            <CheckView>
+              <MaterialIcons
+                name="playlist-add-check"
+                size={24}
+                color="#5f6fee"
+              />
+            </CheckView>
+          </TouchableWithoutFeedback>
         )}
         <IconView>
           <MaterialIcons name="delete-forever" size={24} color="#B3BAC8" />

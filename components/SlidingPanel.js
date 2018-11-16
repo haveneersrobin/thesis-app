@@ -12,6 +12,7 @@ import posed from "react-native-pose";
 import { Header } from "react-navigation";
 import { MyText } from "../styles";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { responsiveFontSize } from "react-native-responsive-dimensions";
 
 const window = Dimensions.get("window");
 
@@ -57,7 +58,7 @@ const SlidingContent = styled(View)`
     Header.HEIGHT -
     StatusBar.currentHeight -
     (1 / 6) * window.height -
-    50};
+    40};
 `;
 
 const NoTracksView = styled(View)`
@@ -71,6 +72,21 @@ const NoTracksText = styled(MyText)`
   color: grey;
   text-align: center;
   font-size: 20;
+`;
+
+const TrackTitle = styled(MyText)`
+  font-size: ${responsiveFontSize(2.3)};
+`;
+const TrackNumber = styled(Text)`
+  color: #5f6fee;
+  font-size: ${responsiveFontSize(2.3)};
+  padding-right: 5px;
+  font-family: "sans-bold";
+`;
+
+const TrackView = styled(View)`
+  flex-direction: row;
+  margin-bottom: 20px;
 `;
 
 const SlidingPanel = props => {
@@ -114,9 +130,14 @@ const SlidingPanel = props => {
           ))}
 
         {props.selected && props.selected.length !== 0 && (
-          <ScrollView>
-            {props.selected.map(track => (
-              <Text>{track.name}</Text>
+          <ScrollView style={{ padding: 30 }}>
+            {props.selected.map((track, idx) => (
+              <TrackView>
+                <TrackNumber>{idx + 1}.</TrackNumber>
+                <TrackTitle numberOfLines={1}>
+                  {track.artist} - {track.name}
+                </TrackTitle>
+              </TrackView>
             ))}
           </ScrollView>
         )}
