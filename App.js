@@ -51,11 +51,11 @@ const AfterSelection = createStackNavigator(
     navigationOptions: {
       headerVisible: true,
       headerStyle: {
-        backgroundColor: "#8360C3"
+        backgroundColor: "#5f6fee"
       },
       headerTintColor: "#fff",
       headerTitleStyle: {
-        fontFamily: "droid-bold"
+        fontFamily: "sans-bold"
       }
     }
   }

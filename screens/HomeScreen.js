@@ -13,7 +13,8 @@ const StyledView = styled(View)`
   height: 100%;
   align-items: center;
   justify-content: flex-end;
-  margin-bottom: 140;
+  padding-bottom: 140;
+  background-color: #f2f2f2;
 `;
 
 class HomeScreen extends Component {
@@ -77,29 +78,17 @@ class HomeScreen extends Component {
 
   render() {
     return (
-      <LinearGradient
-        style={{
-          position: "absolute",
-          left: 0,
-          right: 0,
-          bottom: 0,
-          height: "100%"
-        }}
-        start={[1, 0]}
-        end={[0, 1]}
-        colors={["#8360C3", "rgba(46, 191, 145, 0.4)"]}
-      >
-        <StyledView>
-          <Button
-            bgColor={"#23CF5F"}
-            text={"Log in with Spotify"}
-            onPress={e => this.handleSpotifyLogin(e)}
-          >
-            <Entypo name="spotify-with-circle" size={24} color="white" />
-          </Button>
-          {this.state.didError && <Text>{this.state.error}</Text>}
-        </StyledView>
-      </LinearGradient>
+      <StyledView>
+        <Button
+          color={"#049138"}
+          bgColor={"#C2F8CB"}
+          text={"Log in with Spotify"}
+          onPress={e => this.handleSpotifyLogin(e)}
+        >
+          <Entypo name="spotify-with-circle" size={24} color="#049138" />
+        </Button>
+        {this.state.didError && <Text>{this.state.error}</Text>}
+      </StyledView>
     );
   }
 }

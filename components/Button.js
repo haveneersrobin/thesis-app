@@ -2,7 +2,7 @@ import React from "react";
 import {
   View,
   TouchableNativeFeedback,
-  TouchableHighlight,
+  TouchableOpacity,
   Platform
 } from "react-native";
 import { MyText } from "../styles";
@@ -12,9 +12,13 @@ const ButtonView = styled(View)`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  background-color: ${props => (props.bgColor ? props.bgColor : "#8360C3")};
-  border-radius: 40px;
-  padding: 12px 15px;
+  background-color: ${props => (props.bgColor ? props.bgColor : "#5F6FEE")};
+  padding: ${props => (props.borderColor ? "14px 19px" : "15px 20px")};
+  border-radius: 10px;
+  border: ${props =>
+    props.borderColor
+      ? `1px solid ${props.borderColor}`
+      : `1px solid transparent`};
 `;
 
 const ButtonText = styled(MyText)`
@@ -26,8 +30,7 @@ const ButtonText = styled(MyText)`
 const Button = props => {
   return (
     <View
-      style={{ borderRadius: 40 }}
-      elevation={1}
+      style={{ borderRadius: 10, backgroundColor: "rgba(255,255,255,0)" }}
       opacity={props.disabled === "true" ? 0.3 : 1}
     >
       {Platform.OS === "android" && (
@@ -38,7 +41,7 @@ const Button = props => {
           )}
           onPress={props.onPress}
         >
-          <ButtonView bgColor={props.bgColor}>
+          <ButtonView bgColor={props.bgColor} borderColor={props.borderColor}>
             {props.children}
             <ButtonText color={props.color}> {props.text} </ButtonText>
           </ButtonView>
@@ -46,12 +49,12 @@ const Button = props => {
       )}
 
       {Platform.OS === "ios" && (
-        <TouchableHighlight onPress={props.onPress}>
+        <TouchableOpacity onPress={props.onPress}>
           <ButtonView bgColor={props.bgColor}>
             {props.children}
-            <ButtonText> {props.text} </ButtonText>
+            <ButtonText color={props.color}> {props.text} </ButtonText>
           </ButtonView>
-        </TouchableHighlight>
+        </TouchableOpacity>
       )}
     </View>
   );

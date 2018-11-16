@@ -1,55 +1,69 @@
-import React from "react";
-import { View, Image, TouchableWithoutFeedback } from "react-native";
+import React, { Component } from "react";
+import {
+  View,
+  Image,
+  TouchableWithoutFeedback,
+  Dimensions
+} from "react-native";
 import styled from "styled-components";
 import { MyText } from "../styles";
 
+import { responsiveFontSize } from "react-native-responsive-dimensions";
+const window = Dimensions.get("window");
+
 const MaskedImage = styled(Image)`
-  border-radius: 50;
+  border-radius: 30;
 `;
 
 const ChipView = styled(View)`
   flex-direction: row;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  background-color: #cae7b9;
+  background-color: #d3d8fe;
   border-radius: 80;
   padding: 4px 5px;
-
-  margin-top: ${props => (props.selected ? 10 : 12)};
-  margin-bottom: ${props => (props.selected ? 10 : 12)};
-  margin-left: ${props => (props.selected ? 5 : 7)};
-  margin-right: ${props => (props.selected ? 5 : 7)};
-  ${props => props.selected && `border: 2px solid #23CF5F}`};
+  width: ${window.width / 2 - 25};
+  margin: 10px;
+  ${props =>
+    props.selected
+      ? `border: 2px solid #5f6fee}`
+      : `border: 2px solid transparent}`};
 `;
 
 const ArtistText = styled(MyText)`
-  color: white;
-  font-size: 14;
-  letter-spacing: 1;
-  margin-left: 15;
-  margin-right: 20;
-  font-family: "roboto-black";
+  color: #5f6fee;
+  font-size: ${responsiveFontSize(1.9)};
+  text-align: center;
+  margin-left: -6px;
+  padding: 0px 8px;
+  font-family: "sans-semibold";
 `;
 
-const ArtistChip = props => {
-  return (
-    <TouchableWithoutFeedback onPress={() => props.onPress(props.id)}>
-      <ChipView
-        selected={props.selected === "true"}
-        elevation={props.selected === "true" ? 6 : 4}
+class ArtistChip extends Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return (
+      <TouchableWithoutFeedback
+        onPress={() => this.props.onPress(this.props.id)}
       >
-        <MaskedImage
-          style={{ width: 47, height: 47 }}
-          source={
-            props.selected
-              ? require("../assets/img/check.png")
-              : { uri: props.image.url }
-          }
-        />
-        <ArtistText>{props.name}</ArtistText>
-      </ChipView>
-    </TouchableWithoutFeedback>
-  );
-};
+        <ChipView selected={this.props.selected === "true"}>
+          <MaskedImage
+            style={{ width: 60, height: 60 }}
+            source={
+              this.props.selected
+                ? require("../assets/img/check.png")
+                : { uri: this.props.image.url }
+            }
+          />
+          <View style={{ width: window.width / 2 - 100 }}>
+            <ArtistText numberOfLines={2}>{this.props.name}</ArtistText>
+          </View>
+        </ChipView>
+      </TouchableWithoutFeedback>
+    );
+  }
+}
 
 export default ArtistChip;

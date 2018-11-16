@@ -685,7 +685,7 @@
     hey-listen "^1.0.5"
     style-value-types "^3.0.7"
 
-"@ptomasroos/react-native-multi-slider@^1.0.0":
+"@ptomasroos/react-native-multi-slider@1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@ptomasroos/react-native-multi-slider/-/react-native-multi-slider-1.0.0.tgz#a4ea27b1320b93a1db9f696c24789695df6c9f30"
   integrity sha512-NpX22rQLArg9widwMzGf7XsInTDf6mfY/D1XaDVjglNkVphj3NSN37+nF6MofArCxC++1P+jHv0SGWbmJQwy4g==
@@ -5357,6 +5357,11 @@ react-native-reanimated@1.0.0-alpha.10:
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.0.0-alpha.10.tgz#e9e6fb35a2cf52fdc912b9fbc76f34f80698e530"
   integrity sha512-dbZG/Lh5Q+6zRvS7+gIkZKmXTG7XVqHbpMROL1LApBBMQwuLq/uLtKk/nBSn1+mNmazPrPMTehI7TG3AEkctww==
 
+react-native-responsive-dimensions@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-responsive-dimensions/-/react-native-responsive-dimensions-2.0.1.tgz#64e2064d7e9a2506f10ab7fa7422e8aa64c41d6b"
+  integrity sha512-fVSJEfwR353IvNSLtwwv7asAU4BAqd/wXQWeiyKyasn5pqpn/X0w0u7Tc0QWwsQch8lywz3npMjMThXgXkptuQ==
+
 react-native-safe-area-view@0.11.0:
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/react-native-safe-area-view/-/react-native-safe-area-view-0.11.0.tgz#4f3dda43c2bace37965e7c6aef5fc83d4f19d174"
@@ -5380,6 +5385,11 @@ react-native-screens@^1.0.0-alpha.11:
   version "1.0.0-alpha.16"
   resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.16.tgz#e3651b7077ea8fa04e8dd3265ad9b87f1f77a758"
   integrity sha512-t+/aq5jQa+Is6afiQHa1P+2UPnwPGY9NT0pSqNr2zQ5llCn8TcPq6GN8xDMuEc08g+y/9R5zWo32hlVStwWn1A==
+
+react-native-status-bar-height@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-status-bar-height/-/react-native-status-bar-height-2.1.0.tgz#cb70fcdbb8dfdf0b9140d77625d27e4ea32fd7f4"
+  integrity sha512-bkI12izmSaNjYDoPh/6MYQtxcpd3QnQn5/bvE8Rzk93DeyJas4d7QIbIoHf9PL1GUPXwvNW3ooH8WuB4fpSQ6w==
 
 react-native-svg@8.0.8:
   version "8.0.8"

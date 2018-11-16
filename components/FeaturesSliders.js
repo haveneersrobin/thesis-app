@@ -14,6 +14,8 @@ const FeaturesSliders = props => {
         step={10}
         allowOverlap={false}
         snapped
+        markerStyle={{ backgroundColor: "#5F6FEE" }}
+        selectedStyle={{ backgroundColor: "#5F6FEE" }}
       />
     </View>
   );

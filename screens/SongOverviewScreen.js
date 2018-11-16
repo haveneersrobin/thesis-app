@@ -5,93 +5,30 @@ import {
   ActivityIndicator,
   TouchableWithoutFeedback,
   Text,
-  Modal,
-  Dimensions,
-  StatusBar
+  Modal
 } from "react-native";
 import axios from "axios";
-import { Header } from "react-navigation";
 import styled from "styled-components";
 import { MyText } from "../styles";
 import { getAccessToken } from "../api";
 import PlayCard from "../components/PlayCard";
-import { FontAwesome, Feather, MaterialIcons } from "@expo/vector-icons";
+import { Feather, FontAwesome } from "@expo/vector-icons";
 import Button from "../components/Button";
 import FeaturesSliders from "../components/FeaturesSliders";
-import posed from "react-native-pose";
-
-const window = Dimensions.get("window");
+import SlidingPanel from "../components/SlidingPanel";
+import { responsiveFontSize } from "react-native-responsive-dimensions";
 
 const SongView = styled(View)`
   flex: 1;
   flex-direction: column;
-  background-color: white;
+  background-color: #f2f2f2;
 `;
 
 const LoadingText = styled(MyText)`
-  font-size: 14;
-  margin-top: 5px;
-  color: #9a9a9a;
+  color: rgba(0, 0, 0, 0.4);
+  font-size: ${responsiveFontSize(1.8)};
+  font-family: "sans-lightitalic";
   text-align: center;
-`;
-
-const PanelHeader = styled(View)`
-  flex-direction: row;
-  height: 50;
-  background-color: #8360c3;
-  align-items: center;
-  justify-content: space-between;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  padding-left: 20px;
-  padding-right: 20px;
-`;
-
-const Container = posed.View({
-  open: { top: (1 / 6) * window.height, delay: 0 },
-  closed: {
-    top: window.height - Header.HEIGHT - StatusBar.currentHeight - 50,
-    delay: 0
-  },
-  bounceIn: {
-    top: (8 / 10) * window.height,
-    transition: { type: "spring" }
-  },
-  bounceOut: {
-    top: window.height - Header.HEIGHT - StatusBar.currentHeight - 50
-  }
-});
-
-const StyledContainer = styled(Container)`
-  position: absolute;
-  width: ${window.width};
-  height: ${window.height -
-    Header.HEIGHT -
-    StatusBar.currentHeight -
-    (1 / 6) * window.height};
-`;
-
-const SlidingContent = styled(View)`
-  background-color: white;
-  height: ${window.height -
-    Header.HEIGHT -
-    StatusBar.currentHeight -
-    (1 / 6) * window.height -
-    50};
-`;
-
-const PosedContainer = styled(View)`
-  flex: 1;
-  background-color: white;
-  align-items: center;
-  justify-content: center;
-  height: 100;
-`;
-
-const SlidingUpPanel = styled(View)`
-  flex: 1;
-  z-index: 2;
-  background-color: red;
 `;
 
 const ModalContainer = styled(View)`
@@ -111,26 +48,25 @@ const ModalContent = styled(View)`
 `;
 
 const ModalButtons = styled(View)`
+  align-self: stretch;
   flex-direction: row;
-`;
-
-const NoTracksView = styled(View)`
-  justify-content: center;
   align-items: center;
-  margin-top: 20px;
-  font-style: italic;
-`;
-
-const NoTracksText = styled(MyText)`
-  color: grey;
-  text-align: center;
-  font-size: 20;
+  justify-content: space-evenly;
 `;
 
 class SongOverviewScreen extends Component {
   static navigationOptions = ({ navigation }) => {
     return {
-      title: "Songs",
+      headerLeft: (
+        <TouchableWithoutFeedback onPress={() => console.log("menu")}>
+          <Feather
+            name="menu"
+            color="white"
+            size={24}
+            style={{ paddingLeft: 20 }}
+          />
+        </TouchableWithoutFeedback>
+      ),
       error: null,
       headerRight: (
         <TouchableWithoutFeedback onPress={navigation.getParam("toggleModal")}>
@@ -172,11 +108,16 @@ class SongOverviewScreen extends Component {
     this.onLike = this.onLike.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
     this.bounce = this.bounce.bind(this);
+    this.onPressHeader = this.onPressHeader.bind(this);
     this.getRecommendations();
   }
 
   componentDidMount() {
     this.props.navigation.setParams({ toggleModal: this.toggleModal });
+  }
+
+  componentWillUnmount() {
+    this.setState({ modalVisible: false });
   }
 
   async getPreviewURL(id, accessToken) {
@@ -223,7 +164,6 @@ class SongOverviewScreen extends Component {
   }
 
   bounce() {
-    console.log("bounce");
     this.setState({ pose: "bounceIn" }, () => {
       setTimeout(() => {
         this.setState({
@@ -266,6 +206,13 @@ class SongOverviewScreen extends Component {
     });
   }
 
+  onPressHeader() {
+    this.setState(prevState => ({
+      visible: !prevState.visible,
+      pose: prevState.visible ? "closed" : "open"
+    }));
+  }
+
   async playSound(id, link) {
     if (this.state.playing === id) {
       this.setState({ playing: null }, async () => {
@@ -305,12 +252,12 @@ class SongOverviewScreen extends Component {
         >
           <ModalContainer>
             <ModalContent elevation={3}>
-              <Text>Hello World!</Text>
               <FeaturesSliders />
               <ModalButtons>
                 <Button
                   bgColor={"white"}
-                  color={"#8360C3"}
+                  borderColor={"#5F6FEE"}
+                  color={"#5F6FEE"}
                   text={"Cancel"}
                   onPress={() => {
                     this.setState(prevState => ({
@@ -324,11 +271,26 @@ class SongOverviewScreen extends Component {
           </ModalContainer>
         </Modal>
 
-        <ScrollView>
+        <ScrollView style={{ marginBottom: 50 }}>
           {!this.state.results && (
-            <View>
-              <ActivityIndicator size="large" color="#8360C3" />
-              <LoadingText>Crunching recommendations ...</LoadingText>
+            <View style={{ marginTop: 30 }}>
+              <ActivityIndicator size="large" color="#5f6fee" />
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: 10
+                }}
+              >
+                <FontAwesome
+                  name="magic"
+                  color="rgba(0, 0, 0, 0.4)"
+                  style={{ marginRight: 10 }}
+                  size={20}
+                />
+                <LoadingText>Crunching recommendations ...</LoadingText>
+              </View>
             </View>
           )}
           {this.state.results &&
@@ -350,73 +312,12 @@ class SongOverviewScreen extends Component {
             ))}
         </ScrollView>
         {this.state.results && (
-          <StyledContainer pose={this.state.pose}>
-            <TouchableWithoutFeedback
-              onPress={() =>
-                this.setState(prevState => ({
-                  visible: !prevState.visible,
-                  pose: prevState.visible ? "closed" : "open"
-                }))
-              }
-            >
-              <PanelHeader>
-                <MyText style={{ color: "#FFF" }}>
-                  {this.state.selected.length} songs selected
-                </MyText>
-                <TouchableWithoutFeedback
-                  onPress={() =>
-                    this.setState(prevState => ({
-                      visible: !prevState.visible,
-                      pose: prevState.visible ? "closed" : "open"
-                    }))
-                  }
-                >
-                  <View>
-                    <FontAwesome
-                      style={{
-                        transform: [
-                          this.state.visible
-                            ? { rotate: "180deg" }
-                            : { rotate: "0deg" }
-                        ]
-                      }}
-                      color="white"
-                      name="arrow-circle-up"
-                      size={24}
-                    />
-                  </View>
-                </TouchableWithoutFeedback>
-              </PanelHeader>
-            </TouchableWithoutFeedback>
-            <SlidingContent>
-              {!this.state.selected ||
-                (this.state.selected.length === 0 && (
-                  <NoTracksView>
-                    <NoTracksText> No tracks selected. </NoTracksText>
-                    <View
-                      style={{
-                        flexDirection: "row"
-                      }}
-                    >
-                      <NoTracksText> Select tracks using </NoTracksText>
-                      <MaterialIcons
-                        name="playlist-add"
-                        size={23}
-                        color="grey"
-                      />
-                    </View>
-                  </NoTracksView>
-                ))}
-
-              {this.state.selected && this.state.selected.length !== 0 && (
-                <ScrollView>
-                  {this.state.selected.map(track => (
-                    <Text>{track.name}</Text>
-                  ))}
-                </ScrollView>
-              )}
-            </SlidingContent>
-          </StyledContainer>
+          <SlidingPanel
+            onPressHeader={this.onPressHeader}
+            pose={this.state.pose}
+            visible={this.state.visible}
+            selected={this.state.selected}
+          />
         )}
       </SongView>
     );

@@ -42,10 +42,11 @@ export const loadAssets = async () => {
   ]);
 
   const fontAssets = _cacheFonts([
-    { droid: require("./assets/fonts/DroidSans.ttf") },
-    { "droid-bold": require("./assets/fonts/DroidSans-Bold.ttf") },
-    { "roboto-black": require("./assets/fonts/Roboto-Black.ttf") },
-    { "roboto-regular": require("./assets/fonts/Roboto-Regular.ttf") },
+    { "sans-bold": require("./assets/fonts/OpenSans-Bold.ttf") },
+    { "sans-regular": require("./assets/fonts/OpenSans-Regular.ttf") },
+    { "sans-light": require("./assets/fonts/OpenSans-Light.ttf") },
+    { "sans-semibold": require("./assets/fonts/OpenSans-Semibold.ttf") },
+    { "sans-lightitalic": require("./assets/fonts/OpenSans-LightItalic.ttf") },
     MaterialCommunityIcons.font,
     MaterialIcons.font,
     Entypo.font,

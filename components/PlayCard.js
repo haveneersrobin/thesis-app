@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import { View, Image, Text, TouchableWithoutFeedback } from "react-native";
 import styled from "styled-components";
@@ -6,8 +6,8 @@ import styled from "styled-components";
 const SongView = styled(View)`
   flex-direction: row;
   flex-wrap: nowrap;
-  border-radius: 10;
-  background-color: ${props => (props.selected ? "#e4f3dc" : "white")};
+  border-radius: 8;
+  background-color: ${props => (props.selected ? "#d3d8fe" : "#f8f8f8")};
   padding: 10px 10px;
   margin: 8px 16px;
   ${props => props.first === "true" && `margin-top: 16px;`}
@@ -39,11 +39,11 @@ const CustomText = styled(Text)`
 `;
 
 const ArtistText = styled(CustomText)`
-  font-family: "roboto-black";
+  font-family: "sans-semibold";
 `;
 
 const TitleText = styled(CustomText)`
-  font-family: "roboto-regular";
+  font-family: "sans-regular";
 `;
 
 const ButtonView = styled(View)`
@@ -58,7 +58,7 @@ const IconView = styled(View)`
 `;
 
 const CheckView = styled(IconView)`
-  background-color: #cae7b9;
+  background-color: #88a9fc;
   border-radius: 50;
 `;
 
@@ -99,7 +99,7 @@ const PlayCard = props => {
         {!props.selected && (
           <TouchableWithoutFeedback onPress={props.onLike}>
             <IconView>
-              <MaterialIcons name="playlist-add" size={24} color="#23CF5F" />
+              <MaterialIcons name="playlist-add" size={24} color="#5f6fee" />
             </IconView>
           </TouchableWithoutFeedback>
         )}
@@ -108,13 +108,12 @@ const PlayCard = props => {
             <MaterialIcons
               name="playlist-add-check"
               size={24}
-              color="#23CF5F"
+              color="#5f6fee"
             />
           </CheckView>
         )}
-
         <IconView>
-          <MaterialIcons name="delete-forever" size={24} color="#8360C3" />
+          <MaterialIcons name="delete-forever" size={24} color="#B3BAC8" />
         </IconView>
       </ButtonView>
     </SongView>
