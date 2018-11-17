@@ -47,13 +47,6 @@ const ModalContent = styled(View)`
   border-radius: 10px;
 `;
 
-const ModalButtons = styled(View)`
-  align-self: stretch;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-evenly;
-`;
-
 class SongOverviewScreen extends Component {
   static navigationOptions = ({ navigation }) => {
     return {
@@ -85,27 +78,26 @@ class SongOverviewScreen extends Component {
     super(props);
 
     this.state = {
-      artists: [
-        "0rHFi0qKLbO72s40s0DZ2h",
-        "4TrraAsitQKl821DQY42cZ",
-        "5Q81rlcTFh3k6DQJXPdsot",
-        "1zNqDE7qDGCsyzJwohVaoX",
-        "0nJaMZM8paoA5HEUTUXPqi"
-      ],
-      // artists: this.props.navigation.getParam("artists", undefined),
-      results: null,
+      artists: this.props.navigation.getParam("artists", undefined),
       visible: false,
       pose: "closed",
       modalVisible: false,
       bounceIn: false,
       bounceOut: false,
-      selected: []
+      selected: [],
+      acousticness: [0, 100],
+      instrumentalness: [0, 100],
+      danceability: [0, 100],
+      valence: [0, 100],
+      energy: [0, 100]
     };
 
     this.audioPlayer = new Expo.Audio.Sound();
     this.getRecommendations = this.getRecommendations.bind(this);
     this.playSound = this.playSound.bind(this);
     this.onLike = this.onLike.bind(this);
+    this.onCancel = this.onCancel.bind(this);
+    this.onConfirm = this.onConfirm.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
     this.bounce = this.bounce.bind(this);
     this.onPressHeader = this.onPressHeader.bind(this);
@@ -118,6 +110,18 @@ class SongOverviewScreen extends Component {
 
   componentWillUnmount() {
     this.setState({ modalVisible: false });
+  }
+
+  onCancel() {
+    this.setState({
+      modalVisible: false
+    });
+  }
+
+  onConfirm(state) {
+    this.setState({ ...state, modalVisible: false, results: null }, () =>
+      this.getRecommendations()
+    );
   }
 
   async getPreviewURL(id, accessToken) {
@@ -182,8 +186,18 @@ class SongOverviewScreen extends Component {
 
   getRecommendations() {
     const body = {
-      limit: 50,
-      seed_artists: this.state.artists.join()
+      limit: 100,
+      seed_artists: this.state.artists.join(),
+      min_acousticness: this.state.acousticness[0] / 100 || 0,
+      max_acousticness: this.state.acousticness[1] / 100 || 1,
+      min_instrumentalness: this.state.instrumentalness[0] / 100 || 0,
+      max_instrumentalness: this.state.instrumentalness[1] / 100 || 1,
+      min_danceability: this.state.danceability[0] / 100 || 0,
+      max_danceability: this.state.danceability[1] / 100 || 1,
+      min_valence: this.state.valence[0] / 100 || 0,
+      max_valence: this.state.valence[1] / 100 || 1,
+      min_energy: this.state.energy[0] / 100 || 0,
+      max_energy: this.state.energy[1] / 100 || 1
     };
 
     getAccessToken().then(accessToken => {
@@ -208,7 +222,9 @@ class SongOverviewScreen extends Component {
                 res.data.album.images[res.data.album.images.length - 2] ||
                 res.data.album.images[0]
             }));
-          this.setState({ results: usefulResult });
+          this.setState({
+            results: usefulResult
+          });
         });
     });
   }
@@ -259,21 +275,15 @@ class SongOverviewScreen extends Component {
         >
           <ModalContainer>
             <ModalContent elevation={3}>
-              <FeaturesSliders />
-              <ModalButtons>
-                <Button
-                  bgColor={"white"}
-                  borderColor={"#5F6FEE"}
-                  color={"#5F6FEE"}
-                  text={"Cancel"}
-                  onPress={() => {
-                    this.setState(prevState => ({
-                      modalVisible: !prevState.modalVisible
-                    }));
-                  }}
-                />
-                <Button text={"Confirm"} />
-              </ModalButtons>
+              <FeaturesSliders
+                onCancel={this.onCancel}
+                onConfirm={this.onConfirm}
+                acousticness={this.state.acousticness}
+                instrumentalness={this.state.instrumentalness}
+                danceability={this.state.danceability}
+                valence={this.state.valence}
+                energy={this.state.energy}
+              />
             </ModalContent>
           </ModalContainer>
         </Modal>
