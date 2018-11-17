@@ -188,7 +188,7 @@ class SongOverviewScreen extends Component {
     const body = {
       limit: 100,
       seed_artists: this.state.artists.join(),
-      min_acousticness: this.state.acousticness[0] / 100 || 0,
+      /*min_acousticness: this.state.acousticness[0] / 100 || 0,
       max_acousticness: this.state.acousticness[1] / 100 || 1,
       min_instrumentalness: this.state.instrumentalness[0] / 100 || 0,
       max_instrumentalness: this.state.instrumentalness[1] / 100 || 1,
@@ -197,7 +197,18 @@ class SongOverviewScreen extends Component {
       min_valence: this.state.valence[0] / 100 || 0,
       max_valence: this.state.valence[1] / 100 || 1,
       min_energy: this.state.energy[0] / 100 || 0,
-      max_energy: this.state.energy[1] / 100 || 1
+      max_energy: this.state.energy[1] / 100 || 1,*/
+
+      target_acousticness:
+        (this.state.acousticness[0] - this.state.acousticness[1]) / 200 || 0.5,
+      target_instrumentalness:
+        (this.state.instrumentalness[0] - this.state.instrumentalness[1]) /
+          200 || 0.5,
+      target_danceability:
+        (this.state.danceability[0] - this.state.danceability[1]) / 200 || 0.5,
+      target_valence:
+        (this.state.valence[0] - this.state.valence[1]) / 200 || 0.5,
+      target_energy: (this.state.energy[0] - this.state.energy[1]) / 200 || 0.5
     };
 
     getAccessToken().then(accessToken => {
