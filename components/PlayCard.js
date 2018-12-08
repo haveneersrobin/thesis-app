@@ -2,6 +2,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import { View, Image, Text, TouchableWithoutFeedback } from "react-native";
 import styled from "styled-components";
+import { ellipsize } from "../utils";
 
 const SongView = styled(View)`
   flex-direction: row;
@@ -65,6 +66,7 @@ const CheckView = styled(IconView)`
 `;
 
 const PlayCard = props => {
+  console.log(`${props.artist} - ${props.name}`);
   return (
     <SongView
       elevation={2}
@@ -92,10 +94,8 @@ const PlayCard = props => {
         </ImageView>
       </TouchableWithoutFeedback>
       <TextView>
-        <ArtistText>{props.artist}</ArtistText>
-        <TitleText numberOfLines={1} width={100}>
-          {props.name}
-        </TitleText>
+        <ArtistText>{ellipsize(props.artist)}</ArtistText>
+        <TitleText>{ellipsize(props.name)}</TitleText>
       </TextView>
       <ButtonView>
         {!props.selected && (

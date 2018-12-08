@@ -198,7 +198,7 @@ class PickArtistScreen extends Component {
         >
           <TitleContainer>
             <TitleText>
-              Pick at least 3 artists
+              Pick up to 5 artists
               <Text style={{ fontSize: 45, color: "#5F6FEE" }}>.</Text>
             </TitleText>
             <Border />
@@ -328,7 +328,12 @@ class PickArtistScreen extends Component {
           <BottomContainer>
             <Button
               onPress={this.continue}
-              disabled={this.state.selected.length >= 3 ? "false" : "true"}
+              disabled={
+                this.state.selected.length > 0 &&
+                this.state.selected.length <= 5
+                  ? "false"
+                  : "true"
+              }
               text={"Continue"}
             />
           </BottomContainer>

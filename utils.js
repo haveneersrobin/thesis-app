@@ -68,3 +68,10 @@ const _cacheImages = images => {
 const _cacheFonts = fonts => {
   return fonts.map(font => Font.loadAsync(font));
 };
+
+export const ellipsize = text => {
+  if (text.length > 35) {
+    return text.substring(0, 35) + "...";
+  }
+  return text;
+};

@@ -4,7 +4,6 @@ import {
   ScrollView,
   ActivityIndicator,
   TouchableWithoutFeedback,
-  Text,
   Modal
 } from "react-native";
 import axios from "axios";
@@ -17,6 +16,8 @@ import Button from "../components/Button";
 import FeaturesSliders from "../components/FeaturesSliders";
 import SlidingPanel from "../components/SlidingPanel";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
+import _ from "lodash";
+import { AndroidBackHandler } from "react-navigation-backhandler";
 
 const SongView = styled(View)`
   flex: 1;
@@ -101,11 +102,23 @@ class SongOverviewScreen extends Component {
     this.toggleModal = this.toggleModal.bind(this);
     this.bounce = this.bounce.bind(this);
     this.onPressHeader = this.onPressHeader.bind(this);
-    this.getRecommendations();
+    this.onBackButtonPressAndroid = this.onBackButtonPressAndroid.bind(this);
   }
+
+  onBackButtonPressAndroid = () => {
+    this.setState({ playing: null }, async () => {
+      try {
+        await this.audioPlayer.unloadAsync();
+      } catch (err) {
+        console.warn("Couldn't Stop audio", err);
+      }
+    });
+    return false;
+  };
 
   componentDidMount() {
     this.props.navigation.setParams({ toggleModal: this.toggleModal });
+    this.getRecommendations();
   }
 
   componentWillUnmount() {
@@ -124,15 +137,19 @@ class SongOverviewScreen extends Component {
     );
   }
 
-  async getPreviewURL(id, accessToken) {
-    return await axios.get(`https://api.spotify.com/v1/tracks/${id}`, {
-      params: {
-        market: "BE"
-      },
-      headers: {
-        Authorization: "Bearer " + accessToken
+  async getMultiplePreviewURL(id, accessToken) {
+    console.log(`https://api.spotify.com/v1/tracks/?ids=${id.join()}`);
+    return await axios.get(
+      `https://api.spotify.com/v1/tracks/?ids=${id.join()}`,
+      {
+        params: {
+          market: "BE"
+        },
+        headers: {
+          Authorization: "Bearer " + accessToken
+        }
       }
-    });
+    );
   }
 
   toggleModal() {
@@ -141,14 +158,27 @@ class SongOverviewScreen extends Component {
     }));
   }
 
-  async getPreviewURLs(ids, accesToken) {
+  async getPreviewURLs(ids, accessToken) {
+    let todo = ids;
     const ops = [];
-    ids.forEach(id => {
-      let op = this.getPreviewURL(id, accesToken);
-      ops.push(op);
-    });
+    while (todo.length > 45) {
+      ops.push(
+        await axios.get(
+          `https://api.spotify.com/v1/tracks/?ids=${todo.slice(0, 3).join()}`,
+          {
+            params: {
+              market: "BE"
+            },
+            headers: {
+              Authorization: "Bearer " + accessToken
+            }
+          }
+        )
+      );
+      todo.splice(0, 3);
+    }
     let res = await axios.all(ops);
-    return res;
+    return _.flatten(res.map(res => res.data.tracks));
   }
 
   onLike(track) {
@@ -185,9 +215,10 @@ class SongOverviewScreen extends Component {
   }
 
   getRecommendations() {
+    console.log(this.state.artists);
     const body = {
       limit: 100,
-      seed_artists: this.state.artists.join(),
+      seed_artists: this.state.artists.join()
       /*min_acousticness: this.state.acousticness[0] / 100 || 0,
       max_acousticness: this.state.acousticness[1] / 100 || 1,
       min_instrumentalness: this.state.instrumentalness[0] / 100 || 0,
@@ -197,7 +228,7 @@ class SongOverviewScreen extends Component {
       min_valence: this.state.valence[0] / 100 || 0,
       max_valence: this.state.valence[1] / 100 || 1,
       min_energy: this.state.energy[0] / 100 || 0,
-      max_energy: this.state.energy[1] / 100 || 1,*/
+      max_energy: this.state.energy[1] / 100 || 1,
 
       target_acousticness:
         (this.state.acousticness[0] - this.state.acousticness[1]) / 200 || 0.5,
@@ -208,7 +239,7 @@ class SongOverviewScreen extends Component {
         (this.state.danceability[0] - this.state.danceability[1]) / 200 || 0.5,
       target_valence:
         (this.state.valence[0] - this.state.valence[1]) / 200 || 0.5,
-      target_energy: (this.state.energy[0] - this.state.energy[1]) / 200 || 0.5
+      target_energy: (this.state.energy[0] - this.state.energy[1]) / 200 || 0.5*/
     };
 
     getAccessToken().then(accessToken => {
@@ -223,19 +254,22 @@ class SongOverviewScreen extends Component {
           const trackids = response.data.tracks.map(track => track.id);
           const result = await this.getPreviewURLs(trackids, accessToken);
           const usefulResult = result
-            .filter(result => result.data.preview_url !== null)
+            .filter(result => result.preview_url !== null)
             .map(res => ({
-              id: res.data.id,
-              artist: res.data.artists[0].name,
-              name: res.data.name,
-              preview_url: res.data.preview_url,
+              id: res.id,
+              artist: res.artists[0].name,
+              name: res.name,
+              preview_url: res.preview_url,
               image:
-                res.data.album.images[res.data.album.images.length - 2] ||
-                res.data.album.images[0]
+                res.album.images[res.album.images.length - 2] ||
+                res.album.images[0]
             }));
           this.setState({
             results: usefulResult
           });
+        })
+        .catch(async err => {
+          console.log(err);
         });
     });
   }
@@ -253,7 +287,7 @@ class SongOverviewScreen extends Component {
         try {
           await this.audioPlayer.unloadAsync();
         } catch (err) {
-          console.warn("Couldn't Play audio", err);
+          console.warn("Couldn't Stop audio", err);
         }
       });
     } else {
@@ -271,83 +305,85 @@ class SongOverviewScreen extends Component {
 
   render() {
     return (
-      <SongView>
-        <Modal
-          animationType="slide"
-          transparent={false}
-          visible={this.state.modalVisible}
-          onRequestClose={() => {
-            this.setState(prevState => ({
-              modalVisible: !prevState.modalVisible
-            }));
-          }}
-          transparent={true}
-          animationType="fade"
-        >
-          <ModalContainer>
-            <ModalContent elevation={3}>
-              <FeaturesSliders
-                onCancel={this.onCancel}
-                onConfirm={this.onConfirm}
-                acousticness={this.state.acousticness}
-                instrumentalness={this.state.instrumentalness}
-                danceability={this.state.danceability}
-                valence={this.state.valence}
-                energy={this.state.energy}
-              />
-            </ModalContent>
-          </ModalContainer>
-        </Modal>
-
-        <ScrollView style={{ marginBottom: 50 }}>
-          {!this.state.results && (
-            <View style={{ marginTop: 30 }}>
-              <ActivityIndicator size="large" color="#5f6fee" />
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginTop: 10
-                }}
-              >
-                <FontAwesome
-                  name="magic"
-                  color="rgba(0, 0, 0, 0.4)"
-                  style={{ marginRight: 10 }}
-                  size={20}
+      <AndroidBackHandler onBackPress={this.onBackButtonPressAndroid}>
+        <SongView>
+          <Modal
+            animationType="slide"
+            transparent={false}
+            visible={this.state.modalVisible}
+            onRequestClose={() => {
+              this.setState(prevState => ({
+                modalVisible: !prevState.modalVisible
+              }));
+            }}
+            transparent={true}
+            animationType="fade"
+          >
+            <ModalContainer>
+              <ModalContent elevation={3}>
+                <FeaturesSliders
+                  onCancel={this.onCancel}
+                  onConfirm={this.onConfirm}
+                  acousticness={this.state.acousticness}
+                  instrumentalness={this.state.instrumentalness}
+                  danceability={this.state.danceability}
+                  valence={this.state.valence}
+                  energy={this.state.energy}
                 />
-                <LoadingText>Crunching recommendations ...</LoadingText>
+              </ModalContent>
+            </ModalContainer>
+          </Modal>
+
+          <ScrollView style={{ marginBottom: 50 }}>
+            {!this.state.results && (
+              <View style={{ marginTop: 30 }}>
+                <ActivityIndicator size="large" color="#5f6fee" />
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: 10
+                  }}
+                >
+                  <FontAwesome
+                    name="magic"
+                    color="rgba(0, 0, 0, 0.4)"
+                    style={{ marginRight: 10 }}
+                    size={20}
+                  />
+                  <LoadingText>Crunching recommendations ...</LoadingText>
+                </View>
               </View>
-            </View>
+            )}
+            {this.state.results &&
+              this.state.results.map((track, idx) => (
+                <PlayCard
+                  index={idx}
+                  key={track.id}
+                  id={track.id}
+                  artist={track.artist}
+                  name={track.name}
+                  onPress={() => this.playSound(track.id, track.preview_url)}
+                  onLike={() => this.onLike(track)}
+                  image={track.image}
+                  playing={this.state.playing === track.id}
+                  selected={this.state.selected.some(
+                    selected => selected.id === track.id
+                  )}
+                />
+              ))}
+          </ScrollView>
+          {this.state.results && (
+            <SlidingPanel
+              onPressHeader={this.onPressHeader}
+              pose={this.state.pose}
+              visible={this.state.visible}
+              selected={this.state.selected}
+            />
           )}
-          {this.state.results &&
-            this.state.results.map((track, idx) => (
-              <PlayCard
-                index={idx}
-                key={track.id}
-                id={track.id}
-                artist={track.artist}
-                name={track.name}
-                onPress={() => this.playSound(track.id, track.preview_url)}
-                onLike={() => this.onLike(track)}
-                image={track.image}
-                playing={this.state.playing === track.id}
-                selected={this.state.selected.some(
-                  selected => selected.id === track.id
-                )}
-              />
-            ))}
-        </ScrollView>
-        {this.state.results && (
-          <SlidingPanel
-            onPressHeader={this.onPressHeader}
-            pose={this.state.pose}
-            visible={this.state.visible}
-            selected={this.state.selected}
-          />
-        )}
-      </SongView>
+        </SongView>
+      </AndroidBackHandler>
     );
   }
 }
