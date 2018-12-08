@@ -171,7 +171,7 @@ class PickArtistScreen extends Component {
   }
 
   continue() {
-    if (this.state.selected.length >= 3) {
+    if (this.state.selected.length > 0 && this.state.selected.length <= 5) {
       this.props.navigation.navigate("SongOverviewScreen", {
         artists: this.state.selected
       });

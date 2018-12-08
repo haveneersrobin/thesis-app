@@ -9,7 +9,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "@ptomasroos/react-native-multi-slider": "^1.0.0",
+    "@ptomasroos/react-native-multi-slider": "1.0.0",
     "axios": "^0.18.0",
     "babel-preset-react-native": "^4.0.1",
     "buffer": "^5.2.1",
