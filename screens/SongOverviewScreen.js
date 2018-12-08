@@ -4,7 +4,9 @@ import {
   ScrollView,
   ActivityIndicator,
   TouchableWithoutFeedback,
-  Modal
+  TouchableNativeFeedback,
+  Modal,
+  Platform
 } from "react-native";
 import axios from "axios";
 import styled from "styled-components";
@@ -50,6 +52,36 @@ const ModalContent = styled(View)`
 
 class SongOverviewScreen extends Component {
   static navigationOptions = ({ navigation }) => {
+    let headerRight;
+    if (Platform.OS === "android") {
+      headerRight = (
+        <TouchableNativeFeedback
+          background={TouchableNativeFeedback.Ripple(
+            "rgba(255,255,255,0.8)",
+            true
+          )}
+          onPress={navigation.getParam("toggleModal")}
+        >
+          <View style={{ backgroundColor: "#5f6fee" }}>
+            <Feather
+              name="sliders"
+              color="white"
+              size={24}
+              style={{ paddingRight: 20, paddingLeft: 20 }}
+            />
+          </View>
+        </TouchableNativeFeedback>
+      );
+    } else {
+      <TouchableOpacity onPress={navigation.getParam("toggleModal")}>
+        <Feather
+          name="sliders"
+          color="white"
+          size={24}
+          style={{ paddingRight: 20 }}
+        />
+      </TouchableOpacity>;
+    }
     return {
       headerLeft: (
         <TouchableWithoutFeedback onPress={() => console.log("menu")}>
@@ -62,16 +94,7 @@ class SongOverviewScreen extends Component {
         </TouchableWithoutFeedback>
       ),
       error: null,
-      headerRight: (
-        <TouchableWithoutFeedback onPress={navigation.getParam("toggleModal")}>
-          <Feather
-            name="sliders"
-            color="white"
-            size={24}
-            style={{ paddingRight: 20 }}
-          />
-        </TouchableWithoutFeedback>
-      )
+      headerRight
     };
   };
 
@@ -79,14 +102,7 @@ class SongOverviewScreen extends Component {
     super(props);
 
     this.state = {
-      artists: [
-        "0rHFi0qKLbO72s40s0DZ2h",
-        "4TrraAsitQKl821DQY42cZ",
-        "5Q81rlcTFh3k6DQJXPdsot",
-        "1zNqDE7qDGCsyzJwohVaoX",
-        "0nJaMZM8paoA5HEUTUXPqi"
-      ],
-      // artists: this.props.navigation.getParam("artists", undefined),
+      artists: this.props.navigation.getParam("artists", undefined),
       visible: false,
       pose: "closed",
       modalVisible: false,
