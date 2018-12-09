@@ -132,7 +132,7 @@ const SlidingPanel = props => {
         {props.selected && props.selected.length !== 0 && (
           <ScrollView style={{ padding: 30 }}>
             {props.selected.map((track, idx) => (
-              <TrackView>
+              <TrackView key={track.id}>
                 <TrackNumber>{idx + 1}.</TrackNumber>
                 <TrackTitle numberOfLines={1}>
                   {track.artist} - {track.name}
