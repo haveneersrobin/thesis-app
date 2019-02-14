@@ -40,7 +40,7 @@ const TitleContainer = styled(View)`
 `;
 
 const TitleText = styled(Text)`
-  font-family: "sans-bold";
+  font-family: "roboto-regular";
   font-size: ${responsiveFontSize(4)};
   color: black;
 `;
@@ -99,7 +99,7 @@ const ButtonView = styled(View)`
 const NothingSelected = styled(Text)`
   color: rgba(0, 0, 0, 0.4);
   font-size: ${responsiveFontSize(1.4)};
-  font-family: "sans-lightitalic";
+  font-family: "roboto-regular";
 `;
 
 const SelectedText = styled(MyText)`

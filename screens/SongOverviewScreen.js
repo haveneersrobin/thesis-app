@@ -24,13 +24,13 @@ import { AndroidBackHandler } from "react-navigation-backhandler";
 const SongView = styled(View)`
   flex: 1;
   flex-direction: column;
-  background-color: #f2f2f2;
+  background-color: #ffffff;
 `;
 
 const LoadingText = styled(MyText)`
   color: rgba(0, 0, 0, 0.4);
   font-size: ${responsiveFontSize(1.8)};
-  font-family: "sans-lightitalic";
+  font-family: "roboto-regular";
   text-align: center;
 `;
 
@@ -102,7 +102,14 @@ class SongOverviewScreen extends Component {
     super(props);
 
     this.state = {
-      artists: this.props.navigation.getParam("artists", undefined),
+      /*artists: this.props.navigation.getParam("artists", undefined),*/
+      artists: [
+        "0rHFi0qKLbO72s40s0DZ2h",
+        "4TrraAsitQKl821DQY42cZ",
+        "5Q81rlcTFh3k6DQJXPdsot",
+        "1zNqDE7qDGCsyzJwohVaoX",
+        "0nJaMZM8paoA5HEUTUXPqi"
+      ],
       visible: false,
       pose: "closed",
       modalVisible: false,
@@ -161,7 +168,6 @@ class SongOverviewScreen extends Component {
   }
 
   async getMultiplePreviewURL(id, accessToken) {
-    console.log(`https://api.spotify.com/v1/tracks/?ids=${id.join()}`);
     return await axios.get(
       `https://api.spotify.com/v1/tracks/?ids=${id.join()}`,
       {
@@ -220,7 +226,7 @@ class SongOverviewScreen extends Component {
     } else {
       this.setState(prevState => {
         const newSelected = prevState.selected.filter(
-          current => track.id !== current.id
+          current => current.id !== track.id
         );
         return { selected: newSelected };
       });
@@ -238,7 +244,6 @@ class SongOverviewScreen extends Component {
   }
 
   getRecommendations() {
-    console.log(this.state.artists);
     const body = {
       limit: 100,
       seed_artists: this.state.artists.join()

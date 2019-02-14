@@ -81,7 +81,7 @@ const TrackNumber = styled(Text)`
   color: #5f6fee;
   font-size: ${responsiveFontSize(2.3)};
   padding-right: 5px;
-  font-family: "sans-bold";
+  font-family: "roboto-regular";
 `;
 
 const TrackView = styled(View)`

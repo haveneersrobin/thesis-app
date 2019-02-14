@@ -7,12 +7,12 @@ import { ellipsize } from "../utils";
 const SongView = styled(View)`
   flex-direction: row;
   flex-wrap: nowrap;
-  border-radius: 8;
-  background-color: #f8f8f8;
-  border: ${props =>
-    props.selected ? "2px solid #5f6fee" : "2px solid transparent"};
-  padding: 10px 10px;
-  margin: 8px 16px;
+  /*border-radius: 8;*/
+  /*background-color: #f8f8f8;*/
+  /*border: ${props =>
+    props.selected ? "2px solid #5f6fee" : "2px solid transparent"};*/
+  padding-left: 15;
+  padding-right: 15;
   ${props => props.first === "true" && `margin-top: 16px;`}
 `;
 
@@ -28,25 +28,38 @@ const ImageView = styled(View)`
 `;
 
 const PlayImageView = styled(View)`
-  padding-right: 10px;
   position: absolute;
+  padding-top: 30px;
+  padding-left: 30px;
+`;
+
+const LineContainer = styled(View)`
+  flex-direction: row;
+  flex: 1;
+  align-items: center;
+  border-bottom-color: #eeeeee;
+  border-bottom-width: 1px;
+  padding-top: 10;
+  padding-bottom: 10;
+  margin-left: 10;
+  margin-right: 10;
 `;
 
 const MaskedImage = styled(Image)`
-  border-radius: 10;
+  border-radius: 50;
   margin-right: 10px;
 `;
 
-const CustomText = styled(Text)`
-  font-size: 18;
+const ArtistText = styled(Text)`
+  font-family: "roboto-regular";
+  padding-bottom: 2;
+  font-size: 19;
 `;
 
-const ArtistText = styled(CustomText)`
-  font-family: "sans-semibold";
-`;
-
-const TitleText = styled(CustomText)`
-  font-family: "sans-regular";
+const TitleText = styled(Text)`
+  font-family: "roboto-regular";
+  color: #757575;
+  font-size: 17;
 `;
 
 const ButtonView = styled(View)`
@@ -66,7 +79,6 @@ const CheckView = styled(IconView)`
 `;
 
 const PlayCard = props => {
-  console.log(`${props.artist} - ${props.name}`);
   return (
     <SongView
       elevation={2}
@@ -76,50 +88,52 @@ const PlayCard = props => {
       <TouchableWithoutFeedback onPress={props.onPress}>
         <ImageView>
           <MaskedImage
-            style={{ width: 65, height: 65 }}
+            style={{ width: 50, height: 50 }}
             source={{
               uri: props.image.url || undefined
             }}
           />
           <PlayImageView>
             <Image
-              style={{ width: 50, height: 50 }}
+              style={{ width: 30, height: 30 }}
               source={
                 props.playing
-                  ? require("../assets/img/pause.png")
-                  : require("../assets/img/play.png")
+                  ? require("../assets/img/pause2-bl.png")
+                  : require("../assets/img/play2-bl.png")
               }
             />
           </PlayImageView>
         </ImageView>
       </TouchableWithoutFeedback>
-      <TextView>
-        <ArtistText>{ellipsize(props.artist)}</ArtistText>
-        <TitleText>{ellipsize(props.name)}</TitleText>
-      </TextView>
-      <ButtonView>
-        {!props.selected && (
-          <TouchableWithoutFeedback onPress={props.onLike}>
-            <IconView>
-              <MaterialIcons name="playlist-add" size={24} color="#5f6fee" />
-            </IconView>
-          </TouchableWithoutFeedback>
-        )}
-        {props.selected && (
-          <TouchableWithoutFeedback onPress={props.onLike}>
-            <CheckView>
-              <MaterialIcons
-                name="playlist-add-check"
-                size={24}
-                color="#5f6fee"
-              />
-            </CheckView>
-          </TouchableWithoutFeedback>
-        )}
-        <IconView>
-          <MaterialIcons name="delete-forever" size={24} color="#B3BAC8" />
-        </IconView>
-      </ButtonView>
+      <LineContainer>
+        <TextView>
+          <ArtistText>{ellipsize(props.artist)}</ArtistText>
+          <TitleText>{ellipsize(props.name)}</TitleText>
+        </TextView>
+        <ButtonView>
+          {!props.selected && (
+            <TouchableWithoutFeedback onPress={props.onLike}>
+              <IconView>
+                <MaterialIcons name="playlist-add" size={24} color="#5f6fee" />
+              </IconView>
+            </TouchableWithoutFeedback>
+          )}
+          {props.selected && (
+            <TouchableWithoutFeedback onPress={props.onLike}>
+              <CheckView>
+                <MaterialIcons
+                  name="playlist-add-check"
+                  size={24}
+                  color="#5f6fee"
+                />
+              </CheckView>
+            </TouchableWithoutFeedback>
+          )}
+          <IconView>
+            <MaterialIcons name="delete-forever" size={24} color="#B3BAC8" />
+          </IconView>
+        </ButtonView>
+      </LineContainer>
     </SongView>
   );
 };

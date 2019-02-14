@@ -17,6 +17,7 @@ const StyledView = styled(View)`
   background-color: #f2f2f2;
 `;
 
+
 class HomeScreen extends Component {
   constructor(props) {
     super(props);
@@ -78,7 +79,7 @@ class HomeScreen extends Component {
 
   render() {
     return (
-      <StyledView>
+      <StyledView >
         <Button
           color={"#049138"}
           bgColor={"#C2F8CB"}

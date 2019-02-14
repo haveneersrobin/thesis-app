@@ -42,11 +42,12 @@ export const loadAssets = async () => {
   ]);
 
   const fontAssets = _cacheFonts([
-    { "sans-bold": require("./assets/fonts/OpenSans-Bold.ttf") },
-    { "sans-regular": require("./assets/fonts/OpenSans-Regular.ttf") },
-    { "sans-light": require("./assets/fonts/OpenSans-Light.ttf") },
-    { "sans-semibold": require("./assets/fonts/OpenSans-Semibold.ttf") },
-    { "sans-lightitalic": require("./assets/fonts/OpenSans-LightItalic.ttf") },
+    { "roboto-black": require("./assets/fonts/Roboto-Black.ttf") },
+    { "roboto-bold": require("./assets/fonts/Roboto-Bold.ttf") },
+    { "roboto-light": require("./assets/fonts/Roboto-Light.ttf") },
+    { "roboto-medium": require("./assets/fonts/Roboto-Medium.ttf") },
+    { "roboto-regular": require("./assets/fonts/Roboto-Regular.ttf") },
+    { "roboto-thin": require("./assets/fonts/Roboto-Thin.ttf") },
     MaterialCommunityIcons.font,
     MaterialIcons.font,
     Entypo.font,

@@ -55,7 +55,7 @@ const AfterSelection = createStackNavigator(
       },
       headerTintColor: "#fff",
       headerTitleStyle: {
-        fontFamily: "sans-bold"
+        fontFamily: "roboto-regular"
       }
     }
   }

@@ -36,7 +36,7 @@ const ArtistText = styled(MyText)`
   text-align: center;
   margin-left: -6px;
   padding: 0px 8px;
-  font-family: "sans-semibold";
+  font-family: "roboto-regular";
 `;
 
 class ArtistChip extends Component {

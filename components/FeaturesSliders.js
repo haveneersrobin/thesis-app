@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import { View, Text } from "react-native";
 
-import MultiSlider from "@ptomasroos/react-native-multi-slider";
+import MultiSlider from "react-native-multi-slider";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 
 import styled from "styled-components";
 import Button from "../components/Button";
 
 const SliderText = styled(Text)`
-  font-family: "sans-bold";
+  font-family: "roboto-regular";
   font-size: ${responsiveFontSize(2)};
   margin: 10px 0px;
 `;
