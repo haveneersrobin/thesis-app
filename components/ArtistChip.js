@@ -23,7 +23,7 @@ const ChipView = styled(View)`
   border-radius: 80;
   padding: 4px 5px;
   width: ${window.width / 2 - 25};
-  margin: 10px;
+  margin: 15px 15px;
   ${props =>
     props.selected
       ? `border: 2px solid #5f6fee}`
@@ -35,8 +35,8 @@ const ArtistText = styled(MyText)`
   font-size: ${responsiveFontSize(1.9)};
   text-align: center;
   margin-left: -6px;
-  padding: 0px 8px;
-  font-family: "roboto-regular";
+  padding: 0px 12px;
+  font-family: "roboto-bold";
 `;
 
 class ArtistChip extends Component {

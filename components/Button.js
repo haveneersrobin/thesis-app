@@ -29,10 +29,7 @@ const ButtonText = styled(MyText)`
 
 const Button = props => {
   return (
-    <View
-      style={{ borderRadius: 10, backgroundColor: "rgba(255,255,255,0)" }}
-      opacity={props.disabled === "true" ? 0.3 : 1}
-    >
+    <View>
       {Platform.OS === "android" && (
         <TouchableNativeFeedback
           background={TouchableNativeFeedback.Ripple(

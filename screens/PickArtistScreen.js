@@ -1,26 +1,16 @@
 import React, { Component } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Animated,
-  TouchableHighlight,
-  StatusBar,
-  Platform
-} from "react-native";
+import { View, Text, Animated, StatusBar, Platform } from "react-native";
 import styled from "styled-components";
-import { LinearGradient } from "expo";
-import posed, { Transition } from "react-native-pose";
-import * as Animatable from "react-native-animatable";
-import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import ArtistChip from "../components/ArtistChip";
 import { ScrollView } from "react-native-gesture-handler";
 import { MyText } from "../styles";
 import Button from "../components/Button";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
-
 import { SafeAreaView } from "react-navigation";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import _ from "lodash";
+import { LinearGradient } from "expo";
 
 const MainContainer = styled(View)`
   width: 100%;
@@ -40,7 +30,7 @@ const TitleContainer = styled(View)`
 `;
 
 const TitleText = styled(Text)`
-  font-family: "roboto-regular";
+  font-family: "roboto-light";
   font-size: ${responsiveFontSize(4)};
   color: black;
 `;
@@ -77,24 +67,7 @@ const SelectionContainer = styled(View)`
   align-items: center;
 `;
 
-const ArtistsContainer = styled(Animatable.View)`
-  flex-direction: row;
-  flex: 3;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: flex-start;
-`;
-
-const NavContainer = styled(View)`
-  flex: 2;
-`;
-
-const ButtonView = styled(View)`
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-evenly;
-  width: 200px;
-`;
+const ArtistsContainer = styled(ScrollView)``;
 
 const NothingSelected = styled(Text)`
   color: rgba(0, 0, 0, 0.4);
@@ -181,6 +154,19 @@ class PickArtistScreen extends Component {
   handleViewRef = ref => (this.view = ref);
   fadeIn = () => this.view.fadeIn(800);
 
+  splitArtists(artists) {
+    if (!artists) return artists;
+    else {
+      const columns = [];
+      while (artists.length > 0) {
+        const chunk = artists.splice(0, 4);
+        columns.push(chunk);
+        console.log(artists.length);
+      }
+      return columns;
+    }
+  }
+
   render() {
     const { navigation } = this.props;
     const artists = navigation.getParam("artists", undefined);
@@ -249,80 +235,59 @@ class PickArtistScreen extends Component {
                 </View>
               )}
             </SelectedContainer>
-
             <SelectionContainer>
-              <ArtistsContainer ref={this.handleViewRef}>
+              <ArtistsContainer
+                horizontal={true}
+                contentContainerStyle={{
+                  flexDirection: "row",
+                  justifyContent: "flex-start",
+                  alignItems: "flex-start",
+                  flexGrow: 0,
+                  paddingLeft: 15,
+                  paddingRight: 15
+                }}
+                showsHorizontalScrollIndicator={false}
+                ref={this.handleViewRef}
+              >
                 {artists &&
-                  artists
-                    .slice(this.state.index, this.state.index + 6)
-                    .map(artist => (
-                      <ArtistChip
-                        onPress={this.toggleSelection}
-                        id={artist.id}
-                        key={artist.id}
-                        selected={
-                          this.state.selected.indexOf(artist.id) !== -1 &&
-                          "true"
-                        }
-                        name={artist.name}
-                        image={artist.images[artist.images.length - 2]}
-                      />
-                    ))}
+                  _.chunk(artists, 4).map(col => (
+                    <View
+                      key={col[0].id + "col"}
+                      style={{
+                        flexDirection: "column"
+                      }}
+                    >
+                      {col.map(artist => (
+                        <ArtistChip
+                          onPress={this.toggleSelection}
+                          id={artist.id}
+                          key={artist.id}
+                          selected={
+                            this.state.selected.indexOf(artist.id) !== -1 &&
+                            "true"
+                          }
+                          name={artist.name}
+                          image={artist.images[artist.images.length - 2]}
+                        />
+                      ))}
+                    </View>
+                  ))}
               </ArtistsContainer>
-
-              <NavContainer>
-                {this.state.index === 0 && (
-                  <TouchableHighlight onPress={this.nextIndex}>
-                    <MaterialIcons
-                      name="navigate-next"
-                      size={35}
-                      color="black"
-                    />
-                  </TouchableHighlight>
-                )}
-                {this.state.index > 0 &&
-                  this.state.index <
-                    (Math.ceil(artists.length / 6) - 1) * 6 && (
-                    <ButtonView>
-                      <TouchableOpacity onPress={this.previousIndex}>
-                        <MaterialIcons
-                          name="navigate-next"
-                          size={35}
-                          color="black"
-                          style={{ transform: [{ rotate: "-180deg" }] }}
-                        />
-                      </TouchableOpacity>
-                      <TouchableOpacity onPress={this.nextIndex}>
-                        <MaterialIcons
-                          name="navigate-next"
-                          size={35}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                    </ButtonView>
-                  )}
-                {this.state.index ===
-                  (Math.ceil(artists.length / 6) - 1) * 6 && (
-                  <ButtonView>
-                    <TouchableOpacity onPress={this.previousIndex}>
-                      <MaterialIcons
-                        name="navigate-next"
-                        size={35}
-                        color="black"
-                        style={{ transform: [{ rotate: "-180deg" }] }}
-                      />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={this.resetIndex}>
-                      <MaterialCommunityIcons
-                        name="undo-variant"
-                        size={35}
-                        color="black"
-                      />
-                    </TouchableOpacity>
-                  </ButtonView>
-                )}
-              </NavContainer>
             </SelectionContainer>
+            <LinearGradient
+              colors={["transparent", "rgba(255,255,255,0.6)"]}
+              start={[0, 0]}
+              end={[1, 0]}
+              locations={[0.8, 0.95]}
+              pointerEvents="none"
+              style={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 123,
+                height: 374
+              }}
+            />
           </MiddleContainer>
 
           <BottomContainer>
