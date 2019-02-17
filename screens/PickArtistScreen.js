@@ -1,5 +1,12 @@
 import React, { Component } from "react";
-import { View, Text, Animated, StatusBar, Platform } from "react-native";
+import {
+  View,
+  Text,
+  Animated,
+  StatusBar,
+  Platform,
+  TouchableNativeFeedback
+} from "react-native";
 import styled from "styled-components";
 import { Feather } from "@expo/vector-icons";
 import ArtistChip from "../components/ArtistChip";
@@ -87,9 +94,9 @@ const SelectedText = styled(MyText)`
 
 const BottomContainer = styled(View)`
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: flex-start;
   align-items: center;
-  margin-bottom: 45px;
+  margin-bottom: 50px;
 `;
 
 class PickArtistScreen extends Component {
@@ -284,13 +291,56 @@ class PickArtistScreen extends Component {
                 position: "absolute",
                 left: 0,
                 right: 0,
-                top: 123,
+                top: 103,
                 height: 374
               }}
             />
           </MiddleContainer>
 
           <BottomContainer>
+            <View
+              style={{
+                borderRadius: 50,
+                overflow: "hidden",
+                marginBottom: 70,
+                backgroundColor: "#E4E4E4"
+              }}
+            >
+              <TouchableNativeFeedback
+                background={TouchableNativeFeedback.Ripple(
+                  "rgba(255,255,255,0.3)",
+                  false
+                )}
+                useForeground={true}
+                onPress={() => this.props.navigation.navigate("Search")}
+              >
+                <View
+                  style={{
+                    width: 150,
+                    height: 40,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    flexDirection: "row"
+                  }}
+                >
+                  <MaterialIcons
+                    size={12}
+                    name="search"
+                    color="#616161"
+                    style={{ paddingRight: 10 }}
+                  />
+                  <Text
+                    style={{
+                      color: "#616161",
+                      fontSize: 14,
+                      fontFamily: "roboto-medium"
+                    }}
+                  >
+                    Search artists
+                  </Text>
+                </View>
+              </TouchableNativeFeedback>
+            </View>
             <Button
               onPress={this.continue}
               disabled={

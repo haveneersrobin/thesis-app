@@ -14,7 +14,6 @@ const ButtonView = styled(View)`
   align-items: center;
   background-color: ${props => (props.bgColor ? props.bgColor : "#5F6FEE")};
   padding: ${props => (props.borderColor ? "14px 19px" : "15px 20px")};
-  border-radius: 10px;
   border: ${props =>
     props.borderColor
       ? `1px solid ${props.borderColor}`
@@ -28,33 +27,41 @@ const ButtonText = styled(MyText)`
 `;
 
 const Button = props => {
-  return (
-    <View>
-      {Platform.OS === "android" && (
+  if (Platform.OS === "android") {
+    return (
+      <View
+        style={{
+          borderRadius: 10,
+          overflow: "hidden"
+        }}
+        opacity={props.disabled === "true" ? 0.3 : 1}
+      >
         <TouchableNativeFeedback
+          disabled={props.disabled === "true"}
           background={TouchableNativeFeedback.Ripple(
-            "rgba(255,255,255,0.8)",
-            true
+            "rgba(255,255,255,0.6)",
+            false
           )}
           onPress={props.onPress}
+          useForeground={true}
         >
           <ButtonView bgColor={props.bgColor} borderColor={props.borderColor}>
             {props.children}
             <ButtonText color={props.color}> {props.text} </ButtonText>
           </ButtonView>
         </TouchableNativeFeedback>
-      )}
-
-      {Platform.OS === "ios" && (
-        <TouchableOpacity onPress={props.onPress}>
-          <ButtonView bgColor={props.bgColor}>
-            {props.children}
-            <ButtonText color={props.color}> {props.text} </ButtonText>
-          </ButtonView>
-        </TouchableOpacity>
-      )}
-    </View>
-  );
+      </View>
+    );
+  } else if (Platform.OS === "ios") {
+    return (
+      <TouchableOpacity onPress={props.onPress}>
+        <ButtonView bgColor={props.bgColor}>
+          {props.children}
+          <ButtonText color={props.color}> {props.text} </ButtonText>
+        </ButtonView>
+      </TouchableOpacity>
+    );
+  }
 };
 
 export default Button;

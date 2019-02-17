@@ -4,7 +4,8 @@ import { AppLoading } from "expo";
 import HomeScreen from "./screens/HomeScreen";
 import PickArtistScreen from "./screens/PickArtistScreen";
 import SongOverviewScreen from "./screens/SongOverviewScreen";
-import { fromRight, loadAssets } from "./utils";
+import SearchArtistScreen from "./screens/SearchArtist";
+import { fromRight, opacityChange, loadAssets } from "./utils";
 
 export default class App extends React.Component {
   state = {
@@ -36,6 +37,13 @@ const handleCustomTransition = ({ scenes }) => {
     currentScene.route.routeName === "PickArtist"
   ) {
     return fromRight();
+  } else if (
+    prevScene &&
+    currentScene &&
+    prevScene.route.routeName === "PickArtist" &&
+    currentScene.route.routeName === "Search"
+  ) {
+    return opacityChange();
   }
 };
 
@@ -65,10 +73,11 @@ const RootStack = createStackNavigator(
   {
     Home: { screen: HomeScreen },
     PickArtist: { screen: PickArtistScreen },
+    Search: { screen: SearchArtistScreen },
     SongOverviewScreen: { screen: AfterSelection }
   },
   {
-    initialRouteName: "Home",
+    initialRouteName: "Search",
     headerMode: "none",
     gesturesEnabled: false,
     transitionConfig: scenes => handleCustomTransition(scenes),

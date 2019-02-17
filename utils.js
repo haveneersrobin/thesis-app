@@ -34,6 +34,27 @@ export const fromRight = (duration = 300) => {
   };
 };
 
+export const opacityChange = (duration = 1000) => {
+  return {
+    transitionSpec: {
+      duration,
+      easing: Easing.out(Easing.poly(4)),
+      timing: Animated.timing,
+      useNativeDriver: true
+    },
+    screenInterpolator: ({ layout, position, scene }) => {
+      const thisSceneIndex = scene.index;
+
+      const opacity = position.interpolate({
+        inputRange: [thisSceneIndex - 1, thisSceneIndex],
+        outputRange: [0, 1]
+      });
+
+      return { opacity };
+    }
+  };
+};
+
 export const loadAssets = async () => {
   const imageAssets = _cacheImages([
     require("./assets/img/check.png"),
