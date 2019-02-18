@@ -44,19 +44,18 @@ class ArtistChip extends Component {
     super(props);
   }
   render() {
+    let imageSource;
+    if (this.props.selected) imageSource = require("../assets/img/check.png");
+    else if (this.props.image !== undefined)
+      imageSource = { uri: this.props.image.url };
+    else imageSource = require("../assets/img/profile.png");
+
     return (
       <TouchableWithoutFeedback
         onPress={() => this.props.onPress(this.props.id)}
       >
         <ChipView selected={this.props.selected === "true"}>
-          <MaskedImage
-            style={{ width: 60, height: 60 }}
-            source={
-              this.props.selected
-                ? require("../assets/img/check.png")
-                : { uri: this.props.image.url }
-            }
-          />
+          <MaskedImage style={{ width: 60, height: 60 }} source={imageSource} />
           <View style={{ width: window.width / 2 - 100 }}>
             <ArtistText numberOfLines={2}>{this.props.name}</ArtistText>
           </View>
