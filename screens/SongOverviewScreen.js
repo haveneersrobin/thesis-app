@@ -6,7 +6,8 @@ import {
   TouchableWithoutFeedback,
   TouchableNativeFeedback,
   Modal,
-  Platform
+  Platform,
+  Alert
 } from "react-native";
 import axios from "axios";
 import styled from "styled-components";
@@ -14,13 +15,11 @@ import { MyText } from "../styles";
 import { getAccessToken } from "../api";
 import PlayCard from "../components/PlayCard";
 import { Feather, FontAwesome } from "@expo/vector-icons";
-import Button from "../components/Button";
 import FeaturesSliders from "../components/FeaturesSliders";
 import SlidingPanel from "../components/SlidingPanel";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import _ from "lodash";
 import { AndroidBackHandler } from "react-navigation-backhandler";
-import Dialog from "react-native-dialog";
 
 const SongView = styled(View)`
   flex: 1;
@@ -349,23 +348,26 @@ class SongOverviewScreen extends Component {
 
   afterExport() {
     this.setState({
-      selected: [],
+      pose: "closed",
       visible: false,
-      afterExportDialogVisible: true
+      selected: []
     });
+    Alert.alert(
+      "Export Successful",
+      "Exporting to Spotify was successful !",
+      [
+        {
+          text: "Okay !",
+          onPress: () => this.setState({ afterExportDialogVisible: false })
+        }
+      ],
+      { cancelable: false }
+    );
   }
 
   render() {
     return (
       <AndroidBackHandler onBackPress={this.onBackButtonPressAndroid}>
-        <Dialog.Container visible={this.state.afterExportDialogVisible}>
-          <Dialog.Title>Playlist Export Succesful</Dialog.Title>
-          <Dialog.Button
-            label="Okay !"
-            onPress={this.dismissAfterExportDialog}
-          />
-        </Dialog.Container>
-
         <SongView>
           <Modal
             animationType="slide"
