@@ -7,11 +7,13 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
   Text,
-  ScrollView
+  ScrollView,
+  Keyboard
 } from "react-native";
 import styled from "styled-components";
 import { SafeAreaView } from "react-navigation";
 import { getAccessToken } from "../api";
+import ArtistCard from "../components/ArtistCard";
 
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import _ from "lodash";
@@ -26,8 +28,6 @@ const MainContainer = styled(View)`
   height: 100%;
   flex-direction: column;
   background-color: #f2f2f2;
-  justify-content: flex-start;
-  align-items: center;
 `;
 
 class SearchArtist extends Component {
@@ -47,6 +47,7 @@ class SearchArtist extends Component {
   }
 
   searchArtist() {
+    Keyboard.dismiss();
     this.setState({ searching: "true" });
     if (this.state.query.length > 0) {
       const body = {
@@ -62,14 +63,12 @@ class SearchArtist extends Component {
             }
           })
           .then(async response => {
-            console.log(response);
             this.setState({
               results: response.data.artists.items,
               searching: "false"
             });
           })
           .catch(async err => {
-            console.log(err);
             this.setState({ searching: "false" });
           });
       });
@@ -95,7 +94,8 @@ class SearchArtist extends Component {
               flexDirection: "row",
               justifyContent: "center",
               alignItems: "center",
-              marginTop: 20
+              marginTop: 20,
+              marginBottom: 20
             }}
           >
             <TextInput
@@ -107,10 +107,15 @@ class SearchArtist extends Component {
                 paddingLeft: 20,
                 paddingRight: 20
               }}
-              onChangeText={text => this.setState({ query: text })}
+              onChangeText={text => {
+                this.setState({ query: text });
+                if (text == "")
+                  this.setState({ searching: "false", results: [] });
+              }}
               selectionColor={"#616161"}
               placeholder={"Search artists"}
               placeholderTextColor={"#616161"}
+              onSubmitEditing={this.searchArtist}
             />
             <TouchableWithoutFeedback onPress={this.searchArtist}>
               <MaterialIcons
@@ -134,16 +139,27 @@ class SearchArtist extends Component {
           )}
 
           {this.state.searching === "false" && this.state.results.length !== 0 && (
-            <ScrollView>
+            <ScrollView style={{ paddingBottom: 20 }}>
               {this.state.results.map(artist => (
-                <Text>{artist.name}</Text>
+                <ArtistCard
+                  key={artist.id}
+                  name={artist.name}
+                  image={artist.images.length !== 0 && artist.images[0].url}
+                  followers={artist.followers.total}
+                  addArtist={() => {
+                    navigation.goBack();
+                    navigation.state.params.addArtist(artist);
+                  }}
+                />
               ))}
             </ScrollView>
           )}
 
           {this.state.searching === "false" &&
             this.state.results.length === 0 && (
-              <Text style={{ color: "#616161", marginTop: 20 }}>
+              <Text
+                style={{ color: "#616161", marginTop: 20, textAlign: "center" }}
+              >
                 Start searching for artists using the field above.
               </Text>
             )}

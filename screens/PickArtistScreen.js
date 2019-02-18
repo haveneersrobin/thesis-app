@@ -108,7 +108,8 @@ class PickArtistScreen extends Component {
     this.state = {
       index: 0,
       fadeAnim: new Animated.Value(0), // init opacity 0
-      selected: []
+      selected: [],
+      artists: []
     };
 
     this._moveIndex = this._moveIndex.bind(this);
@@ -117,6 +118,13 @@ class PickArtistScreen extends Component {
     this.resetIndex = this.resetIndex.bind(this);
     this.toggleSelection = this.toggleSelection.bind(this);
     this.continue = this.continue.bind(this);
+    this.addArtist = this.addArtist.bind(this);
+  }
+
+  componentWillMount() {
+    this.setState({
+      artists: this.props.navigation.getParam("artists", undefined)
+    });
   }
 
   _moveIndex(amount) {
@@ -168,16 +176,23 @@ class PickArtistScreen extends Component {
       while (artists.length > 0) {
         const chunk = artists.splice(0, 4);
         columns.push(chunk);
-        console.log(artists.length);
       }
       return columns;
     }
   }
 
-  render() {
-    const { navigation } = this.props;
-    const artists = navigation.getParam("artists", undefined);
+  addArtist(artist) {
+    const artistsInState = this.state.artists;
+    if (!artistsInState.find(el => el.id === artist.id)) {
+      artistsInState.unshift(artist);
+      this.setState({ artists: artistsInState });
+    }
+    const selectedInState = this.state.selected;
+    selectedInState.unshift(artist.id);
+    this.setState({ selected: selectedInState });
+  }
 
+  render() {
     return (
       <SafeAreaView style={{ backgroundColor: "#f2f2f2", color: "black" }}>
         <StatusBar
@@ -213,7 +228,7 @@ class PickArtistScreen extends Component {
                   <MaterialIcons name="navigate-next" color="#8b919d" />
                   {this.state.selected.map(id => (
                     <SelectedText key={id}>
-                      {artists.find(artist => artist.id === id).name}
+                      {this.state.artists.find(artist => artist.id === id).name}
                     </SelectedText>
                   ))}
                   <MaterialIcons
@@ -256,8 +271,8 @@ class PickArtistScreen extends Component {
                 showsHorizontalScrollIndicator={false}
                 ref={this.handleViewRef}
               >
-                {artists &&
-                  _.chunk(artists, 4).map(col => (
+                {this.state.artists &&
+                  _.chunk(this.state.artists, 4).map(col => (
                     <View
                       key={col[0].id + "col"}
                       style={{
@@ -312,7 +327,11 @@ class PickArtistScreen extends Component {
                   false
                 )}
                 useForeground={true}
-                onPress={() => this.props.navigation.navigate("Search")}
+                onPress={() =>
+                  this.props.navigation.navigate("Search", {
+                    addArtist: this.addArtist
+                  })
+                }
               >
                 <View
                   style={{
@@ -336,7 +355,7 @@ class PickArtistScreen extends Component {
                       fontFamily: "roboto-medium"
                     }}
                   >
-                    Search artists
+                    Search artist
                   </Text>
                 </View>
               </TouchableNativeFeedback>
