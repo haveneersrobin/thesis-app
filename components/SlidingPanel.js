@@ -11,7 +11,14 @@ import styled from "styled-components";
 import posed from "react-native-pose";
 import { Header } from "react-navigation";
 import { MyText } from "../styles";
-import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+
+import Button from "../components/Button";
+import {
+  FontAwesome,
+  MaterialIcons,
+  Entypo,
+  MaterialCommunityIcons
+} from "@expo/vector-icons";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 
 const window = Dimensions.get("window");
@@ -74,9 +81,17 @@ const NoTracksText = styled(MyText)`
   font-size: 20;
 `;
 
-const TrackTitle = styled(MyText)`
+const TrackArtist = styled(MyText)`
   font-size: ${responsiveFontSize(2.3)};
+  font-family: "roboto-regular";
 `;
+
+const TrackTitle = styled(MyText)`
+  font-size: ${responsiveFontSize(2.0)};
+  font-family: "roboto-regular";
+  color: #757575;
+`;
+
 const TrackNumber = styled(Text)`
   color: #5f6fee;
   font-size: ${responsiveFontSize(2.3)};
@@ -87,6 +102,12 @@ const TrackNumber = styled(Text)`
 const TrackView = styled(View)`
   flex-direction: row;
   margin-bottom: 20px;
+`;
+
+const ExportButtonView = styled(View)`
+  justify-content: flex-end;
+  align-items: flex-end;
+  margin-right: 30px;
 `;
 
 const SlidingPanel = props => {
@@ -130,16 +151,48 @@ const SlidingPanel = props => {
           ))}
 
         {props.selected && props.selected.length !== 0 && (
-          <ScrollView style={{ padding: 30 }}>
-            {props.selected.map((track, idx) => (
-              <TrackView key={track.id}>
-                <TrackNumber>{idx + 1}.</TrackNumber>
-                <TrackTitle numberOfLines={1}>
-                  {track.artist} - {track.name}
-                </TrackTitle>
-              </TrackView>
-            ))}
-          </ScrollView>
+          <View
+            style={{
+              flexDirection: "column",
+              justifyContent: "space-between"
+            }}
+          >
+            <ScrollView style={{ padding: 30, height: "85%" }}>
+              {props.selected.map((track, idx) => (
+                <TrackView key={track.id}>
+                  <TrackNumber>{idx + 1}.</TrackNumber>
+                  <View style={{ flexDirection: "column" }}>
+                    <TrackArtist numberOfLines={1}>{track.artist}</TrackArtist>
+                    <TrackTitle numberOfLines={1}>{track.name}</TrackTitle>
+                  </View>
+
+                  <View
+                    style={{
+                      justifyContent: "flex-end",
+                      alignItems: "center",
+                      flex: 1,
+                      flexDirection: "row"
+                    }}
+                  >
+                    <TouchableWithoutFeedback
+                      onPress={() => props.removeFromList(track.id)}
+                    >
+                      <Entypo name="cross" size={24} color="#B3BAC8" />
+                    </TouchableWithoutFeedback>
+                  </View>
+                </TrackView>
+              ))}
+            </ScrollView>
+            <ExportButtonView>
+              <Button
+                color="white"
+                onPress={this.export}
+                text={"Export to Spotify"}
+              >
+                <MaterialCommunityIcons name="export" size={24} color="white" />
+              </Button>
+            </ExportButtonView>
+          </View>
         )}
       </SlidingContent>
     </StyledContainer>

@@ -102,7 +102,14 @@ class SongOverviewScreen extends Component {
     super(props);
 
     this.state = {
-      artists: this.props.navigation.getParam("artists", undefined),
+      /*artists: this.props.navigation.getParam("artists", undefined),*/
+      artists: [
+        "0rHFi0qKLbO72s40s0DZ2h",
+        "4TrraAsitQKl821DQY42cZ",
+        "5Q81rlcTFh3k6DQJXPdsot",
+        "1zNqDE7qDGCsyzJwohVaoX",
+        "0nJaMZM8paoA5HEUTUXPqi"
+      ],
       visible: false,
       pose: "closed",
       modalVisible: false,
@@ -126,6 +133,7 @@ class SongOverviewScreen extends Component {
     this.bounce = this.bounce.bind(this);
     this.onPressHeader = this.onPressHeader.bind(this);
     this.onBackButtonPressAndroid = this.onBackButtonPressAndroid.bind(this);
+    this.removeSongFromList = this.removeSongFromList.bind(this);
   }
 
   onBackButtonPressAndroid = () => {
@@ -302,6 +310,12 @@ class SongOverviewScreen extends Component {
     }));
   }
 
+  removeSongFromList(id) {
+    this.setState(prevState => ({
+      selected: prevState.selected.filter(el => el.id !== id)
+    }));
+  }
+
   async playSound(id, link) {
     if (this.state.playing === id) {
       this.setState({ playing: null }, async () => {
@@ -397,6 +411,7 @@ class SongOverviewScreen extends Component {
           </ScrollView>
           {this.state.results && (
             <SlidingPanel
+              removeFromList={this.removeSongFromList}
               onPressHeader={this.onPressHeader}
               pose={this.state.pose}
               visible={this.state.visible}

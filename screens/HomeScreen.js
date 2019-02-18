@@ -12,11 +12,45 @@ const StyledView = styled(View)`
   width: 100%;
   height: 100%;
   align-items: center;
-  justify-content: flex-end;
-  padding-bottom: 140;
+  padding-top: 40;
+  padding-bottom: 40;
   background-color: #f2f2f2;
 `;
+const TitleContainer = styled(View)`
+  padding-top: 20;
+  flex: 7;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-items: center;
+`;
 
+const BottomContainer = styled(View)`
+  flex: 1;
+  width: 70%;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  border-top-color: #e0e0e0;
+  border-top-width: 2;
+`;
+
+const TitleText = styled(Text)`
+  font-size: 86;
+  margin-bottom: -8;
+  font-family: "roboto-light";
+`;
+
+const Pronounciation = styled(Text)`
+  font-size: 24;
+  margin-bottom: 40;
+  font-family: "roboto-thin";
+`;
+
+const Explanation = styled(Text)`
+  font-size: 16;
+  font-family: "roboto-light";
+`;
 
 class HomeScreen extends Component {
   constructor(props) {
@@ -79,16 +113,27 @@ class HomeScreen extends Component {
 
   render() {
     return (
-      <StyledView >
-        <Button
-          color={"#049138"}
-          bgColor={"#C2F8CB"}
-          text={"Log in with Spotify"}
-          onPress={e => this.handleSpotifyLogin(e)}
-        >
-          <Entypo name="spotify-with-circle" size={24} color="#049138" />
-        </Button>
-        {this.state.didError && <Text>{this.state.error}</Text>}
+      <StyledView>
+        <TitleContainer>
+          <TitleText>Mispre</TitleText>
+          <Pronounciation>
+            '{"<"} mis-puhr {">"}'{" "}
+          </Pronounciation>
+          <Explanation>
+            Mobile Interface for Spotify Recommendations
+          </Explanation>
+        </TitleContainer>
+        <BottomContainer>
+          <Button
+            color={"#049138"}
+            bgColor={"#C2F8CB"}
+            text={"Log in with Spotify"}
+            onPress={e => this.handleSpotifyLogin(e)}
+          >
+            <Entypo name="spotify-with-circle" size={24} color="#049138" />
+          </Button>
+          {this.state.didError && <Text>{this.state.error}</Text>}
+        </BottomContainer>
       </StyledView>
     );
   }
