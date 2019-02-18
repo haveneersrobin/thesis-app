@@ -20,6 +20,7 @@ import SlidingPanel from "../components/SlidingPanel";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import _ from "lodash";
 import { AndroidBackHandler } from "react-navigation-backhandler";
+import Dialog from "react-native-dialog";
 
 const SongView = styled(View)`
   flex: 1;
@@ -120,7 +121,8 @@ class SongOverviewScreen extends Component {
       instrumentalness: [0, 100],
       danceability: [0, 100],
       valence: [0, 100],
-      energy: [0, 100]
+      energy: [0, 100],
+      afterExportDialogVisible: false
     };
 
     this.audioPlayer = new Expo.Audio.Sound();
@@ -134,6 +136,8 @@ class SongOverviewScreen extends Component {
     this.onPressHeader = this.onPressHeader.bind(this);
     this.onBackButtonPressAndroid = this.onBackButtonPressAndroid.bind(this);
     this.removeSongFromList = this.removeSongFromList.bind(this);
+    this.afterExport = this.afterExport.bind(this);
+    this.dismissAfterExportDialog = this.dismissAfterExportDialog.bind(this);
   }
 
   onBackButtonPressAndroid = () => {
@@ -166,6 +170,10 @@ class SongOverviewScreen extends Component {
     this.setState({ ...state, modalVisible: false, results: null }, () =>
       this.getRecommendations()
     );
+  }
+
+  dismissAfterExportDialog() {
+    this.setState({ afterExportDialogVisible: false });
   }
 
   async getMultiplePreviewURL(id, accessToken) {
@@ -289,6 +297,7 @@ class SongOverviewScreen extends Component {
               artist: res.artists[0].name,
               name: res.name,
               preview_url: res.preview_url,
+              uri: res.uri,
               image:
                 res.album.images[res.album.images.length - 2] ||
                 res.album.images[0]
@@ -338,9 +347,25 @@ class SongOverviewScreen extends Component {
     }
   }
 
+  afterExport() {
+    this.setState({
+      selected: [],
+      visible: false,
+      afterExportDialogVisible: true
+    });
+  }
+
   render() {
     return (
       <AndroidBackHandler onBackPress={this.onBackButtonPressAndroid}>
+        <Dialog.Container visible={this.state.afterExportDialogVisible}>
+          <Dialog.Title>Playlist Export Succesful</Dialog.Title>
+          <Dialog.Button
+            label="Okay !"
+            onPress={this.dismissAfterExportDialog}
+          />
+        </Dialog.Container>
+
         <SongView>
           <Modal
             animationType="slide"
@@ -416,6 +441,7 @@ class SongOverviewScreen extends Component {
               pose={this.state.pose}
               visible={this.state.visible}
               selected={this.state.selected}
+              afterExport={this.afterExport}
             />
           )}
         </SongView>

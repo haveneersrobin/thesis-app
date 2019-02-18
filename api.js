@@ -6,7 +6,8 @@ import querystring from "querystring";
 
 const SPOTIFY_CLIENT_ID = "b2ff1c99b3fc459ca733f35ee9f3e068"; // Your client id
 const SPOTIFY_CLIENT_SECRET = "cd4e85fd594644fe87df109a814adac1"; // Your secret
-const SCOPE = "user-read-private user-read-email user-top-read";
+const SCOPE =
+  "user-read-private user-read-email user-top-read playlist-modify-private playlist-modify-public";
 
 const HEADERS = {
   "Content-Type": "application/x-www-form-urlencoded",
@@ -17,12 +18,24 @@ const HEADERS = {
     )
 };
 
-export const getAccessToken = async () => {
-  var accessToken = JSON.parse(await SecureStore.getItemAsync("access_token"));
+const getUserID = async () => {
+  const accessToken = await getAccessToken();
+  const res = await axios.get("https://api.spotify.com/v1/me", {
+    headers: {
+      Authorization: "Bearer " + accessToken
+    }
+  });
+  return await res.data.id;
+};
+
+const getAccessToken = async () => {
+  const accessToken = JSON.parse(
+    await SecureStore.getItemAsync("access_token")
+  );
   if (moment(accessToken.expires) > moment()) {
     return accessToken.token;
   } else {
-    var refreshToken = await SecureStore.getItemAsync("refresh_token");
+    const refreshToken = await SecureStore.getItemAsync("refresh_token");
     const body = {
       refresh_token: refreshToken,
       grant_type: "refresh_token"
@@ -48,7 +61,7 @@ export const getAccessToken = async () => {
   }
 };
 
-export const handleSpotifyLogin = async () => {
+const handleSpotifyLogin = async () => {
   const redirectUrl = AuthSession.getRedirectUrl();
   var results = await AuthSession.startAsync({
     authUrl:
@@ -99,3 +112,5 @@ export const handleSpotifyLogin = async () => {
       });
   }
 };
+
+export { getUserID, getAccessToken, handleSpotifyLogin };
