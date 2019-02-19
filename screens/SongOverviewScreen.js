@@ -14,7 +14,7 @@ import styled from "styled-components";
 import { MyText } from "../styles";
 import { getAccessToken } from "../api";
 import PlayCard from "../components/PlayCard";
-import { Feather, FontAwesome } from "@expo/vector-icons";
+import { Feather, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import FeaturesSliders from "../components/FeaturesSliders";
 import SlidingPanel from "../components/SlidingPanel";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
@@ -52,9 +52,9 @@ const ModalContent = styled(View)`
 
 class SongOverviewScreen extends Component {
   static navigationOptions = ({ navigation }) => {
-    let headerRight;
+    let headerLeft;
     if (Platform.OS === "android") {
-      headerRight = (
+      headerLeft = (
         <TouchableNativeFeedback
           background={TouchableNativeFeedback.Ripple(
             "rgba(255,255,255,0.8)",
@@ -82,19 +82,27 @@ class SongOverviewScreen extends Component {
         />
       </TouchableOpacity>;
     }
+
     return {
-      headerLeft: (
-        <TouchableWithoutFeedback onPress={() => console.log("menu")}>
-          <Feather
-            name="menu"
+      headerLeft: navigation.getParam("step") == 1 ? headerLeft : undefined,
+      headerRight: (
+        <TouchableWithoutFeedback
+          onPress={() =>
+            navigation.navigate("PartScreen", {
+              part: navigation.getParam("step") == 1 ? 2 : 3,
+              artists: navigation.getParam("topArtists", undefined)
+            })
+          }
+        >
+          <MaterialIcons
+            name="done"
             color="white"
             size={24}
-            style={{ paddingLeft: 20 }}
+            style={{ paddingRight: 20, paddingLeft: 20 }}
           />
         </TouchableWithoutFeedback>
       ),
-      error: null,
-      headerRight
+      error: null
     };
   };
 

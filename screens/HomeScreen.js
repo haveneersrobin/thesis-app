@@ -100,8 +100,9 @@ class HomeScreen extends Component {
               }, {})
           );
           this.setState({ artists: filtered }, () =>
-            this.props.navigation.navigate("PickArtist", {
-              artists: this.state.artists
+            this.props.navigation.navigate("PartScreen", {
+              artists: this.state.artists,
+              part: 1
             })
           );
         })

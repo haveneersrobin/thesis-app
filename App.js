@@ -5,6 +5,7 @@ import HomeScreen from "./screens/HomeScreen";
 import PickArtistScreen from "./screens/PickArtistScreen";
 import SongOverviewScreen from "./screens/SongOverviewScreen";
 import SearchArtistScreen from "./screens/SearchArtist";
+import PartScreen from "./screens/PartScreen";
 import { fromRight, opacityChange, loadAssets } from "./utils";
 
 export default class App extends React.Component {
@@ -74,7 +75,8 @@ const RootStack = createStackNavigator(
     Home: { screen: HomeScreen },
     PickArtist: { screen: PickArtistScreen },
     Search: { screen: SearchArtistScreen },
-    SongOverviewScreen: { screen: AfterSelection }
+    SongOverviewScreen: { screen: AfterSelection },
+    PartScreen: { screen: PartScreen }
   },
   {
     initialRouteName: "Home",
