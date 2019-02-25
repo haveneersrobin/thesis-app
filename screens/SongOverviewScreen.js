@@ -52,9 +52,9 @@ const ModalContent = styled(View)`
 
 class SongOverviewScreen extends Component {
   static navigationOptions = ({ navigation }) => {
-    let headerLeft;
+    let headerRight;
     if (Platform.OS === "android") {
-      headerLeft = (
+      headerRight = (
         <TouchableNativeFeedback
           background={TouchableNativeFeedback.Ripple(
             "rgba(255,255,255,0.8)",
@@ -84,24 +84,7 @@ class SongOverviewScreen extends Component {
     }
 
     return {
-      headerLeft: navigation.getParam("step") == 1 ? headerLeft : undefined,
-      headerRight: (
-        <TouchableWithoutFeedback
-          onPress={() =>
-            navigation.navigate("PartScreen", {
-              part: navigation.getParam("step") == 1 ? 2 : 3,
-              artists: navigation.getParam("topArtists", undefined)
-            })
-          }
-        >
-          <MaterialIcons
-            name="done"
-            color="white"
-            size={24}
-            style={{ paddingRight: 20, paddingLeft: 20 }}
-          />
-        </TouchableWithoutFeedback>
-      ),
+      headerRight: navigation.getParam("step") == 1 ? headerRight : undefined,
       error: null
     };
   };
@@ -145,7 +128,15 @@ class SongOverviewScreen extends Component {
     this.removeSongFromList = this.removeSongFromList.bind(this);
     this.afterExport = this.afterExport.bind(this);
     this.dismissAfterExportDialog = this.dismissAfterExportDialog.bind(this);
+    this.continue = this.continue.bind(this);
   }
+
+  continue = () => {
+    this.props.navigation.navigate("PartScreen", {
+      part: this.props.navigation.getParam("step") == 1 ? 2 : 3,
+      artists: this.props.navigation.getParam("topArtists", undefined)
+    });
+  };
 
   onBackButtonPressAndroid = () => {
     this.setState({ playing: null }, async () => {
@@ -365,8 +356,13 @@ class SongOverviewScreen extends Component {
       "Exporting to Spotify was successful !",
       [
         {
-          text: "Okay !",
-          onPress: () => this.setState({ afterExportDialogVisible: false })
+          text: "Create another playlist",
+          style: "cancel"
+        },
+        {
+          text: "Done",
+          onPress: () =>
+            this.setState({ afterExportDialogVisible: false }, this.continue())
         }
       ],
       { cancelable: false }
@@ -446,6 +442,7 @@ class SongOverviewScreen extends Component {
           </ScrollView>
           {this.state.results && (
             <SlidingPanel
+              onDone={this.continue}
               removeFromList={this.removeSongFromList}
               onPressHeader={this.onPressHeader}
               pose={this.state.pose}

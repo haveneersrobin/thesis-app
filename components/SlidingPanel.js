@@ -112,9 +112,23 @@ const TrackView = styled(View)`
 `;
 
 const ExportButtonView = styled(View)`
-  justify-content: flex-end;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: flex-end;
+  ${props => props.addMargin === "true" && "margin-top: 40px"}
   margin-right: 30px;
+  margin-left: 30px;
+`;
+
+const ExportText = styled(Text)`
+  font-family: "roboto-light";
+`;
+
+const StyledScrollView = styled(ScrollView)`
+  padding-left: 30;
+  padding-right: 30;
+  height: 80%;
+  ${props => props.addPadding === "true" && "padding-top: 15px"};
 `;
 
 class SlidingPanel extends Component {
@@ -247,7 +261,24 @@ class SlidingPanel extends Component {
                 justifyContent: "space-between"
               }}
             >
-              <ScrollView style={{ padding: 30, height: "85%" }}>
+              {this.props.selected.length < 5 && (
+                <View
+                  style={{
+                    height: 40,
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }}
+                >
+                  <ExportText>
+                    Please select at least 5 songs before exporting.
+                  </ExportText>
+                </View>
+              )}
+
+              <StyledScrollView
+                addPadding={this.props.selected.length >= 5 ? "true" : "false"}
+              >
                 {this.props.selected.map((track, idx) => (
                   <TrackView key={track.id}>
                     <TrackNumber>{idx + 1}.</TrackNumber>
@@ -274,24 +305,28 @@ class SlidingPanel extends Component {
                     </View>
                   </TrackView>
                 ))}
-              </ScrollView>
-              <ExportButtonView>
+              </StyledScrollView>
+              <ExportButtonView
+                addMargin={this.props.selected.length >= 5 ? "true" : "false"}
+              >
                 {this.state.creatingPlaylist === "false" && (
                   <Button
-                    color="white"
+                    color={"#049138"}
+                    bgColor={"#C2F8CB"}
                     onPress={this.createAndAdd}
+                    disabled={this.props.selected.length < 5 && "true"}
                     text={"Export to Spotify"}
                   >
                     <MaterialCommunityIcons
                       name="export"
                       size={24}
-                      color="white"
+                      color="#049138"
                     />
                   </Button>
                 )}
 
                 {this.state.creatingPlaylist === "true" && (
-                  <Button color="white">
+                  <Button color={"#049138"} bgColor={"#C2F8CB"}>
                     <View
                       style={{
                         paddingLeft: 10,
@@ -300,10 +335,24 @@ class SlidingPanel extends Component {
                         paddingBottom: 4
                       }}
                     >
-                      <SkypeIndicator color="white" size={30} />
+                      <SkypeIndicator color={"#049138"} size={30} />
                     </View>
                   </Button>
                 )}
+                <Button
+                  onPress={this.props.onDone}
+                  disabled={
+                    this.props.selected.length < 5 &&
+                    this.state.creatingPlaylist === "false" &&
+                    "true"
+                  }
+                  color="white"
+                  text="Done"
+                >
+                  <View>
+                    <MaterialIcons name="done" size={24} color="white" />
+                  </View>
+                </Button>
               </ExportButtonView>
             </View>
           )}

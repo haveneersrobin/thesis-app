@@ -79,7 +79,7 @@ const RootStack = createStackNavigator(
     PartScreen: { screen: PartScreen }
   },
   {
-    initialRouteName: "Home",
+    initialRouteName: "SongOverviewScreen",
     headerMode: "none",
     gesturesEnabled: false,
     transitionConfig: scenes => handleCustomTransition(scenes),
