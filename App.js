@@ -102,9 +102,9 @@ const RootNavigator = createAppContainer(
           defaultNavigationOptions: {
             headerVisible: true,
             headerStyle: {
-              backgroundColor: "green"
+              backgroundColor: "#5f6fee"
             },
-            headerTintColor: "yellow",
+            headerTintColor: "#fff",
             headerTitleStyle: {
               fontFamily: "roboto-regular"
             }
