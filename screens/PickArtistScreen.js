@@ -19,6 +19,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import _ from "lodash";
 import { LinearGradient } from "expo";
 import { getAccessToken } from "../api";
+import axios from "axios";
 
 const MainContainer = styled(View)`
   width: 100%;

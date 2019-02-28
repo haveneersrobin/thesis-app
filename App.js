@@ -18,11 +18,6 @@ export default class App extends React.Component {
     isReady: false
   };
 
-  async componentDidMount() {
-    await SecureStore.deleteItemAsync("access_token");
-    await SecureStore.deleteItemAsync("refresh_token");
-  }
-
   render() {
     if (!this.state.isReady) {
       return (

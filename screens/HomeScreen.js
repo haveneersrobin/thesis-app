@@ -1,12 +1,17 @@
 import React, { Component } from "react";
-import { View, Text, BackHandler, Alert } from "react-native";
+import { View, Text, Image } from "react-native";
 import Analytics from "../Analytics";
 import styled from "styled-components";
 import Button from "../components/Button";
-import axios from "axios";
-import { SecureStore } from "expo";
-import { handleSpotifyLogin as login, getAccessToken, getUserID } from "../api";
-import { AntDesign, Entypo } from "@expo/vector-icons";
+import { SecureStore, Au } from "expo";
+import {
+  handleSpotifyLogin as login,
+  getAccessToken,
+  getUserID,
+  getNameAndPicture,
+  logout
+} from "../api";
+import { Entypo, MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import { AndroidBackHandler } from "react-navigation-backhandler";
 
 const StyledView = styled(View)`
@@ -20,7 +25,7 @@ const StyledView = styled(View)`
 `;
 const TitleContainer = styled(View)`
   padding-top: 20;
-  flex: 7;
+  flex: 5;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -54,21 +59,62 @@ const Explanation = styled(Text)`
   font-family: "roboto-light";
 `;
 
+const ProfileImage = styled(Image)`
+  border-radius: 50;
+  margin-right: 8px;
+  width: 20px;
+  height: 20px;
+`;
+
+const ProfileView = styled(View)`
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 5px;
+`;
+
+const ButtonView = styled(View)`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+`;
+
 class HomeScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       error: null,
       didError: false,
-      accessToken: "initial"
+      accessToken: "initial",
+      profileInfo: null
     };
 
     this.handleSpotifyLogin = this.handleSpotifyLogin.bind(this);
     this.continue = this.continue.bind(this);
+    this.logoutSpotify = this.logoutSpotify.bind(this);
   }
 
+  onBackButtonPressAndroid = () => {
+    Alert.alert("Confirm exit", "Do you want to quit the app?", [
+      {
+        text: "Cancel",
+        style: "cancel"
+      },
+      {
+        text: "Ok, exit.",
+        onPress: () => BackHandler.exitApp()
+      }
+    ]);
+
+    return true;
+  };
+
   async componentDidMount() {
-    this.setState({ accessToken: await getAccessToken() });
+    this.setState({
+      accessToken: await getAccessToken(),
+      profileInfo: await getNameAndPicture()
+    });
   }
 
   async handleSpotifyLogin() {
@@ -79,13 +125,18 @@ class HomeScreen extends Component {
       const userId = await getUserID();
       Analytics.identify(userId);
       Analytics.track(Analytics.events.LOGGED_IN, { id: userId });
-      this.continue;
+      this.continue();
     } else {
       this.setState({
         didError: true,
         error: "An unknown error has occured! :("
       });
     }
+  }
+
+  async logoutSpotify() {
+    this.setState({ profileInfo: null, accessToken: null });
+    logout();
   }
 
   continue() {
@@ -126,11 +177,61 @@ class HomeScreen extends Component {
             </Button>
           )}
 
-          {this.state.accessToken && this.state.accesToken !== "initial" && (
-            <Button text={"Start"} onPress={() => this.continueWithoutLogin()}>
-              <AntDesign name="login" size={24} color="white" />
-            </Button>
-          )}
+          {this.state.accessToken &&
+            this.state.accessToken !== "initial" &&
+            this.state.profileInfo && (
+              <View>
+                <ProfileView>
+                  <Text
+                    style={{
+                      fontFamily: "roboto-bold",
+                      marginRight: 10
+                    }}
+                  >
+                    Logged in as:
+                  </Text>
+                  <ProfileImage
+                    source={{ uri: this.state.profileInfo.image }}
+                  />
+                  <Text
+                    style={{
+                      fontFamily: "roboto-light"
+                    }}
+                  >
+                    {this.state.profileInfo.name}
+                  </Text>
+                </ProfileView>
+                <ButtonView>
+                  <View style={{ marginRight: 6 }}>
+                    <Button
+                      color="#5F6FEE"
+                      borderColor={"#5F6FEE"}
+                      bgColor="white"
+                      text={"Logout"}
+                      onPress={() => this.logoutSpotify()}
+                    >
+                      <MaterialCommunityIcons
+                        name="logout"
+                        size={24}
+                        color="#5F6FEE"
+                      />
+                    </Button>
+                  </View>
+                  <View style={{ marginLeft: 6 }}>
+                    <Button
+                      text={"Continue"}
+                      onPress={() => this.continueWithoutLogin()}
+                    >
+                      <Ionicons
+                        name="ios-play-circle"
+                        size={24}
+                        color="white"
+                      />
+                    </Button>
+                  </View>
+                </ButtonView>
+              </View>
+            )}
           {this.state.didError && <Text>{this.state.error}</Text>}
         </BottomContainer>
       </StyledView>

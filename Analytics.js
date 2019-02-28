@@ -15,11 +15,20 @@ const events = {
   EXPORT_PLAYLIST: "EXPORT_PLAYLIST",
   OPEN_SLIDERS: "OPEN_SLIDERS",
   CHANGE_SLIDER: "CHANGE_SLIDER",
-  CLOSE_SLIDER: "CLOSE_SLIDER"
+  CLOSE_SLIDER: "CLOSE_SLIDER",
+  LOGGED_OUT: "LOGGED_OUT"
 };
 
 let isInitialized = false;
 const apiKey = "0f292b2bf2fb788d477f5b82308068b2";
+
+const logout = () => {
+  if (isInitialized) {
+    Analytics.track(Analytics.events.USER_LOGGED_OUT);
+    Amplitude.initialize(null);
+    isInitialized = false;
+  }
+};
 
 const initialize = () => {
   if (!isInitialized) {
@@ -45,5 +54,6 @@ const track = (event, options) => {
 export default {
   events,
   track,
-  identify
+  identify,
+  logout
 };

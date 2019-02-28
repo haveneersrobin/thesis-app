@@ -12,6 +12,7 @@ const ButtonView = styled(View)`
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  border-radius: 10px;
   background-color: ${props => (props.bgColor ? props.bgColor : "#5F6FEE")};
   padding: ${props => (props.borderColor ? "14px 19px" : "15px 20px")};
   border: ${props =>

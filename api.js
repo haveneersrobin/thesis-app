@@ -3,6 +3,7 @@ import moment from "moment";
 import { Buffer } from "buffer";
 import { AuthSession, SecureStore } from "expo";
 import querystring from "querystring";
+import Analytics from "./Analytics";
 
 const SPOTIFY_CLIENT_ID = "b2ff1c99b3fc459ca733f35ee9f3e068"; // Your client id
 const SPOTIFY_CLIENT_SECRET = "cd4e85fd594644fe87df109a814adac1"; // Your secret
@@ -20,7 +21,6 @@ const HEADERS = {
 
 const getUserID = async () => {
   const accessToken = await getAccessToken();
-
   const res = await axios.get("https://api.spotify.com/v1/me", {
     headers: {
       Authorization: "Bearer " + accessToken
@@ -28,6 +28,24 @@ const getUserID = async () => {
   });
 
   return res.data.id;
+};
+
+const logout = async () => {
+  await SecureStore.deleteItemAsync("access_token");
+  await SecureStore.deleteItemAsync("refresh_token");
+  Analytics.logout();
+  AuthSession.dismiss();
+};
+
+const getNameAndPicture = async () => {
+  const accessToken = await getAccessToken();
+  const res = await axios.get("https://api.spotify.com/v1/me", {
+    headers: {
+      Authorization: "Bearer " + accessToken
+    }
+  });
+
+  return { name: res.data.display_name, image: res.data.images[0].url };
 };
 
 const getAccessToken = async () => {
@@ -79,7 +97,8 @@ const handleSpotifyLogin = async () => {
         response_type: "code",
         client_id: SPOTIFY_CLIENT_ID,
         scope: SCOPE,
-        redirect_uri
+        redirect_uri,
+        show_dialog: true
       })
   });
 
@@ -111,4 +130,10 @@ const handleSpotifyLogin = async () => {
   } else return results;
 };
 
-export { getUserID, getAccessToken, handleSpotifyLogin };
+export {
+  getUserID,
+  getAccessToken,
+  handleSpotifyLogin,
+  getNameAndPicture,
+  logout
+};
