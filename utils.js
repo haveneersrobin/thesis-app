@@ -87,6 +87,22 @@ const _cacheImages = images => {
   });
 };
 
+export const alertError = error => {
+  let message;
+  if (typeof error == object) {
+    message = JSON.stringify(object);
+  } else {
+    message = error;
+  }
+
+  Alert.alert("Error", `An error has occured: ${message.substring(0, 200)}`, [
+    {
+      text: "Dismiss",
+      style: "cancel"
+    }
+  ]);
+};
+
 const _cacheFonts = fonts => {
   return fonts.map(font => Font.loadAsync(font));
 };

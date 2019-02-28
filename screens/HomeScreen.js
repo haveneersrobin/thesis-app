@@ -108,8 +108,12 @@ class HomeScreen extends Component {
 
   async componentDidMount() {
     this.setState({
-      accessToken: await getAccessToken().catch(err => console.log(err)),
-      profileInfo: await getNameAndPicture().catch(err => console.log(err))
+      accessToken: await getAccessToken().catch(err =>
+        this.setState({ didError: true, error: err })
+      ),
+      profileInfo: await getNameAndPicture().catch(err =>
+        this.setState({ didError: true, error: err })
+      )
     });
   }
 
