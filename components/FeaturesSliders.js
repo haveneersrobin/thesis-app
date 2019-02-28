@@ -1,16 +1,25 @@
 import React, { Component } from "react";
 import { View, Text } from "react-native";
 
-import MultiSlider from "react-native-multi-slider";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 
 import styled from "styled-components";
 import Button from "../components/Button";
+import CustomMultiSlider from "../components/CustomMultiSlider";
+import {
+  SimpleLineIcons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+  Feather
+} from "@expo/vector-icons";
 
 const SliderText = styled(Text)`
-  font-family: "roboto-regular";
-  font-size: ${responsiveFontSize(2)};
-  margin: 10px 0px;
+  font-family: "roboto-medium";
+  font-size: ${responsiveFontSize(1.5)};
+  color: #616161;
+  padding-top: 5;
+  padding-bottom: 5;
+  margin-left: 10;
 `;
 
 const ModalButtons = styled(View)`
@@ -18,6 +27,44 @@ const ModalButtons = styled(View)`
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
+  margin-top: 10;
+`;
+
+const SliderContainer = styled(View)`
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 15;
+  margin-bottom: 15;
+`;
+
+const TextView = styled(View)`
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50;
+  overflow: hidden;
+  background-color: #e4e4e4;
+  padding-top: 5;
+  padding-bottom: 5;
+`;
+
+const TitleText = styled(Text)`
+  text-align: center;
+  font-size: ${responsiveFontSize(2.6)};
+  font-family: "roboto-black";
+  border-bottom-color: #e0e0e0;
+  border-bottom-width: 2px;
+  padding-bottom: 15px;
+`;
+
+const SliderView = styled(View)`
+  padding-left: 12px;
+  padding-right: 12px;
+`;
+
+const TitleView = styled(View)`
+  margin-bottom: 15;
+  padding-top: 5;
 `;
 
 class FeaturesSliders extends Component {
@@ -42,128 +89,92 @@ class FeaturesSliders extends Component {
   render() {
     return (
       <View>
-        <View
-          style={{
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <SliderText>Acousticness</SliderText>
-          <MultiSlider
-            values={this.state.acousticness}
-            onValuesChangeFinish={values =>
-              this.paramsChange("acousticness", values)
-            }
-            sliderLength={300}
-            min={0}
-            max={100}
-            step={1}
-            allowOverlap={false}
-            snapped
-            markerStyle={{ backgroundColor: "#5F6FEE" }}
-            selectedStyle={{ backgroundColor: "#5F6FEE" }}
-            containerStyle={{ marginRight: 10, marginLeft: 10 }}
-          />
-        </View>
+        <TitleView>
+          <TitleText>Adjust parameters</TitleText>
+        </TitleView>
+        <SliderContainer>
+          <TextView>
+            <MaterialCommunityIcons
+              name="guitar-acoustic"
+              size={22}
+              color="#5f6fee"
+            />
+            <SliderText>Acousticness</SliderText>
+          </TextView>
+          <SliderView>
+            <CustomMultiSlider
+              values={this.state.acousticness}
+              onValuesChangeFinish={values =>
+                this.paramsChange("acousticness", values)
+              }
+            />
+          </SliderView>
+        </SliderContainer>
 
-        <View
-          style={{
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <SliderText>Instrumentalness</SliderText>
-          <MultiSlider
-            values={this.state.instrumentalness}
-            sliderLength={300}
-            onValuesChangeFinish={values =>
-              this.paramsChange("instrumentalness", values)
-            }
-            min={0}
-            max={100}
-            step={1}
-            allowOverlap={false}
-            snapped
-            markerStyle={{ backgroundColor: "#5F6FEE" }}
-            selectedStyle={{ backgroundColor: "#5F6FEE" }}
-            containerStyle={{ marginRight: 10, marginLeft: 10 }}
-          />
-        </View>
+        <SliderContainer>
+          <TextView>
+            <MaterialCommunityIcons name="voice" size={22} color="#5f6fee" />
+            <SliderText>Instrumentalness</SliderText>
+          </TextView>
+          <SliderView>
+            <CustomMultiSlider
+              values={this.state.instrumentalness}
+              onValuesChangeFinish={values =>
+                this.paramsChange("instrumentalness", values)
+              }
+            />
+          </SliderView>
+        </SliderContainer>
 
-        <View
-          style={{
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <SliderText>Danceability</SliderText>
-          <MultiSlider
-            values={this.state.danceability}
-            sliderLength={300}
-            min={0}
-            max={100}
-            onValuesChangeFinish={values =>
-              this.paramsChange("danceability", values)
-            }
-            step={1}
-            allowOverlap={false}
-            snapped
-            markerStyle={{ backgroundColor: "#5F6FEE" }}
-            selectedStyle={{ backgroundColor: "#5F6FEE" }}
-            containerStyle={{ marginRight: 10, marginLeft: 10 }}
-          />
-        </View>
+        <SliderContainer>
+          <TextView>
+            <MaterialCommunityIcons
+              name="shoe-heel"
+              size={22}
+              color="#5f6fee"
+            />
+            <SliderText>Danceability</SliderText>
+          </TextView>
+          <SliderView>
+            <CustomMultiSlider
+              values={this.state.danceability}
+              onValuesChangeFinish={values =>
+                this.paramsChange("danceability", values)
+              }
+            />
+          </SliderView>
+        </SliderContainer>
 
-        <View
-          style={{
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <SliderText>Valence</SliderText>
-          <MultiSlider
-            values={this.state.valence}
-            sliderLength={300}
-            onValuesChangeFinish={values =>
-              this.paramsChange("valence", values)
-            }
-            min={0}
-            max={100}
-            step={1}
-            allowOverlap={false}
-            snapped
-            markerStyle={{ backgroundColor: "#5F6FEE" }}
-            selectedStyle={{ backgroundColor: "#5F6FEE" }}
-            containerStyle={{ marginRight: 10, marginLeft: 10 }}
-          />
-        </View>
+        <SliderContainer>
+          <TextView>
+            <MaterialIcons name="sentiment-neutral" size={22} color="#5f6fee" />
+            <SliderText>Valence</SliderText>
+          </TextView>
+          <SliderView>
+            <CustomMultiSlider
+              values={this.state.valence}
+              onValuesChangeFinish={values =>
+                this.paramsChange("valence", values)
+              }
+            />
+          </SliderView>
+        </SliderContainer>
 
-        <View
-          style={{
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <SliderText>Energy</SliderText>
-          <MultiSlider
-            values={this.state.energy}
-            sliderLength={300}
-            onValuesChangeFinish={values => this.paramsChange("energy", values)}
-            min={0}
-            max={100}
-            step={1}
-            allowOverlap={false}
-            snapped
-            markerStyle={{ backgroundColor: "#5F6FEE" }}
-            selectedStyle={{ backgroundColor: "#5F6FEE" }}
-            containerStyle={{ marginRight: 10, marginLeft: 10 }}
-          />
-        </View>
+        <SliderContainer style={{ marginBottom: 30 }}>
+          <TextView>
+            <SimpleLineIcons name="energy" size={22} color="#5f6fee" />
+            <SliderText>Energy</SliderText>
+          </TextView>
+          <SliderView>
+            <CustomMultiSlider
+              values={this.state.energy}
+              onValuesChangeFinish={values =>
+                this.paramsChange("energy", values)
+              }
+            />
+          </SliderView>
+        </SliderContainer>
+
         <ModalButtons>
           <Button
             bgColor={"white"}
@@ -171,11 +182,15 @@ class FeaturesSliders extends Component {
             color={"#5F6FEE"}
             text={"Cancel"}
             onPress={this.props.onCancel}
-          />
+          >
+            <MaterialIcons name="cancel" size={24} color="#5F6FEE" />
+          </Button>
           <Button
             text={"Confirm"}
             onPress={() => this.props.onConfirm(this.state)}
-          />
+          >
+            <Feather name="check-circle" size={24} color="white" />
+          </Button>
         </ModalButtons>
       </View>
     );

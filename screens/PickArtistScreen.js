@@ -8,14 +8,13 @@ import {
   TouchableNativeFeedback
 } from "react-native";
 import styled from "styled-components";
-import { Feather } from "@expo/vector-icons";
 import ArtistChip from "../components/ArtistChip";
 import { ScrollView } from "react-native-gesture-handler";
 import { MyText } from "../styles";
 import Button from "../components/Button";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { SafeAreaView } from "react-navigation";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { Feather, MaterialIcons } from "@expo/vector-icons";
 import _ from "lodash";
 import { LinearGradient } from "expo";
 import { getAccessToken } from "../api";
@@ -384,7 +383,9 @@ class PickArtistScreen extends Component {
                   : "true"
               }
               text={"Continue"}
-            />
+            >
+              <Feather name="arrow-right-circle" size={24} color="white" />
+            </Button>
           </BottomContainer>
         </MainContainer>
       </SafeAreaView>

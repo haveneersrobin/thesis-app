@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import {
   View,
   ScrollView,
-  ActivityIndicator,
   TouchableWithoutFeedback,
   TouchableNativeFeedback,
   Modal,
@@ -21,6 +20,7 @@ import { responsiveFontSize } from "react-native-responsive-dimensions";
 import _ from "lodash";
 import { AndroidBackHandler } from "react-navigation-backhandler";
 import Analytics from "../Analytics";
+import { SkypeIndicator } from "react-native-indicators";
 
 const SongView = styled(View)`
   flex: 1;
@@ -46,9 +46,12 @@ const ModalContent = styled(View)`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
   background-color: white;
-  border-radius: 10px;
+  border-radius: 15px;
 `;
 
 class SongOverviewScreen extends Component {
@@ -170,15 +173,25 @@ class SongOverviewScreen extends Component {
   }
 
   onCancel() {
+    Analytics.track(Analytics.events.CANCEL_SLIDERS);
     this.setState({
       modalVisible: false
     });
   }
 
   onConfirm(state) {
+    Analytics.track(Analytics.events.CONFIRM_SLIDERS, { ...state });
     this.setState({ ...state, modalVisible: false, results: null }, () =>
       this.getRecommendations()
     );
+  }
+
+  toggleModal() {
+    if (!this.state.modalVisible)
+      Analytics.track(Analytics.events.OPEN_SLIDERS);
+    this.setState(prevState => ({
+      modalVisible: !prevState.modalVisible
+    }));
   }
 
   dismissAfterExportDialog() {
@@ -197,12 +210,6 @@ class SongOverviewScreen extends Component {
         }
       }
     );
-  }
-
-  toggleModal() {
-    this.setState(prevState => ({
-      modalVisible: !prevState.modalVisible
-    }));
   }
 
   async getPreviewURLs(ids, accessToken) {
@@ -435,7 +442,7 @@ class SongOverviewScreen extends Component {
           <ScrollView style={{ marginBottom: 50 }}>
             {!this.state.results && (
               <View style={{ marginTop: 30 }}>
-                <ActivityIndicator size="large" color="#5f6fee" />
+                <SkypeIndicator color={"#5F6FEE"} size={40} />
                 <View
                   style={{
                     flexDirection: "row",
