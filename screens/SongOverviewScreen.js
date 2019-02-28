@@ -245,13 +245,10 @@ class SongOverviewScreen extends Component {
         first ? this.bounce() : () => {}
       );
     } else {
-      Analytics.track(
-        Analytics.events.REMOVE_TRACK_FROM_PLAYLIST,
-        {
-          song: `${track.artist} - ${track.name}`
-        },
-        { from: "main view" }
-      );
+      Analytics.track(Analytics.events.REMOVE_TRACK_FROM_PLAYLIST, {
+        song: `${track.artist} - ${track.name}`,
+        from: "main view"
+      });
       this.setState(prevState => {
         const newSelected = prevState.selected.filter(
           current => current.id !== track.id
@@ -344,13 +341,10 @@ class SongOverviewScreen extends Component {
     }));
 
     const song = this.state.results.find(el => el.id == id);
-    Analytics.track(
-      Analytics.events.REMOVE_TRACK_FROM_PLAYLIST,
-      {
-        song: `${song.artist} - ${song.name}`
-      },
-      { from: "sliding panel" }
-    );
+    Analytics.track(Analytics.events.REMOVE_TRACK_FROM_PLAYLIST, {
+      song: `${song.artist} - ${song.name}`,
+      from: "sliding panel"
+    });
   }
 
   async playSound(id, link) {
@@ -368,7 +362,7 @@ class SongOverviewScreen extends Component {
         }
       });
     } else {
-      Analytics.track(Analytics.events.PLAY, {
+      Analytics.track(Analytics.events.PLAY_TRACK, {
         song: `${song.artist} - ${song.name}`
       });
       this.setState({ playing: id }, async () => {

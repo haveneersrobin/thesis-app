@@ -138,6 +138,8 @@ class SlidingPanel extends Component {
     this.state = {
       creatingPlaylist: "false"
     };
+
+    this.createAndAdd = this.createAndAdd.bind(this);
   }
 
   async createPlaylist() {

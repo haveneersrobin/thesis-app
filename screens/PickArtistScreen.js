@@ -116,12 +116,11 @@ class PickArtistScreen extends Component {
     this.toggleSelection = this.toggleSelection.bind(this);
     this.addArtist = this.addArtist.bind(this);
     this.continue = this.continue.bind(this);
-    this.fetchTopArtist = this.fetchTopArtist.bind(this);
-    this.fetchTopArtist();
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     Analytics.track(Analytics.events.ENTER_ARTIST_SELECTION_SCREEN);
+    await this.fetchTopArtist();
   }
 
   async fetchTopArtist() {
@@ -164,8 +163,7 @@ class PickArtistScreen extends Component {
       .map(artist => artist.name);
     if (this.state.selected.length > 0 && this.state.selected.length <= 5) {
       Analytics.track(Analytics.events.EXIT_ARTIST_SELECTION_SCREEN, {
-        selected_artists: selectedArtistNames,
-        step: this.props.navigation.getParam("step", undefined)
+        selected_artists: selectedArtistNames
       });
       this.props.navigation.navigate("SongOverviewScreen", {
         artists: this.state.selected,

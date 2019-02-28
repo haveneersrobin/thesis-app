@@ -66,7 +66,7 @@ const RootNavigator = createAppContainer(
           headerMode: "none",
           gesturesEnabled: false,
           transitionConfig: scenes => handleCustomTransition(scenes),
-          navigationOptions: {
+          defaultNavigationOptions: {
             headerVisible: false
           }
         }
@@ -83,7 +83,7 @@ const RootNavigator = createAppContainer(
           headerMode: "none",
           gesturesEnabled: false,
           transitionConfig: scenes => handleCustomTransition(scenes),
-          navigationOptions: {
+          defaultNavigationOptions: {
             headerVisible: false
           }
         }
@@ -99,12 +99,12 @@ const RootNavigator = createAppContainer(
           headerMode: "screen",
           gesturesEnabled: false,
           transitionConfig: scenes => handleCustomTransition(scenes),
-          navigationOptions: {
+          defaultNavigationOptions: {
             headerVisible: true,
             headerStyle: {
-              backgroundColor: "#5f6fee"
+              backgroundColor: "green"
             },
-            headerTintColor: "#fff",
+            headerTintColor: "yellow",
             headerTitleStyle: {
               fontFamily: "roboto-regular"
             }

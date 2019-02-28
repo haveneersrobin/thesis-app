@@ -12,6 +12,7 @@ import {
 } from "../api";
 import { Entypo, MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import { AndroidBackHandler } from "react-navigation-backhandler";
+import { SkypeIndicator } from "react-native-indicators";
 
 const StyledView = styled(View)`
   flex: 1;
@@ -227,6 +228,12 @@ class HomeScreen extends Component {
                 </ButtonView>
               </View>
             )}
+
+          {(!this.state.accessToken ||
+            this.state.accessToken === "initial" ||
+            !this.state.profileInfo) && (
+            <SkypeIndicator color={"#5F6FEE"} size={40} />
+          )}
           {this.state.didError && <Text>{this.state.error}</Text>}
         </BottomContainer>
       </StyledView>
