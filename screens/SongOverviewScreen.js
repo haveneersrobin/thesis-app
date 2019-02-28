@@ -20,6 +20,7 @@ import SlidingPanel from "../components/SlidingPanel";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import _ from "lodash";
 import { AndroidBackHandler } from "react-navigation-backhandler";
+import Analytics from "../Analytics";
 
 const SongView = styled(View)`
   flex: 1;
@@ -132,6 +133,9 @@ class SongOverviewScreen extends Component {
   }
 
   continue = () => {
+    Analytics.track(Analytics.events.DONE, {
+      continue_to: this.props.navigation.getParam("step") == 1 ? 2 : "end"
+    });
     this.props.navigation.navigate("PartScreen", {
       part: this.props.navigation.getParam("step") == 1 ? 2 : 3,
       artists: this.props.navigation.getParam("topArtists", undefined)
@@ -150,8 +154,15 @@ class SongOverviewScreen extends Component {
   };
 
   componentDidMount() {
+    Analytics.track(Analytics.events.ENTER_SONGS_SCREEN, {
+      part: this.props.navigation.getParam("step")
+    });
     this.props.navigation.setParams({ toggleModal: this.toggleModal });
     this.getRecommendations();
+  }
+
+  componentWillUnmount() {
+    Analytics.track(Analytics.events.EXIT_SONGS_SCREEN);
   }
 
   componentWillUnmount() {
@@ -221,6 +232,9 @@ class SongOverviewScreen extends Component {
     if (
       !this.state.selected.some(selectedTrack => selectedTrack.id === track.id)
     ) {
+      Analytics.track(Analytics.events.ADD_TRACK_TO_PLAYLIST, {
+        song: `${track.artist} - ${track.name}`
+      });
       const first = this.state.selected.length === 0;
       this.setState(
         prevState => {
@@ -231,6 +245,13 @@ class SongOverviewScreen extends Component {
         first ? this.bounce() : () => {}
       );
     } else {
+      Analytics.track(
+        Analytics.events.REMOVE_TRACK_FROM_PLAYLIST,
+        {
+          song: `${track.artist} - ${track.name}`
+        },
+        { from: "main view" }
+      );
       this.setState(prevState => {
         const newSelected = prevState.selected.filter(
           current => current.id !== track.id
@@ -321,10 +342,24 @@ class SongOverviewScreen extends Component {
     this.setState(prevState => ({
       selected: prevState.selected.filter(el => el.id !== id)
     }));
+
+    const song = this.state.results.find(el => el.id == id);
+    Analytics.track(
+      Analytics.events.REMOVE_TRACK_FROM_PLAYLIST,
+      {
+        song: `${song.artist} - ${song.name}`
+      },
+      { from: "sliding panel" }
+    );
   }
 
   async playSound(id, link) {
+    const song = this.state.results.find(el => el.id == id);
+
     if (this.state.playing === id) {
+      Analytics.track(Analytics.events.PAUSE_TRACK, {
+        song: `${song.artist} - ${song.name}`
+      });
       this.setState({ playing: null }, async () => {
         try {
           await this.audioPlayer.unloadAsync();
@@ -333,6 +368,9 @@ class SongOverviewScreen extends Component {
         }
       });
     } else {
+      Analytics.track(Analytics.events.PLAY, {
+        song: `${song.artist} - ${song.name}`
+      });
       this.setState({ playing: id }, async () => {
         try {
           await this.audioPlayer.unloadAsync();

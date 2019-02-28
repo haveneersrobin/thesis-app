@@ -19,6 +19,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import _ from "lodash";
 import axios from "axios";
 
+import Analytics from "../Analytics";
 import { SkypeIndicator } from "react-native-indicators";
 
 const window = Dimensions.get("window");

@@ -26,6 +26,7 @@ import {
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { getUserID, getAccessToken } from "../api";
 
+import Analytics from "../Analytics";
 import { SkypeIndicator } from "react-native-indicators";
 
 const window = Dimensions.get("window");
@@ -198,6 +199,10 @@ class SlidingPanel extends Component {
   }
 
   async createAndAdd() {
+    Analytics.track(Analytics.events.EXPORT_PLAYLIST, {
+      playlist_length: this.props.selected.length
+    });
+
     this.setState({ creatingPlaylist: "true" }, async () => {
       const playlistId = await this.createPlaylist();
       const result = await this.addSongs(playlistId);

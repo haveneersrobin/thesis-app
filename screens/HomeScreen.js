@@ -107,17 +107,17 @@ class HomeScreen extends Component {
 
   async componentDidMount() {
     this.setState({
-      accessToken: await getAccessToken(),
-      profileInfo: await getNameAndPicture()
+      accessToken: await getAccessToken().catch(err => console.log(err)),
+      profileInfo: await getNameAndPicture().catch(err => console.log(err))
     });
   }
 
   async handleSpotifyLogin() {
-    const result = await login();
+    const result = await login().catch(err => console.log(err));
     if (result.type == "error") {
       this.setState({ didError: true, error: result.errorCode });
     } else if (result.type == "success") {
-      const userId = await getUserID();
+      const userId = await getUserID().catch(err => console.log(err));
       Analytics.identify(userId);
       Analytics.track(Analytics.events.LOGGED_IN, { id: userId });
       this.continue();

@@ -60,7 +60,7 @@ const getAccessToken = async () => {
     refreshToken &&
     moment(accessToken.expires) <= moment()
   ) {
-    const newAccessToken = refreshAccessToken(refreshToken);
+    const newAccessToken = await refreshAccessToken(refreshToken);
     await SecureStore.setItemAsync(
       "access_token",
       JSON.stringify({
