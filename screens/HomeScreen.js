@@ -3,7 +3,6 @@ import { View, Text, Image } from "react-native";
 import Analytics from "../Analytics";
 import styled from "styled-components";
 import Button from "../components/Button";
-import { SecureStore, Au } from "expo";
 import {
   handleSpotifyLogin as login,
   getAccessToken,
@@ -89,10 +88,6 @@ class HomeScreen extends Component {
       accessToken: "initial",
       profileInfo: null
     };
-
-    this.handleSpotifyLogin = this.handleSpotifyLogin.bind(this);
-    this.continue = this.continue.bind(this);
-    this.logoutSpotify = this.logoutSpotify.bind(this);
   }
 
   onBackButtonPressAndroid = () => {

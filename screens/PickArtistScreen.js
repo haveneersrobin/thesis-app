@@ -20,6 +20,7 @@ import _ from "lodash";
 import { LinearGradient } from "expo";
 import { getAccessToken } from "../api";
 import axios from "axios";
+import { SkypeIndicator } from "react-native-indicators";
 
 const MainContainer = styled(View)`
   width: 100%;
@@ -76,8 +77,6 @@ const SelectionContainer = styled(View)`
   align-items: center;
 `;
 
-const ArtistsContainer = styled(ScrollView)``;
-
 const NothingSelected = styled(Text)`
   color: rgba(0, 0, 0, 0.4);
   font-size: ${responsiveFontSize(1.4)};
@@ -109,23 +108,21 @@ class PickArtistScreen extends Component {
     super(props);
     this.state = {
       index: 0,
-      fadeAnim: new Animated.Value(0), // init opacity 0
       selected: [],
       artists: []
     };
-    this.toggleSelection = this.toggleSelection.bind(this);
-    this.continue = this.continue.bind(this);
-    this.addArtist = this.addArtist.bind(this);
 
-    this.fetchTopArtist = this.fetchTopArtist.bind(this);
+    this.toggleSelection = this.toggleSelection.bind(this);
+    this.addArtist = this.addArtist.bind(this);
+    this.continue = this.continue.bind(this);
   }
 
-  componentWillMount() {
-    this.fetchTopArtist();
+  async componentDidMount() {
+    await this.fetchTopArtist();
   }
 
   async fetchTopArtist() {
-    const accessToken = getAccessToken();
+    const accessToken = await getAccessToken();
     const result = await axios.get(
       "https://api.spotify.com/v1/me/top/artists",
       {
@@ -143,7 +140,7 @@ class PickArtistScreen extends Component {
           return obj;
         }, {})
     );
-    this.setState({ artists: filtered });
+    this.setState({ artists: filtered }, console.log(`State ${this.state}`));
   }
 
   toggleSelection(id) {
@@ -166,9 +163,6 @@ class PickArtistScreen extends Component {
       });
     }
   }
-
-  handleViewRef = ref => (this.view = ref);
-  fadeIn = () => this.view.fadeIn(800);
 
   splitArtists(artists) {
     if (!artists) return artists;
@@ -214,103 +208,114 @@ class PickArtistScreen extends Component {
           </TitleContainer>
 
           <MiddleContainer>
+            {this.state.artists.length == 0 && (
+              <SkypeIndicator color={"black"} size={30} />
+            )}
             <SelectedContainer>
-              {this.state.selected.length !== 0 && (
+              {this.state.artists &&
+                this.state.artists.length != 0 &&
+                this.state.selected.length !== 0 && (
+                  <ScrollView
+                    horizontal={true}
+                    contentContainerStyle={{
+                      flexDirection: "row",
+                      justifyContent: "flex-start",
+                      alignItems: "center",
+                      flexGrow: 0
+                    }}
+                    showsHorizontalScrollIndicator={false}
+                  >
+                    <MaterialIcons name="navigate-next" color="#8b919d" />
+                    {this.state.selected.map(id => (
+                      <SelectedText key={id}>
+                        {
+                          this.state.artists.find(artist => artist.id === id)
+                            .name
+                        }
+                      </SelectedText>
+                    ))}
+                    <MaterialIcons
+                      name="navigate-next"
+                      color="#8b919d"
+                      style={{ transform: [{ rotate: "-180deg" }] }}
+                    />
+                  </ScrollView>
+                )}
+              {this.state.artists &&
+                this.state.artists.length != 0 &&
+                this.state.selected.length === 0 && (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center"
+                    }}
+                  >
+                    <Feather
+                      name="info"
+                      color="rgba(0, 0, 0, 0.4)"
+                      style={{ marginRight: 8 }}
+                    />
+                    <NothingSelected>
+                      Your selected artists will appear here.
+                    </NothingSelected>
+                  </View>
+                )}
+            </SelectedContainer>
+            {this.state.artists && this.state.artists.length != 0 && (
+              <SelectionContainer>
                 <ScrollView
                   horizontal={true}
                   contentContainerStyle={{
                     flexDirection: "row",
                     justifyContent: "flex-start",
-                    alignItems: "center",
-                    flexGrow: 0
+                    alignItems: "flex-start",
+                    flexGrow: 0,
+                    paddingLeft: 15,
+                    paddingRight: 15
                   }}
                   showsHorizontalScrollIndicator={false}
                 >
-                  <MaterialIcons name="navigate-next" color="#8b919d" />
-                  {this.state.selected.map(id => (
-                    <SelectedText key={id}>
-                      {this.state.artists.find(artist => artist.id === id).name}
-                    </SelectedText>
-                  ))}
-                  <MaterialIcons
-                    name="navigate-next"
-                    color="#8b919d"
-                    style={{ transform: [{ rotate: "-180deg" }] }}
-                  />
+                  {this.state.artists &&
+                    _.chunk(this.state.artists, 4).map(col => (
+                      <View
+                        key={col[0].id + "col"}
+                        style={{
+                          flexDirection: "column"
+                        }}
+                      >
+                        {col.map(artist => (
+                          <ArtistChip
+                            onPress={this.toggleSelection}
+                            id={artist.id}
+                            key={artist.id}
+                            selected={
+                              this.state.selected.indexOf(artist.id) !== -1 &&
+                              "true"
+                            }
+                            name={artist.name}
+                            image={artist.images[artist.images.length - 2]}
+                          />
+                        ))}
+                      </View>
+                    ))}
                 </ScrollView>
-              )}
-              {this.state.selected.length === 0 && (
-                <View
+                <LinearGradient
+                  colors={["transparent", "rgba(255,255,255,0.6)"]}
+                  start={[0, 0]}
+                  end={[1, 0]}
+                  locations={[0.8, 0.95]}
+                  pointerEvents="none"
                   style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center"
+                    position: "absolute",
+                    left: 0,
+                    right: 0,
+                    top: 103,
+                    height: 374
                   }}
-                >
-                  <Feather
-                    name="info"
-                    color="rgba(0, 0, 0, 0.4)"
-                    style={{ marginRight: 8 }}
-                  />
-                  <NothingSelected>
-                    Your selected artists will appear here.
-                  </NothingSelected>
-                </View>
-              )}
-            </SelectedContainer>
-            <SelectionContainer>
-              <ArtistsContainer
-                horizontal={true}
-                contentContainerStyle={{
-                  flexDirection: "row",
-                  justifyContent: "flex-start",
-                  alignItems: "flex-start",
-                  flexGrow: 0,
-                  paddingLeft: 15,
-                  paddingRight: 15
-                }}
-                showsHorizontalScrollIndicator={false}
-                ref={this.handleViewRef}
-              >
-                {this.state.artists &&
-                  _.chunk(this.state.artists, 4).map(col => (
-                    <View
-                      key={col[0].id + "col"}
-                      style={{
-                        flexDirection: "column"
-                      }}
-                    >
-                      {col.map(artist => (
-                        <ArtistChip
-                          onPress={this.toggleSelection}
-                          id={artist.id}
-                          key={artist.id}
-                          selected={
-                            this.state.selected.indexOf(artist.id) !== -1 &&
-                            "true"
-                          }
-                          name={artist.name}
-                          image={artist.images[artist.images.length - 2]}
-                        />
-                      ))}
-                    </View>
-                  ))}
-              </ArtistsContainer>
-            </SelectionContainer>
-            <LinearGradient
-              colors={["transparent", "rgba(255,255,255,0.6)"]}
-              start={[0, 0]}
-              end={[1, 0]}
-              locations={[0.8, 0.95]}
-              pointerEvents="none"
-              style={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top: 103,
-                height: 374
-              }}
-            />
+                />
+              </SelectionContainer>
+            )}
           </MiddleContainer>
 
           <BottomContainer>
