@@ -21,6 +21,7 @@ import { LinearGradient } from "expo";
 import { getAccessToken } from "../api";
 import axios from "axios";
 import { SkypeIndicator } from "react-native-indicators";
+import Analytics from "../Analytics";
 
 const MainContainer = styled(View)`
   width: 100%;
@@ -118,6 +119,7 @@ class PickArtistScreen extends Component {
   }
 
   async componentDidMount() {
+    Analytics.track(Analytics.events.ENTER_ARTIST_SELECTION_SCREEN);
     await this.fetchTopArtist();
   }
 
@@ -156,6 +158,10 @@ class PickArtistScreen extends Component {
 
   continue() {
     if (this.state.selected.length > 0 && this.state.selected.length <= 5) {
+      Analytics.track(Analytics.events.EXIT_ARTIST_SELECTION_SCREEN, {
+        selected_artists: this.state.selected,
+        step: this.props.navigation.getParam("step", undefined)
+      });
       this.props.navigation.navigate("SongOverviewScreen", {
         artists: this.state.selected,
         topArtists: this.state.artists,

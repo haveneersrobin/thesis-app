@@ -54,6 +54,9 @@ class SearchArtist extends Component {
         q: this.state.query,
         type: "artist"
       };
+      Analytics.track(Analytics.events.SEARCH_ARTIST, {
+        query: this.state.query
+      });
       getAccessToken().then(accessToken => {
         axios
           .get("https://api.spotify.com/v1/search", {
