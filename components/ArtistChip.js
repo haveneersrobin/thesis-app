@@ -6,9 +6,9 @@ import {
   Dimensions
 } from "react-native";
 import styled from "styled-components";
+import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { MyText } from "../styles";
 
-import { responsiveFontSize } from "react-native-responsive-dimensions";
 const window = Dimensions.get("window");
 
 const MaskedImage = styled(Image)`

@@ -18,6 +18,7 @@ import { SafeAreaView } from "react-navigation";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import _ from "lodash";
 import { LinearGradient } from "expo";
+import { getAccessToken } from "../api";
 
 const MainContainer = styled(View)`
   width: 100%;
@@ -111,40 +112,37 @@ class PickArtistScreen extends Component {
       selected: [],
       artists: []
     };
-
-    this._moveIndex = this._moveIndex.bind(this);
-    this.nextIndex = this.nextIndex.bind(this);
-    this.previousIndex = this.previousIndex.bind(this);
-    this.resetIndex = this.resetIndex.bind(this);
     this.toggleSelection = this.toggleSelection.bind(this);
     this.continue = this.continue.bind(this);
     this.addArtist = this.addArtist.bind(this);
+
+    this.fetchTopArtist = this.fetchTopArtist.bind(this);
   }
 
   componentWillMount() {
-    this.setState({
-      artists: this.props.navigation.getParam("artists", undefined)
-    });
+    this.fetchTopArtist();
   }
 
-  _moveIndex(amount) {
-    this.fadeIn();
-    this.setState(prevState => ({
-      index: (prevState.index += amount)
-    }));
-  }
+  async fetchTopArtist() {
+    const accessToken = getAccessToken();
+    const result = await axios.get(
+      "https://api.spotify.com/v1/me/top/artists",
+      {
+        headers: {
+          Authorization: "Bearer " + accessToken
+        }
+      }
+    );
 
-  nextIndex() {
-    this._moveIndex(6);
-  }
-
-  previousIndex() {
-    this._moveIndex(-6);
-  }
-
-  resetIndex() {
-    this.fadeIn();
-    this.setState({ index: 0 });
+    const filtered = result.data.items.map(item =>
+      Object.keys(item)
+        .filter(key => ["external_urls", "name", "images", "id"].includes(key))
+        .reduce((obj, key) => {
+          obj[key] = item[key];
+          return obj;
+        }, {})
+    );
+    this.setState({ artists: filtered });
   }
 
   toggleSelection(id) {

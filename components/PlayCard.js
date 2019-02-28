@@ -27,20 +27,14 @@ const ImageView = styled(View)`
   justify-content: center;
 `;
 
-const PlayImageView = styled(View)`
-  position: absolute;
-  padding-top: 30px;
-  padding-left: 30px;
-`;
-
 const LineContainer = styled(View)`
   flex-direction: row;
   flex: 1;
   align-items: center;
   border-bottom-color: #eeeeee;
   border-bottom-width: 1px;
-  padding-top: 10;
-  padding-bottom: 10;
+  padding-top: 25;
+  padding-bottom: 15;
   margin-left: 10;
   margin-right: 10;
 `;
@@ -64,9 +58,9 @@ const TitleText = styled(Text)`
 
 const ButtonView = styled(View)`
   flex: 1;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: space-between;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
 `;
 
 const IconView = styled(View)`
@@ -85,32 +79,30 @@ const PlayCard = props => {
       first={props.index === 0 ? "true" : "false"}
       selected={props.selected}
     >
-      <TouchableWithoutFeedback onPress={props.onPress}>
-        <ImageView>
-          <MaskedImage
-            style={{ width: 50, height: 50 }}
-            source={{
-              uri: props.image.url || undefined
-            }}
-          />
-          <PlayImageView>
-            <Image
-              style={{ width: 30, height: 30 }}
-              source={
-                props.playing
-                  ? require("../assets/img/pause2-bl.png")
-                  : require("../assets/img/play2-bl.png")
-              }
-            />
-          </PlayImageView>
-        </ImageView>
-      </TouchableWithoutFeedback>
+      <ImageView>
+        <MaskedImage
+          style={{ width: 50, height: 50 }}
+          source={{
+            uri: props.image.url || undefined
+          }}
+        />
+      </ImageView>
       <LineContainer>
         <TextView>
           <ArtistText>{ellipsize(props.artist)}</ArtistText>
           <TitleText>{ellipsize(props.name)}</TitleText>
         </TextView>
         <ButtonView>
+          <TouchableWithoutFeedback onPress={props.onPress}>
+            <Image
+              style={{ width: 36, height: 36, marginRight: 10 }}
+              source={
+                props.playing
+                  ? require("../assets/img/pause2-bl.png")
+                  : require("../assets/img/play2-bl.png")
+              }
+            />
+          </TouchableWithoutFeedback>
           {!props.selected && (
             <TouchableWithoutFeedback onPress={props.onLike}>
               <IconView>
@@ -129,9 +121,6 @@ const PlayCard = props => {
               </CheckView>
             </TouchableWithoutFeedback>
           )}
-          <IconView>
-            <MaterialIcons name="delete-forever" size={24} color="#B3BAC8" />
-          </IconView>
         </ButtonView>
       </LineContainer>
     </SongView>

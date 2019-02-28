@@ -1,11 +1,13 @@
 import React, { Component } from "react";
-import { View, Text } from "react-native";
-import { LinearGradient } from "expo";
-import { Entypo } from "@expo/vector-icons";
+import { View, Text, BackHandler, Alert } from "react-native";
+import Analytics from "../Analytics";
 import styled from "styled-components";
 import Button from "../components/Button";
 import axios from "axios";
-import { handleSpotifyLogin as login, getAccessToken } from "../api";
+import { SecureStore } from "expo";
+import { handleSpotifyLogin as login, getAccessToken, getUserID } from "../api";
+import { AntDesign, Entypo } from "@expo/vector-icons";
+import { AndroidBackHandler } from "react-navigation-backhandler";
 
 const StyledView = styled(View)`
   flex: 1;
@@ -56,83 +58,79 @@ class HomeScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      artists: null,
       error: null,
-      didError: false
+      didError: false,
+      accessToken: "initial"
     };
 
     this.handleSpotifyLogin = this.handleSpotifyLogin.bind(this);
-    this.getTopArtist = this.getTopArtist.bind(this);
+    this.continue = this.continue.bind(this);
   }
 
-  handleSpotifyLogin() {
-    login().then(result => {
-      if (result.type === "error") {
-        this.setState({ didError: true, error: result.errorCode });
-      } else if (result.type === "success") {
-        this.getTopArtist();
-      } else {
-        this.setState({
-          didError: true,
-          error: "An unknown error has occured! :("
-        });
-      }
+  async componentDidMount() {
+    this.setState({ accessToken: await getAccessToken() });
+  }
+
+  async handleSpotifyLogin() {
+    const result = await login();
+    if (result.type == "error") {
+      this.setState({ didError: true, error: result.errorCode });
+    } else if (result.type == "success") {
+      const userId = await getUserID();
+      Analytics.identify(userId);
+      Analytics.track(Analytics.events.LOGGED_IN, { id: userId });
+      this.continue;
+    } else {
+      this.setState({
+        didError: true,
+        error: "An unknown error has occured! :("
+      });
+    }
+  }
+
+  continue() {
+    this.props.navigation.navigate("PartScreen", {
+      part: 1
     });
   }
 
-  getTopArtist() {
-    getAccessToken().then(accessToken => {
-      axios
-        .get("https://api.spotify.com/v1/me/top/artists", {
-          headers: {
-            Authorization: "Bearer " + accessToken
-          }
-        })
-        .then(response => {
-          const filtered = response.data.items.map(item =>
-            Object.keys(item)
-              .filter(key =>
-                ["external_urls", "name", "images", "id"].includes(key)
-              )
-              .reduce((obj, key) => {
-                obj[key] = item[key];
-                return obj;
-              }, {})
-          );
-          this.setState({ artists: filtered }, () =>
-            this.props.navigation.navigate("PartScreen", {
-              artists: this.state.artists,
-              part: 1
-            })
-          );
-        })
-        .catch(error => {
-          this.setState({ error });
-        });
-    });
+  async continueWithoutLogin() {
+    const userId = await getUserID();
+    Analytics.identify(userId, { id: userId });
+    Analytics.track(Analytics.events.CONTINUE_NO_LOGIN, { id: userId });
+    this.continue();
   }
 
   render() {
     return (
       <StyledView>
+        <AndroidBackHandler onBackPress={this.onBackButtonPressAndroid} />
         <TitleContainer>
           <TitleText>Mispre</TitleText>
           <Pronounciation>
-            '{"<"} mis-puhr {">"}'{" "}
+            '{"<"} mis-puhr {">"}'
           </Pronounciation>
           <Explanation>
             Mobile Interface for Spotify Recommendations
           </Explanation>
         </TitleContainer>
         <BottomContainer>
-          <Button
-            color={"#049138"}
-            bgColor={"#C2F8CB"}
-            text={"Log in with Spotify"}
-            onPress={e => this.handleSpotifyLogin(e)}
-          >
-            <Entypo name="spotify-with-circle" size={24} color="#049138" />
-          </Button>
+          {!this.state.accessToken && (
+            <Button
+              color={"#049138"}
+              bgColor={"#C2F8CB"}
+              text={"Log in with Spotify"}
+              onPress={() => this.handleSpotifyLogin()}
+            >
+              <Entypo name="spotify-with-circle" size={24} color="#049138" />
+            </Button>
+          )}
+
+          {this.state.accessToken && this.state.accesToken !== "initial" && (
+            <Button text={"Start"} onPress={() => this.continueWithoutLogin()}>
+              <AntDesign name="login" size={24} color="white" />
+            </Button>
+          )}
           {this.state.didError && <Text>{this.state.error}</Text>}
         </BottomContainer>
       </StyledView>

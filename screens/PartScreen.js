@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import { View, Text } from "react-native";
+import { View, Text, BackHandler, Alert } from "react-native";
 import styled from "styled-components";
 import Button from "../components/Button";
 import { Feather } from "@expo/vector-icons";
+import { AndroidBackHandler } from "react-navigation-backhandler";
 
 const StyledView = styled(View)`
   flex: 1;
@@ -55,15 +56,30 @@ class PartScreen extends Component {
 
   continue() {
     this.props.navigation.navigate("PickArtist", {
-      step: this.props.navigation.getParam("part", undefined),
-      artists: this.props.navigation.getParam("artists", undefined)
+      step: this.props.navigation.getParam("part", undefined)
     });
   }
+
+  onBackButtonPressAndroid = () => {
+    Alert.alert("Confirm exit", "Do you want to quit the app?", [
+      {
+        text: "Cancel",
+        style: "cancel"
+      },
+      {
+        text: "Ok, exit.",
+        onPress: () => BackHandler.exitApp()
+      }
+    ]);
+
+    return true;
+  };
 
   render() {
     const part = this.props.navigation.getParam("part", 1);
     return (
       <StyledView>
+        <AndroidBackHandler onBackPress={this.onBackButtonPressAndroid} />
         {part === 1 && (
           <View>
             <TitleContainer>

@@ -1,5 +1,9 @@
 import React from "react";
-import { createStackNavigator } from "react-navigation";
+import {
+  createSwitchNavigator,
+  createStackNavigator,
+  createAppContainer
+} from "react-navigation";
 import { AppLoading } from "expo";
 import HomeScreen from "./screens/HomeScreen";
 import PickArtistScreen from "./screens/PickArtistScreen";
@@ -7,11 +11,17 @@ import SongOverviewScreen from "./screens/SongOverviewScreen";
 import SearchArtistScreen from "./screens/SearchArtist";
 import PartScreen from "./screens/PartScreen";
 import { fromRight, opacityChange, loadAssets } from "./utils";
+import { SecureStore } from "expo";
 
 export default class App extends React.Component {
   state = {
     isReady: false
   };
+
+  async componentDidMount() {
+    await SecureStore.deleteItemAsync("access_token");
+    await SecureStore.deleteItemAsync("refresh_token");
+  }
 
   render() {
     if (!this.state.isReady) {
@@ -23,7 +33,7 @@ export default class App extends React.Component {
         />
       );
     }
-    return <RootStack />;
+    return <RootNavigator />;
   }
 }
 
@@ -48,43 +58,64 @@ const handleCustomTransition = ({ scenes }) => {
   }
 };
 
-const AfterSelection = createStackNavigator(
-  {
-    SongOverviewScreen: { screen: SongOverviewScreen }
-  },
-  {
-    initialRouteName: "SongOverviewScreen",
-    headerMode: "screen",
-    gesturesEnabled: false,
-    transitionConfig: scenes => handleCustomTransition(scenes),
-    navigationOptions: {
-      headerVisible: true,
-      headerStyle: {
-        backgroundColor: "#5f6fee"
-      },
-      headerTintColor: "#fff",
-      headerTitleStyle: {
-        fontFamily: "roboto-regular"
-      }
+const RootNavigator = createAppContainer(
+  createSwitchNavigator({
+    loginFlow: {
+      screen: createSwitchNavigator(
+        {
+          Home: { screen: HomeScreen },
+          PartScreen: { screen: PartScreen }
+        },
+        {
+          initialRouteName: "Home",
+          headerMode: "none",
+          gesturesEnabled: false,
+          transitionConfig: scenes => handleCustomTransition(scenes),
+          navigationOptions: {
+            headerVisible: false
+          }
+        }
+      )
+    },
+    artistSelection: {
+      screen: createStackNavigator(
+        {
+          PickArtist: { screen: PickArtistScreen },
+          Search: { screen: SearchArtistScreen }
+        },
+        {
+          initialRouteName: "PickArtist",
+          headerMode: "none",
+          gesturesEnabled: false,
+          transitionConfig: scenes => handleCustomTransition(scenes),
+          navigationOptions: {
+            headerVisible: false
+          }
+        }
+      )
+    },
+    afterArtistSelection: {
+      screen: createStackNavigator(
+        {
+          SongOverviewScreen: { screen: SongOverviewScreen }
+        },
+        {
+          initialRouteName: "SongOverviewScreen",
+          headerMode: "screen",
+          gesturesEnabled: false,
+          transitionConfig: scenes => handleCustomTransition(scenes),
+          navigationOptions: {
+            headerVisible: true,
+            headerStyle: {
+              backgroundColor: "#5f6fee"
+            },
+            headerTintColor: "#fff",
+            headerTitleStyle: {
+              fontFamily: "roboto-regular"
+            }
+          }
+        }
+      )
     }
-  }
-);
-
-const RootStack = createStackNavigator(
-  {
-    Home: { screen: HomeScreen },
-    PickArtist: { screen: PickArtistScreen },
-    Search: { screen: SearchArtistScreen },
-    SongOverviewScreen: { screen: AfterSelection },
-    PartScreen: { screen: PartScreen }
-  },
-  {
-    initialRouteName: "SongOverviewScreen",
-    headerMode: "none",
-    gesturesEnabled: false,
-    transitionConfig: scenes => handleCustomTransition(scenes),
-    navigationOptions: {
-      headerVisible: false
-    }
-  }
+  })
 );

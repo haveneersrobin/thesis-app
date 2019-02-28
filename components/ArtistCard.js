@@ -6,10 +6,6 @@ import { ellipsize } from "../utils";
 const ArtistView = styled(View)`
   flex-direction: row;
   flex-wrap: nowrap;
-  /*border-radius: 8;*/
-  /*background-color: #f8f8f8;*/
-  /*border: ${props =>
-    props.selected ? "2px solid #5f6fee" : "2px solid transparent"};*/
   padding-left: 25;
   padding-right: 25;
   margin-bottom: 20;
