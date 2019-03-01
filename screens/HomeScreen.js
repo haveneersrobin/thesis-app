@@ -41,6 +41,7 @@ const BottomContainer = styled(View)`
   align-items: center;
   border-top-color: #e0e0e0;
   border-top-width: 2;
+  padding-top: 10px;
 `;
 
 const TitleText = styled(Text)`
@@ -78,7 +79,8 @@ const ButtonView = styled(View)`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-top: 20px;
+  margin-top: 10px;
+  margin-bottom: 15px;
 `;
 
 class HomeScreen extends Component {
@@ -120,6 +122,7 @@ class HomeScreen extends Component {
     let result;
     let userId;
     try {
+      alertError("login");
       result = await login();
     } catch (error) {
       alertError("[handle Spotify login] Couldn't login.");
@@ -248,6 +251,7 @@ class HomeScreen extends Component {
             )}
 
           {this.state.didError && <Text>{this.state.error}</Text>}
+          <Text style={{ fontSize: 9 }}>Version 1.0.1</Text>
         </BottomContainer>
       </StyledView>
     );
