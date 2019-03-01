@@ -10,6 +10,7 @@ import {
   getNameAndPicture,
   logout
 } from "../api";
+import { alertError } from "../utils";
 import { Entypo, MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import { AndroidBackHandler } from "react-navigation-backhandler";
 import { SkypeIndicator } from "react-native-indicators";
@@ -86,8 +87,9 @@ class HomeScreen extends Component {
     this.state = {
       error: null,
       didError: false,
-      accessToken: "initial",
-      profileInfo: null
+      accessToken: null,
+      profileInfo: null,
+      loading: true
     };
   }
 
@@ -108,29 +110,33 @@ class HomeScreen extends Component {
 
   async componentDidMount() {
     this.setState({
-      accessToken: await getAccessToken().catch(err =>
-        this.setState({ didError: true, error: err })
-      ),
-      profileInfo: await getNameAndPicture().catch(err =>
-        this.setState({ didError: true, error: err })
-      )
+      accessToken: await getAccessToken(),
+      profileInfo: await getNameAndPicture(),
+      loading: false
     });
   }
 
   async handleSpotifyLogin() {
-    const result = await login().catch(err => console.log(err));
-    if (result.type == "error") {
+    let result;
+    let userId;
+    try {
+      result = await login();
+    } catch (error) {
+      alertError("[handle Spotify login] Couldn't login.");
+    }
+    if (result && result.type == "error") {
       this.setState({ didError: true, error: result.errorCode });
-    } else if (result.type == "success") {
-      const userId = await getUserID().catch(err => console.log(err));
+    } else if (result && result.type == "success") {
+      try {
+        userId = await getUserID();
+      } catch (error) {
+        alertError("[handle Spotify login] Couldn't fetch user id.");
+      }
       Analytics.identify(userId);
       Analytics.track(Analytics.events.LOGGED_IN, { id: userId });
       this.continue();
     } else {
-      this.setState({
-        didError: true,
-        error: "An unknown error has occured! :("
-      });
+      alertError("[handle Spotify login] An unknown error has occured.");
     }
   }
 
@@ -166,19 +172,23 @@ class HomeScreen extends Component {
           </Explanation>
         </TitleContainer>
         <BottomContainer>
-          {!this.state.accessToken && (
-            <Button
-              color={"#049138"}
-              bgColor={"#C2F8CB"}
-              text={"Log in with Spotify"}
-              onPress={() => this.handleSpotifyLogin()}
-            >
-              <Entypo name="spotify-with-circle" size={24} color="#049138" />
-            </Button>
-          )}
+          {this.state.loading && <SkypeIndicator color={"#5F6FEE"} size={40} />}
 
-          {this.state.accessToken &&
-            this.state.accessToken !== "initial" &&
+          {!this.state.loading &&
+            !this.state.accessToken &&
+            !this.state.profileInfo && (
+              <Button
+                color={"#049138"}
+                bgColor={"#C2F8CB"}
+                text={"Log in with Spotify"}
+                onPress={() => this.handleSpotifyLogin()}
+              >
+                <Entypo name="spotify-with-circle" size={24} color="#049138" />
+              </Button>
+            )}
+
+          {!this.state.loading &&
+            this.state.accessToken &&
             this.state.profileInfo && (
               <View>
                 <ProfileView>
@@ -191,7 +201,11 @@ class HomeScreen extends Component {
                     Logged in as:
                   </Text>
                   <ProfileImage
-                    source={{ uri: this.state.profileInfo.image }}
+                    source={
+                      this.state.profileInfo.image
+                        ? { uri: this.state.profileInfo.image }
+                        : require("../assets/img/profile.png")
+                    }
                   />
                   <Text
                     style={{
@@ -233,11 +247,6 @@ class HomeScreen extends Component {
               </View>
             )}
 
-          {(!this.state.accessToken ||
-            this.state.accessToken === "initial" ||
-            !this.state.profileInfo) && (
-            <SkypeIndicator color={"#5F6FEE"} size={40} />
-          )}
           {this.state.didError && <Text>{this.state.error}</Text>}
         </BottomContainer>
       </StyledView>

@@ -2,14 +2,13 @@ import React, { Component } from "react";
 import {
   View,
   Text,
-  Animated,
   StatusBar,
   Platform,
-  TouchableNativeFeedback
+  TouchableNativeFeedback,
+  ScrollView
 } from "react-native";
 import styled from "styled-components";
 import ArtistChip from "../components/ArtistChip";
-import { ScrollView } from "react-native-gesture-handler";
 import { MyText } from "../styles";
 import Button from "../components/Button";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
@@ -21,6 +20,8 @@ import { getAccessToken } from "../api";
 import axios from "axios";
 import { SkypeIndicator } from "react-native-indicators";
 import Analytics from "../Analytics";
+import { alertError } from "../utils";
+import * as env from "../env";
 
 const MainContainer = styled(View)`
   width: 100%;
@@ -112,37 +113,79 @@ class PickArtistScreen extends Component {
       artists: []
     };
 
+    this.fetchTopArtist = this.fetchTopArtist.bind(this);
     this.toggleSelection = this.toggleSelection.bind(this);
     this.addArtist = this.addArtist.bind(this);
     this.continue = this.continue.bind(this);
   }
 
   async componentDidMount() {
+    try {
+      await this.fetchTopArtist();
+    } catch (error) {}
     Analytics.track(Analytics.events.ENTER_ARTIST_SELECTION_SCREEN);
-    await this.fetchTopArtist();
   }
 
   async fetchTopArtist() {
-    const accessToken = await getAccessToken();
-    const result = await axios.get(
-      "https://api.spotify.com/v1/me/top/artists",
-      {
-        headers: {
-          Authorization: "Bearer " + accessToken
-        }
+    let result;
+    try {
+      result = await axios.get("https://api.spotify.com/v1/me/top/artists", {
+        headers: env.GET_HEADERS(await getAccessToken())
+      });
+    } catch (error) {
+      alertError(error);
+    }
+
+    let artistsToUse;
+    if (result.data.items.length != 0) {
+      artistsToUse = result.data.items;
+    } else {
+      try {
+        artistsToUse = await this.getBelgiumTop50Artists();
+      } catch (error) {
+        alertError("Could not fetch top Belgium artists");
       }
+    }
+    this.setState({
+      artists: artistsToUse.map(item =>
+        _.pick(item, ["external_urls", "name", "images", "id"])
+      )
+    });
+  }
+
+  async getBelgiumTop50Artists() {
+    let result;
+    const playlist_id = "37i9dQZEVXbJNSeeHswcKB";
+    try {
+      result = await axios.get(
+        `https://api.spotify.com/v1/playlists/${playlist_id}`,
+        {
+          headers: env.GET_HEADERS(await getAccessToken())
+        }
+      );
+    } catch (error) {
+      alertError(JSON.stringify(error) + " Could not fetch top artists");
+    }
+    const temp = _.uniq(
+      result.data.tracks.items
+        .map(item => item.track.album.artists[0].id)
+        .slice(0, 20)
     );
 
-    const filtered = result.data.items.map(item =>
-      Object.keys(item)
-        .filter(key => ["external_urls", "name", "images", "id"].includes(key))
-        .reduce((obj, key) => {
-          obj[key] = item[key];
-          return obj;
-        }, {})
-    );
-
-    this.setState({ artists: filtered });
+    let artists_objects;
+    try {
+      artists_objects = await axios.get("https://api.spotify.com/v1/artists", {
+        params: {
+          ids: temp.join()
+        },
+        headers: env.GET_HEADERS(await getAccessToken())
+      });
+    } catch (error) {
+      alertError(
+        JSON.stringify(error) + " Could not fetch top artists objects"
+      );
+    }
+    return artists_objects.data.artists;
   }
 
   toggleSelection(id) {
@@ -169,18 +212,6 @@ class PickArtistScreen extends Component {
         topArtists: this.state.artists,
         step: this.props.navigation.getParam("step", undefined)
       });
-    }
-  }
-
-  splitArtists(artists) {
-    if (!artists) return artists;
-    else {
-      const columns = [];
-      while (artists.length > 0) {
-        const chunk = artists.splice(0, 4);
-        columns.push(chunk);
-      }
-      return columns;
     }
   }
 

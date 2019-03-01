@@ -1,4 +1,4 @@
-import { Animated, Easing } from "react-native";
+import { Animated, Easing, Alert } from "react-native";
 import { Font, Asset } from "expo";
 import {
   Entypo,
@@ -88,14 +88,8 @@ const _cacheImages = images => {
 };
 
 export const alertError = error => {
-  let message;
-  if (typeof error == object) {
-    message = JSON.stringify(object);
-  } else {
-    message = error;
-  }
-
-  Alert.alert("Error", `An error has occured: ${message.substring(0, 200)}`, [
+  const message = JSON.stringify(error);
+  Alert.alert("Error", `An error has occured: ${message.substring(0, 1000)}`, [
     {
       text: "Dismiss",
       style: "cancel"
