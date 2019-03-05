@@ -5,23 +5,19 @@
     "slug": "mispre",
     "privacy": "public",
     "sdkVersion": "32.0.0",
-    "platforms": [
-      "android"
-    ],
+    "platforms": ["android"],
     "version": "1.0.8",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#f2f2f2"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false
     },

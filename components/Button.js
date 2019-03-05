@@ -8,13 +8,19 @@ import {
 import { MyText } from "../styles";
 import styled from "styled-components";
 
+import { responsiveFontSize } from "react-native-responsive-dimensions";
+
+// padding: 14px 19px or 15px 20px
 const ButtonView = styled(View)`
   flex-direction: row;
   justify-content: center;
   align-items: center;
   border-radius: 10px;
   background-color: ${props => (props.bgColor ? props.bgColor : "#5F6FEE")};
-  padding: ${props => (props.borderColor ? "14px 19px" : "15px 20px")};
+  padding: ${props =>
+    props.borderColor
+      ? `${responsiveFontSize(1.7)}px ${responsiveFontSize(1.9)}px`
+      : `${responsiveFontSize(1.6)}px ${responsiveFontSize(2)}px`};
   border: ${props =>
     props.borderColor
       ? `1px solid ${props.borderColor}`
@@ -22,7 +28,7 @@ const ButtonView = styled(View)`
 `;
 
 const ButtonText = styled(MyText)`
-  font-size: 18;
+  font-size: ${responsiveFontSize(1.9)};
   padding-left: 6px;
   color: ${props => (props.color ? props.color : "white")};
 `;

@@ -16,6 +16,11 @@ import { AndroidBackHandler } from "react-navigation-backhandler";
 import { SkypeIndicator } from "react-native-indicators";
 import FlashMessage from "react-native-flash-message";
 import { AppInstalledChecker } from "react-native-check-app-install";
+import {
+  responsiveFontSize,
+  responsiveWidth,
+  responsiveHeight
+} from "react-native-responsive-dimensions";
 
 const StyledView = styled(View)`
   flex: 1;
@@ -47,27 +52,27 @@ const BottomContainer = styled(View)`
 `;
 
 const TitleText = styled(Text)`
-  font-size: 86;
+  font-size: ${responsiveFontSize(10)};
   margin-bottom: -8;
   font-family: "roboto-light";
 `;
 
 const Pronounciation = styled(Text)`
-  font-size: 24;
+  font-size: ${responsiveFontSize(3)};
   margin-bottom: 40;
   font-family: "roboto-thin";
 `;
 
 const Explanation = styled(Text)`
-  font-size: 16;
+  font-size: ${responsiveFontSize(1.6)};
   font-family: "roboto-light";
 `;
 
 const ProfileImage = styled(Image)`
   border-radius: 50;
   margin-right: 8px;
-  width: 20px;
-  height: 20px;
+  width: ${responsiveHeight(2.2)};
+  height: ${responsiveHeight(2.2)};
 `;
 
 const ProfileView = styled(View)`
@@ -321,7 +326,7 @@ class HomeScreen extends Component {
           {this.state.didError && <Text>{this.state.error}</Text>}
         </BottomContainer>
 
-        <Text style={{ fontSize: 9 }}>Version 1.0.8</Text>
+        <Text style={{ fontSize: responsiveFontSize(1) }}>Version 1.0.8</Text>
         <FlashMessage
           ref="flashMessage"
           position="top"
