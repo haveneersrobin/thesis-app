@@ -15,6 +15,7 @@ import { Entypo, MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import { AndroidBackHandler } from "react-navigation-backhandler";
 import { SkypeIndicator } from "react-native-indicators";
 import FlashMessage from "react-native-flash-message";
+import { AppInstalledChecker } from "react-native-check-app-install";
 
 const StyledView = styled(View)`
   flex: 1;
@@ -94,7 +95,8 @@ class HomeScreen extends Component {
       profileInfo: null,
       loading: true,
       connected: false,
-      wifi: false
+      wifi: false,
+      chrome_installed: false
     };
   }
 
@@ -146,6 +148,10 @@ class HomeScreen extends Component {
 
   async componentDidMount() {
     const connection = await NetInfo.getConnectionInfo();
+    const chrome_installed = await AppInstalledChecker.checkURLScheme(
+      "googlechrome"
+    );
+    if (chrome_installed) this.setState({ chrome_installed: chrome_installed });
     if (connection.type === "cellular") {
       this.refs.flashMessage.showMessage({
         message: "Mobile Data",
@@ -158,11 +164,11 @@ class HomeScreen extends Component {
       this.setState({
         accessToken: await getAccessToken(),
         profileInfo: await getNameAndPicture(),
-        loading: false,
         connected: true,
         wifi: connection.type === "wifi"
       });
     }
+    this.setState({ loading: false });
   }
 
   async handleSpotifyLogin() {
@@ -222,11 +228,10 @@ class HomeScreen extends Component {
           </Explanation>
         </TitleContainer>
         <BottomContainer>
-          {this.state.connected && this.state.loading && (
-            <SkypeIndicator color={"#5F6FEE"} size={40} />
-          )}
+          {this.state.loading && <SkypeIndicator color={"#5F6FEE"} size={40} />}
 
-          {this.state.connected &&
+          {this.state.chrome_installed &&
+            this.state.connected &&
             !this.state.loading &&
             !this.state.accessToken &&
             !this.state.profileInfo && (
@@ -240,7 +245,8 @@ class HomeScreen extends Component {
               </Button>
             )}
 
-          {this.state.connected &&
+          {this.state.chrome_installed &&
+            this.state.connected &&
             !this.state.loading &&
             this.state.accessToken &&
             this.state.profileInfo && (
@@ -300,8 +306,16 @@ class HomeScreen extends Component {
                 </ButtonView>
               </View>
             )}
-          {!this.state.connected && (
-            <Text>Please connect to the internet to use this application.</Text>
+          {this.state.chrome_installed &&
+            !this.state.connected &&
+            !this.state.loading && (
+              <Text>
+                Please connect to the internet to use this application.
+              </Text>
+            )}
+
+          {!this.state.chrome_installed && !this.state.loading && (
+            <Text>Please install Google Chrome to use this app.</Text>
           )}
 
           {this.state.didError && <Text>{this.state.error}</Text>}
