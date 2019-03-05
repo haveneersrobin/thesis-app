@@ -1,6 +1,6 @@
 import axios from "axios";
 import moment from "moment";
-import { AuthSession, SecureStore } from "expo";
+import { AuthSession, SecureStore, Constants } from "expo";
 import querystring from "querystring";
 import Analytics from "./Analytics";
 import { alertError } from "./utils";
@@ -15,7 +15,8 @@ const getUserID = async () => {
     });
     res = accessToken ? await userID : undefined;
   } catch (error) {
-    alertError("getUserId" + error);
+    alertError(error);
+    alertError("getUserId");
   }
 
   if (res) return res.data.id;
@@ -27,7 +28,8 @@ const logout = async () => {
     await SecureStore.deleteItemAsync("access_token");
     await SecureStore.deleteItemAsync("refresh_token");
   } catch (error) {
-    alertError("logout" + error);
+    alertError(error);
+    alertError("logout");
   }
   Analytics.logout();
   AuthSession.dismiss();
@@ -61,9 +63,9 @@ const getAccessToken = async () => {
     accessToken = JSON.parse(await SecureStore.getItemAsync("access_token"));
     refreshToken = await SecureStore.getItemAsync("refresh_token");
   } catch (error) {
+    alertError(error);
     alertError(
-      "Could not retrieve access token or refresh token from Secure Store. " +
-        error
+      "Could not retrieve access token or refresh token from Secure Store. "
     );
   }
 
@@ -87,6 +89,7 @@ const getAccessToken = async () => {
       );
       return accessToken;
     } catch (error) {
+      alertError(error);
       alertError("Can not refresh acces token");
     }
   }
@@ -106,6 +109,7 @@ const refreshAccessToken = async refresh_token => {
       { headers: env.POST_HEADERS }
     );
   } catch (error) {
+    alertError(error);
     alertError("Can not refresh acces token");
   }
   return result.data.access_token;
@@ -122,8 +126,8 @@ const handleSpotifyLogin = async () => {
           response_type: "code",
           client_id: env.SPOTIFY_CLIENT_ID,
           scope: env.SCOPE,
-          redirect_uri,
-          show_dialog: true
+          show_dialog: true,
+          redirect_uri
         })
     });
   } catch (error) {
@@ -142,6 +146,7 @@ const handleSpotifyLogin = async () => {
         { headers: env.POST_HEADERS }
       );
     } catch (error) {
+      alertError(error);
       alertError("Could not retrieve tokens from Spotify.");
     }
     try {
@@ -160,6 +165,7 @@ const handleSpotifyLogin = async () => {
       );
       return results;
     } catch (error) {
+      alertError(error);
       alertError("Could not store access token or refresh token.");
     }
   } else return results;

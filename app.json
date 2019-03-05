@@ -2,11 +2,13 @@
   "expo": {
     "name": "Mispre",
     "description": "Mispre. Spotify recommendation interface built for master thesis.",
-    "slug": "mispre-thesis-app",
+    "slug": "mispre",
     "privacy": "public",
     "sdkVersion": "32.0.0",
-    "platforms": ["android"],
-    "version": "1.0.1",
+    "platforms": [
+      "android"
+    ],
+    "version": "1.0.8",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -17,12 +19,15 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false
     },
     "android": {
       "package": "cs.kuleuven.be.thesis_robin_haveneers.mispre"
-    }
+    },
+    "scheme": "mispre"
   }
 }

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, NetInfo } from "react-native";
 import Analytics from "../Analytics";
 import styled from "styled-components";
 import Button from "../components/Button";
@@ -14,6 +14,7 @@ import { alertError } from "../utils";
 import { Entypo, MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import { AndroidBackHandler } from "react-navigation-backhandler";
 import { SkypeIndicator } from "react-native-indicators";
+import FlashMessage from "react-native-flash-message";
 
 const StyledView = styled(View)`
   flex: 1;
@@ -37,7 +38,7 @@ const BottomContainer = styled(View)`
   flex: 1;
   width: 70%;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
   border-top-color: #e0e0e0;
   border-top-width: 2;
@@ -91,7 +92,9 @@ class HomeScreen extends Component {
       didError: false,
       accessToken: null,
       profileInfo: null,
-      loading: true
+      loading: true,
+      connected: false,
+      wifi: false
     };
   }
 
@@ -102,7 +105,7 @@ class HomeScreen extends Component {
         style: "cancel"
       },
       {
-        text: "Ok, exit.",
+        text: "Ok, exit!",
         onPress: () => BackHandler.exitApp()
       }
     ]);
@@ -110,19 +113,62 @@ class HomeScreen extends Component {
     return true;
   };
 
-  async componentDidMount() {
+  componentWillMount() {
+    NetInfo.addEventListener(
+      "connectionChange",
+      this.handleFirstConnectivityChange
+    );
+  }
+
+  componentWillUnmount() {
+    NetInfo.removeEventListener(
+      "connectionChange",
+      this.handleFirstConnectivityChange
+    );
+  }
+
+  handleFirstConnectivityChange = connectionInfo => {
+    if (connectionInfo.type === "cellular") {
+      this.refs.flashMessage.showMessage({
+        message: "Mobile Data",
+        description:
+          "You are not using Wi-Fi. Beware of possible carrier charges. You can tap this message to dismiss it.",
+        type: "warning"
+      });
+    } else if (connectionInfo.type === "wifi") {
+      this.refs.flashMessage.hideMessage();
+    }
     this.setState({
-      accessToken: await getAccessToken(),
-      profileInfo: await getNameAndPicture(),
-      loading: false
+      connected: connectionInfo.type !== "none",
+      wifi: connectionInfo.type === "wifi"
     });
+  };
+
+  async componentDidMount() {
+    const connection = await NetInfo.getConnectionInfo();
+    if (connection.type === "cellular") {
+      this.refs.flashMessage.showMessage({
+        message: "Mobile Data",
+        description:
+          "You are not using Wi-Fi. Beware of possible carrier charges. You can tap this message to dismiss it.",
+        type: "warning"
+      });
+    }
+    if (connection.type !== "none") {
+      this.setState({
+        accessToken: await getAccessToken(),
+        profileInfo: await getNameAndPicture(),
+        loading: false,
+        connected: true,
+        wifi: connection.type === "wifi"
+      });
+    }
   }
 
   async handleSpotifyLogin() {
     let result;
     let userId;
     try {
-      alertError("login");
       result = await login();
     } catch (error) {
       alertError("[handle Spotify login] Couldn't login.");
@@ -139,6 +185,7 @@ class HomeScreen extends Component {
       Analytics.track(Analytics.events.LOGGED_IN, { id: userId });
       this.continue();
     } else {
+      alertError(result);
       alertError("[handle Spotify login] An unknown error has occured.");
     }
   }
@@ -175,9 +222,12 @@ class HomeScreen extends Component {
           </Explanation>
         </TitleContainer>
         <BottomContainer>
-          {this.state.loading && <SkypeIndicator color={"#5F6FEE"} size={40} />}
+          {this.state.connected && this.state.loading && (
+            <SkypeIndicator color={"#5F6FEE"} size={40} />
+          )}
 
-          {!this.state.loading &&
+          {this.state.connected &&
+            !this.state.loading &&
             !this.state.accessToken &&
             !this.state.profileInfo && (
               <Button
@@ -190,7 +240,8 @@ class HomeScreen extends Component {
               </Button>
             )}
 
-          {!this.state.loading &&
+          {this.state.connected &&
+            !this.state.loading &&
             this.state.accessToken &&
             this.state.profileInfo && (
               <View>
@@ -249,10 +300,21 @@ class HomeScreen extends Component {
                 </ButtonView>
               </View>
             )}
+          {!this.state.connected && (
+            <Text>Please connect to the internet to use this application.</Text>
+          )}
 
           {this.state.didError && <Text>{this.state.error}</Text>}
-          <Text style={{ fontSize: 9 }}>Version 1.0.1</Text>
         </BottomContainer>
+
+        <Text style={{ fontSize: 9 }}>Version 1.0.8</Text>
+        <FlashMessage
+          ref="flashMessage"
+          position="top"
+          animated={true}
+          autoHide={false}
+          floating={true}
+        />
       </StyledView>
     );
   }

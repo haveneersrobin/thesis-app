@@ -97,14 +97,7 @@ class SongOverviewScreen extends Component {
     super(props);
 
     this.state = {
-      /*artists: this.props.navigation.getParam("artists", undefined),*/
-      artists: [
-        "0rHFi0qKLbO72s40s0DZ2h",
-        "4TrraAsitQKl821DQY42cZ",
-        "5Q81rlcTFh3k6DQJXPdsot",
-        "1zNqDE7qDGCsyzJwohVaoX",
-        "0nJaMZM8paoA5HEUTUXPqi"
-      ],
+      artists: this.props.navigation.getParam("artists", undefined),
       visible: false,
       pose: "closed",
       modalVisible: false,
@@ -278,28 +271,17 @@ class SongOverviewScreen extends Component {
   getRecommendations() {
     const body = {
       limit: 100,
-      seed_artists: this.state.artists.join()
-      /*min_acousticness: this.state.acousticness[0] / 100 || 0,
-      max_acousticness: this.state.acousticness[1] / 100 || 1,
-      min_instrumentalness: this.state.instrumentalness[0] / 100 || 0,
-      max_instrumentalness: this.state.instrumentalness[1] / 100 || 1,
-      min_danceability: this.state.danceability[0] / 100 || 0,
-      max_danceability: this.state.danceability[1] / 100 || 1,
-      min_valence: this.state.valence[0] / 100 || 0,
-      max_valence: this.state.valence[1] / 100 || 1,
-      min_energy: this.state.energy[0] / 100 || 0,
-      max_energy: this.state.energy[1] / 100 || 1,
-
+      seed_artists: this.state.artists.join(),
       target_acousticness:
-        (this.state.acousticness[0] - this.state.acousticness[1]) / 200 || 0.5,
+        (this.state.acousticness[0] + this.state.acousticness[1]) / 200 || 0.5,
       target_instrumentalness:
-        (this.state.instrumentalness[0] - this.state.instrumentalness[1]) /
+        (this.state.instrumentalness[0] + this.state.instrumentalness[1]) /
           200 || 0.5,
       target_danceability:
-        (this.state.danceability[0] - this.state.danceability[1]) / 200 || 0.5,
+        (this.state.danceability[0] + this.state.danceability[1]) / 200 || 0.5,
       target_valence:
-        (this.state.valence[0] - this.state.valence[1]) / 200 || 0.5,
-      target_energy: (this.state.energy[0] - this.state.energy[1]) / 200 || 0.5*/
+        (this.state.valence[0] + this.state.valence[1]) / 200 || 0.5,
+      target_energy: (this.state.energy[0] + this.state.energy[1]) / 200 || 0.5
     };
 
     getAccessToken().then(accessToken => {

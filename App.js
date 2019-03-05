@@ -11,7 +11,6 @@ import SongOverviewScreen from "./screens/SongOverviewScreen";
 import SearchArtistScreen from "./screens/SearchArtist";
 import PartScreen from "./screens/PartScreen";
 import { fromRight, opacityChange, loadAssets } from "./utils";
-import { SecureStore } from "expo";
 
 export default class App extends React.Component {
   state = {
