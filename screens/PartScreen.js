@@ -4,6 +4,10 @@ import styled from "styled-components";
 import Button from "../components/Button";
 import { Feather } from "@expo/vector-icons";
 import { AndroidBackHandler } from "react-navigation-backhandler";
+import {
+  responsiveFontSize,
+  responsiveHeight
+} from "react-native-responsive-dimensions";
 
 const StyledView = styled(View)`
   flex: 1;
@@ -31,12 +35,12 @@ const FinishContainer = styled(View)`
 `;
 
 const TitleText = styled(Text)`
-  font-size: 76;
+  font-size: ${responsiveFontSize(7)};
   font-family: "roboto-regular";
 `;
 
 const SubTitle = styled(Text)`
-  font-size: 26;
+  font-size: ${responsiveFontSize(4)};
   font-family: "roboto-light";
 `;
 

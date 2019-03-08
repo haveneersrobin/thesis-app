@@ -6,13 +6,17 @@ import {
   Dimensions
 } from "react-native";
 import styled from "styled-components";
-import { responsiveFontSize } from "react-native-responsive-dimensions";
+import {
+  responsiveFontSize,
+  responsiveHeight,
+  responsiveWidth
+} from "react-native-responsive-dimensions";
 import { MyText } from "../styles";
 
 const window = Dimensions.get("window");
 
 const MaskedImage = styled(Image)`
-  border-radius: 30;
+  border-radius: 50;
 `;
 
 const ChipView = styled(View)`
@@ -20,10 +24,13 @@ const ChipView = styled(View)`
   justify-content: flex-start;
   align-items: center;
   background-color: #d3d8fe;
-  border-radius: 80;
-  padding: 4px 5px;
-  width: ${window.width / 2 - 25};
-  margin: 15px 15px;
+  border-radius: 200;
+  padding-top: 4;
+  padding-bottom: 4;
+  padding-left: 4;
+  padding-right: 4;
+  width: ${window.width / 2 - responsiveHeight(1.3)};
+  margin: ${responsiveHeight(1.3)}px ${responsiveHeight(1.3)}px;
   ${props =>
     props.selected
       ? `border: 2px solid #5f6fee}`
@@ -34,9 +41,16 @@ const ArtistText = styled(MyText)`
   color: #5f6fee;
   font-size: ${responsiveFontSize(1.9)};
   text-align: center;
-  margin-left: -6px;
-  padding: 0px 12px;
   font-family: "roboto-bold";
+`;
+
+const ArtistTextView = styled(View)`
+  width: ${window.width / 2 - responsiveHeight(10)}px;
+  padding-left: 8;
+  padding-right: 12;
+  justify-content: center;
+  align-content: center;
+  flex-direction: row;
 `;
 
 class ArtistChip extends Component {
@@ -55,10 +69,13 @@ class ArtistChip extends Component {
         onPress={() => this.props.onPress(this.props.id)}
       >
         <ChipView selected={this.props.selected === "true"}>
-          <MaskedImage style={{ width: 60, height: 60 }} source={imageSource} />
-          <View style={{ width: window.width / 2 - 100 }}>
+          <MaskedImage
+            style={{ width: responsiveHeight(8), height: responsiveHeight(8) }}
+            source={imageSource}
+          />
+          <ArtistTextView>
             <ArtistText numberOfLines={2}>{this.props.name}</ArtistText>
-          </View>
+          </ArtistTextView>
         </ChipView>
       </TouchableWithoutFeedback>
     );

@@ -18,7 +18,6 @@ import FlashMessage from "react-native-flash-message";
 import { AppInstalledChecker } from "react-native-check-app-install";
 import {
   responsiveFontSize,
-  responsiveWidth,
   responsiveHeight
 } from "react-native-responsive-dimensions";
 
@@ -28,12 +27,11 @@ const StyledView = styled(View)`
   height: 100%;
   align-items: center;
   padding-top: 40;
-  padding-bottom: 40;
+  padding-bottom: 20;
   background-color: #f2f2f2;
 `;
 const TitleContainer = styled(View)`
-  padding-top: 20;
-  flex: 5;
+  flex: 20;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -41,25 +39,34 @@ const TitleContainer = styled(View)`
 `;
 
 const BottomContainer = styled(View)`
-  flex: 1;
+  flex: 5;
   width: 70%;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   border-top-color: #e0e0e0;
   border-top-width: 2;
-  padding-top: 10px;
+`;
+
+const VersionContainer = styled(View)`
+  justify-content: flex-end;
+  flex: 1;
+`;
+
+const ProfileView = styled(View)`
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: ${responsiveHeight(3)};
 `;
 
 const TitleText = styled(Text)`
   font-size: ${responsiveFontSize(10)};
-  margin-bottom: -8;
   font-family: "roboto-light";
 `;
 
 const Pronounciation = styled(Text)`
   font-size: ${responsiveFontSize(3)};
-  margin-bottom: 40;
   font-family: "roboto-thin";
 `;
 
@@ -75,19 +82,10 @@ const ProfileImage = styled(Image)`
   height: ${responsiveHeight(2.2)};
 `;
 
-const ProfileView = styled(View)`
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 5px;
-`;
-
 const ButtonView = styled(View)`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-top: 10px;
-  margin-bottom: 15px;
 `;
 
 class HomeScreen extends Component {
@@ -232,6 +230,7 @@ class HomeScreen extends Component {
             Mobile Interface for Spotify Recommendations
           </Explanation>
         </TitleContainer>
+
         <BottomContainer>
           {this.state.loading && <SkypeIndicator color={"#5F6FEE"} size={40} />}
 
@@ -260,7 +259,8 @@ class HomeScreen extends Component {
                   <Text
                     style={{
                       fontFamily: "roboto-bold",
-                      marginRight: 10
+                      marginRight: 10,
+                      fontSize: responsiveFontSize(1.4)
                     }}
                   >
                     Logged in as:
@@ -326,7 +326,9 @@ class HomeScreen extends Component {
           {this.state.didError && <Text>{this.state.error}</Text>}
         </BottomContainer>
 
-        <Text style={{ fontSize: responsiveFontSize(1) }}>Version 1.0.8</Text>
+        <VersionContainer>
+          <Text style={{ fontSize: responsiveFontSize(1) }}>Version 1.0.8</Text>
+        </VersionContainer>
         <FlashMessage
           ref="flashMessage"
           position="top"

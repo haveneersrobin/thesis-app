@@ -11,7 +11,10 @@ import styled from "styled-components";
 import ArtistChip from "../components/ArtistChip";
 import { MyText } from "../styles";
 import Button from "../components/Button";
-import { responsiveFontSize } from "react-native-responsive-dimensions";
+import {
+  responsiveFontSize,
+  responsiveHeight
+} from "react-native-responsive-dimensions";
 import { SafeAreaView } from "react-navigation";
 import { Feather, MaterialIcons } from "@expo/vector-icons";
 import _ from "lodash";
@@ -28,7 +31,7 @@ const MainContainer = styled(View)`
   height: 100%;
   flex-direction: column;
   background-color: #f2f2f2;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
 `;
 
@@ -57,25 +60,32 @@ const Border = styled(View)`
 
 const MiddleContainer = styled(View)`
   flex-direction: column;
-  flex: 2;
   justify-content: flex-start;
   align-items: center;
 `;
 
+const BottomContainer = styled(View)`
+  flex: 3 1 auto;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+  margin-bottom: ${responsiveHeight(2)};
+`;
+
 const SelectedContainer = styled(View)`
-  flex: 1;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   margin-left: 20px;
   margin-right: 20px;
+  height: ${responsiveHeight(7)};
 `;
 
 const SelectionContainer = styled(View)`
-  flex: 5;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  height: ${responsiveHeight(50)};
 `;
 
 const NothingSelected = styled(Text)`
@@ -86,7 +96,7 @@ const NothingSelected = styled(Text)`
 
 const SelectedText = styled(MyText)`
   color: #8b919d;
-  font-size: 14;
+  font-size: ${responsiveFontSize(1.4)};
   padding: 12px 10px;
   margin-left: 4px;
   margin-right: 4px;
@@ -94,11 +104,10 @@ const SelectedText = styled(MyText)`
   border-radius: 20;
 `;
 
-const BottomContainer = styled(View)`
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  margin-bottom: 50px;
+const SearchTextContainer = styled(View)`
+  border-radius: 50;
+  overflow: hidden;
+  background-color: #e4e4e4;
 `;
 
 class PickArtistScreen extends Component {
@@ -235,13 +244,19 @@ class PickArtistScreen extends Component {
         <MainContainer
           style={{
             paddingTop:
-              Platform.OS === "ios" ? 0 : Expo.Constants.statusBarHeight + 40
+              Platform.OS === "ios"
+                ? 0
+                : Expo.Constants.statusBarHeight + responsiveHeight(3)
           }}
         >
           <TitleContainer>
             <TitleText>
               Pick up to 5 artists
-              <Text style={{ fontSize: 45, color: "#5F6FEE" }}>.</Text>
+              <Text
+                style={{ fontSize: responsiveFontSize(1.5), color: "#5F6FEE" }}
+              >
+                .
+              </Text>
             </TitleText>
             <Border />
           </TitleContainer>
@@ -259,8 +274,7 @@ class PickArtistScreen extends Component {
                     contentContainerStyle={{
                       flexDirection: "row",
                       justifyContent: "flex-start",
-                      alignItems: "center",
-                      flexGrow: 0
+                      alignItems: "center"
                     }}
                     showsHorizontalScrollIndicator={false}
                   >
@@ -309,7 +323,6 @@ class PickArtistScreen extends Component {
                     flexDirection: "row",
                     justifyContent: "flex-start",
                     alignItems: "flex-start",
-                    flexGrow: 0,
                     paddingLeft: 15,
                     paddingRight: 15
                   }}
@@ -339,7 +352,7 @@ class PickArtistScreen extends Component {
                       </View>
                     ))}
                 </ScrollView>
-                <LinearGradient
+                {/*<LinearGradient
                   colors={["transparent", "rgba(255,255,255,0.6)"]}
                   start={[0, 0]}
                   end={[1, 0]}
@@ -352,20 +365,10 @@ class PickArtistScreen extends Component {
                     top: 103,
                     height: 374
                   }}
-                />
+                />*/}
               </SelectionContainer>
             )}
-          </MiddleContainer>
-
-          <BottomContainer>
-            <View
-              style={{
-                borderRadius: 50,
-                overflow: "hidden",
-                marginBottom: 70,
-                backgroundColor: "#E4E4E4"
-              }}
-            >
+            <SearchTextContainer>
               <TouchableNativeFeedback
                 background={TouchableNativeFeedback.Ripple(
                   "rgba(255,255,255,0.3)",
@@ -404,7 +407,10 @@ class PickArtistScreen extends Component {
                   </Text>
                 </View>
               </TouchableNativeFeedback>
-            </View>
+            </SearchTextContainer>
+          </MiddleContainer>
+
+          <BottomContainer>
             <Button
               onPress={this.continue}
               disabled={
