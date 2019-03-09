@@ -327,7 +327,7 @@ class HomeScreen extends Component {
         </BottomContainer>
 
         <VersionContainer>
-          <Text style={{ fontSize: responsiveFontSize(1) }}>Version 1.0.8</Text>
+          <Text style={{ fontSize: responsiveFontSize(1) }}>Version 1.1.0</Text>
         </VersionContainer>
         <FlashMessage
           ref="flashMessage"
