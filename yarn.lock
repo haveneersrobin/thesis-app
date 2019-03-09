@@ -5633,6 +5633,11 @@ react-navigation-transitions@^1.0.5:
   resolved "https://registry.yarnpkg.com/react-navigation-transitions/-/react-navigation-transitions-1.0.8.tgz#59ecc341c6da86a616c6a64674a36882d780b2e6"
   integrity sha512-NDa6ScctQFAICys7OjVAguHyLEfCXQv+9T+lF2uKgy68tbR1xJKAjXE8Pg07r6LUnkuKr7gqFvwxDFZZmF69aA==
 
+react-navigation-underscore@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/react-navigation-underscore/-/react-navigation-underscore-0.0.3.tgz#7f93c95ad5c46c83959dcd913cfdef04d78e2c29"
+  integrity sha1-f5PJWtXEbIOVnc2RPP3vBNeOLCk=
+
 react-navigation@^3.0.9:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-3.3.2.tgz#4f0fe3fa119adb4922d29da2ae395dd5b020a5f9"

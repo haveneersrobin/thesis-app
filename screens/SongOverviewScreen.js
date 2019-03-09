@@ -13,7 +13,7 @@ import styled from "styled-components";
 import { MyText } from "../styles";
 import { getAccessToken } from "../api";
 import PlayCard from "../components/PlayCard";
-import { Feather, FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 import FeaturesSliders from "../components/FeaturesSliders";
 import SlidingPanel from "../components/SlidingPanel";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
@@ -21,6 +21,7 @@ import _ from "lodash";
 import { AndroidBackHandler } from "react-navigation-backhandler";
 import Analytics from "../Analytics";
 import { SkypeIndicator } from "react-native-indicators";
+import withUnderscore from "react-navigation-underscore";
 
 const SongView = styled(View)`
   flex: 1;
@@ -59,22 +60,38 @@ class SongOverviewScreen extends Component {
     let headerRight;
     if (Platform.OS === "android") {
       headerRight = (
-        <TouchableNativeFeedback
-          background={TouchableNativeFeedback.Ripple(
-            "rgba(255,255,255,0.8)",
-            true
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          {navigation.getParam("step") == 1 && (
+            <TouchableNativeFeedback
+              background={TouchableNativeFeedback.Ripple(
+                "rgba(255,255,255,0.8)",
+                true
+              )}
+              onPress={navigation.getParam("toggleModal")}
+            >
+              <View style={{ backgroundColor: "#5f6fee" }}>
+                <Feather name="sliders" color="white" size={24} />
+              </View>
+            </TouchableNativeFeedback>
           )}
-          onPress={navigation.getParam("toggleModal")}
-        >
-          <View style={{ backgroundColor: "#5f6fee" }}>
-            <Feather
-              name="sliders"
-              color="white"
-              size={24}
-              style={{ paddingRight: 20, paddingLeft: 20 }}
-            />
-          </View>
-        </TouchableNativeFeedback>
+
+          <TouchableNativeFeedback
+            background={TouchableNativeFeedback.Ripple(
+              "rgba(255,255,255,0.8)",
+              true
+            )}
+            onPress={navigation.getParam("randomParameters")}
+          >
+            <View style={{ backgroundColor: "#5f6fee" }}>
+              <Ionicons
+                name="ios-shuffle"
+                color="white"
+                size={32}
+                style={{ paddingRight: 20, paddingLeft: 30 }}
+              />
+            </View>
+          </TouchableNativeFeedback>
+        </View>
       );
     } else {
       <TouchableOpacity onPress={navigation.getParam("toggleModal")}>
@@ -97,14 +114,14 @@ class SongOverviewScreen extends Component {
     super(props);
 
     this.state = {
-      //artists: this.props.navigation.getParam("artists", undefined),
-      artists: [
+      artists: this.props.navigation.getParam("artists", undefined),
+      /*artists: [
         "0rHFi0qKLbO72s40s0DZ2h",
         "4TrraAsitQKl821DQY42cZ",
         "5Q81rlcTFh3k6DQJXPdsot",
         "1zNqDE7qDGCsyzJwohVaoX",
         "0nJaMZM8paoA5HEUTUXPqi"
-      ],
+      ],*/
       visible: false,
       pose: "closed",
       modalVisible: false,
@@ -133,6 +150,7 @@ class SongOverviewScreen extends Component {
     this.afterExport = this.afterExport.bind(this);
     this.dismissAfterExportDialog = this.dismissAfterExportDialog.bind(this);
     this.continue = this.continue.bind(this);
+    this.randomParameters = this.randomParameters.bind(this);
   }
 
   continue = () => {
@@ -160,15 +178,52 @@ class SongOverviewScreen extends Component {
     Analytics.track(Analytics.events.ENTER_SONGS_SCREEN, {
       part: this.props.navigation.getParam("step")
     });
-    this.props.navigation.setParams({ toggleModal: this.toggleModal });
+    this.props.navigation.setParams({
+      toggleModal: this.toggleModal,
+      randomParameters: this.randomParameters
+    });
     this.getRecommendations();
+  }
+
+  randomParameters() {
+    const state = {
+      results: [],
+      acousticness: [
+        Math.floor(Math.random() * 51),
+        Math.floor(Math.random() * 51 + 50)
+      ],
+      instrumentalness: [
+        Math.floor(Math.random() * 51),
+        Math.floor(Math.random() * 51 + 50)
+      ],
+      danceability: [
+        Math.floor(Math.random() * 51),
+        Math.floor(Math.random() * 51 + 50)
+      ],
+      valence: [
+        Math.floor(Math.random() * 51),
+        Math.floor(Math.random() * 51 + 50)
+      ],
+      energy: [
+        Math.floor(Math.random() * 51),
+        Math.floor(Math.random() * 51 + 50)
+      ]
+    };
+    console.log(state);
+
+    Analytics.track(Analytics.events.RANDOM_PARAMETERS, {
+      acousticness: state.acousticness,
+      instrumentalness: state.instrumentalness,
+      danceability: state.danceability,
+      valence: state.valence,
+      energy: state.energy
+    });
+
+    this.setState(state, () => this.getRecommendations());
   }
 
   componentWillUnmount() {
     Analytics.track(Analytics.events.EXIT_SONGS_SCREEN);
-  }
-
-  componentWillUnmount() {
     this.setState({ modalVisible: false });
   }
 
@@ -429,6 +484,29 @@ class SongOverviewScreen extends Component {
           </Modal>
 
           <ScrollView style={{ marginBottom: 50 }}>
+            {this.state.results && this.state.results.length == 0 && (
+              <View style={{ marginTop: 30 }}>
+                <SkypeIndicator color={"#5F6FEE"} size={40} />
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: 10
+                  }}
+                >
+                  <FontAwesome
+                    name="magic"
+                    color="rgba(0, 0, 0, 0.4)"
+                    style={{ marginRight: 10 }}
+                    size={20}
+                  />
+                  <LoadingText>
+                    Getting new recommendations with random parameters
+                  </LoadingText>
+                </View>
+              </View>
+            )}
             {!this.state.results && (
               <View style={{ marginTop: 30 }}>
                 <SkypeIndicator color={"#5F6FEE"} size={40} />

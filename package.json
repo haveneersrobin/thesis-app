@@ -38,6 +38,7 @@
     "react-navigation": "^3.0.9",
     "react-navigation-backhandler": "^1.2.0",
     "react-navigation-transitions": "^1.0.5",
+    "react-navigation-underscore": "^0.0.3",
     "request": "^2.88.0",
     "styled-components": "^4.0.2"
   }

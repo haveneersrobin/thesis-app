@@ -1,7 +1,10 @@
 import React, { Component } from "react";
-import { View, Text } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 
-import { responsiveFontSize } from "react-native-responsive-dimensions";
+import {
+  responsiveFontSize,
+  responsiveHeight
+} from "react-native-responsive-dimensions";
 
 import styled from "styled-components";
 import Button from "../components/Button";
@@ -13,6 +16,8 @@ import {
   Feather
 } from "@expo/vector-icons";
 
+import FlashMessage from "react-native-flash-message";
+
 const SliderText = styled(Text)`
   font-family: "roboto-medium";
   font-size: ${responsiveFontSize(1.5)};
@@ -22,12 +27,16 @@ const SliderText = styled(Text)`
   margin-left: 10;
 `;
 
+const ScrollContainer = styled(View)`
+  max-height: ${responsiveHeight(69.4)};
+`;
+
 const ModalButtons = styled(View)`
   align-self: stretch;
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
-  margin-top: 10;
+  margin-top: 20;
 `;
 
 const SliderContainer = styled(View)`
@@ -80,10 +89,21 @@ class FeaturesSliders extends Component {
     };
 
     this.paramsChange = this.paramsChange.bind(this);
+    this.showParameterInfo = this.showParameterInfo.bind(this);
   }
 
   paramsChange(key, values) {
     this.setState({ [key]: values });
+  }
+
+  showParameterInfo(info, parameter) {
+    this.refs.flashMessage.showMessage({
+      message: `What is '${parameter}' ?`,
+      description: `${info}\n(Tap this message to dismiss)`,
+      type: "info",
+      backgroundColor: "#5f6fee",
+      color: "white"
+    });
   }
 
   render() {
@@ -92,89 +112,145 @@ class FeaturesSliders extends Component {
         <TitleView>
           <TitleText>Adjust parameters</TitleText>
         </TitleView>
-        <SliderContainer>
-          <TextView>
-            <MaterialCommunityIcons
-              name="guitar-acoustic"
-              size={22}
-              color="#5f6fee"
-            />
-            <SliderText>Acousticness</SliderText>
-          </TextView>
-          <SliderView>
-            <CustomMultiSlider
-              values={this.state.acousticness}
-              onValuesChangeFinish={values =>
-                this.paramsChange("acousticness", values)
-              }
-            />
-          </SliderView>
-        </SliderContainer>
+        <ScrollContainer>
+          <ScrollView>
+            <SliderContainer>
+              <TouchableOpacity
+                onPress={() =>
+                  this.showParameterInfo(
+                    "A confidence measure of whether the track is acoustic. 100 represents high confidence the track is acoustic (so, not electronic).",
+                    "acousticness"
+                  )
+                }
+              >
+                <TextView>
+                  <MaterialCommunityIcons
+                    name="guitar-acoustic"
+                    size={22}
+                    color="#5f6fee"
+                  />
+                  <SliderText>Acousticness</SliderText>
+                </TextView>
+              </TouchableOpacity>
+              <SliderView>
+                <CustomMultiSlider
+                  values={this.state.acousticness}
+                  onValuesChangeFinish={values =>
+                    this.paramsChange("acousticness", values)
+                  }
+                />
+              </SliderView>
+            </SliderContainer>
 
-        <SliderContainer>
-          <TextView>
-            <MaterialCommunityIcons name="voice" size={22} color="#5f6fee" />
-            <SliderText>Instrumentalness</SliderText>
-          </TextView>
-          <SliderView>
-            <CustomMultiSlider
-              values={this.state.instrumentalness}
-              onValuesChangeFinish={values =>
-                this.paramsChange("instrumentalness", values)
-              }
-            />
-          </SliderView>
-        </SliderContainer>
+            <SliderContainer>
+              <TouchableOpacity
+                onPress={() =>
+                  this.showParameterInfo(
+                    "Predicts whether a track contains no vocals. Rap or spoken word tracks, for example, are very “vocal” and so not instrumental.",
+                    "instrumentalness"
+                  )
+                }
+              >
+                <TextView>
+                  <MaterialCommunityIcons
+                    name="voice"
+                    size={22}
+                    color="#5f6fee"
+                  />
+                  <SliderText>Instrumentalness</SliderText>
+                </TextView>
+              </TouchableOpacity>
+              <SliderView>
+                <CustomMultiSlider
+                  values={this.state.instrumentalness}
+                  onValuesChangeFinish={values =>
+                    this.paramsChange("instrumentalness", values)
+                  }
+                />
+              </SliderView>
+            </SliderContainer>
 
-        <SliderContainer>
-          <TextView>
-            <MaterialCommunityIcons
-              name="shoe-heel"
-              size={22}
-              color="#5f6fee"
-            />
-            <SliderText>Danceability</SliderText>
-          </TextView>
-          <SliderView>
-            <CustomMultiSlider
-              values={this.state.danceability}
-              onValuesChangeFinish={values =>
-                this.paramsChange("danceability", values)
-              }
-            />
-          </SliderView>
-        </SliderContainer>
+            <SliderContainer>
+              <TouchableOpacity
+                onPress={() =>
+                  this.showParameterInfo(
+                    "Danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity.",
+                    "danceability"
+                  )
+                }
+              >
+                <TextView>
+                  <MaterialCommunityIcons
+                    name="shoe-heel"
+                    size={22}
+                    color="#5f6fee"
+                  />
+                  <SliderText>Danceability</SliderText>
+                </TextView>
+              </TouchableOpacity>
+              <SliderView>
+                <CustomMultiSlider
+                  values={this.state.danceability}
+                  onValuesChangeFinish={values =>
+                    this.paramsChange("danceability", values)
+                  }
+                />
+              </SliderView>
+            </SliderContainer>
 
-        <SliderContainer>
-          <TextView>
-            <MaterialIcons name="sentiment-neutral" size={22} color="#5f6fee" />
-            <SliderText>Valence</SliderText>
-          </TextView>
-          <SliderView>
-            <CustomMultiSlider
-              values={this.state.valence}
-              onValuesChangeFinish={values =>
-                this.paramsChange("valence", values)
-              }
-            />
-          </SliderView>
-        </SliderContainer>
+            <SliderContainer>
+              <TouchableOpacity
+                onPress={() =>
+                  this.showParameterInfo(
+                    "A measure describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).",
+                    "valence"
+                  )
+                }
+              >
+                <TextView>
+                  <MaterialIcons
+                    name="sentiment-neutral"
+                    size={22}
+                    color="#5f6fee"
+                  />
+                  <SliderText>Valence</SliderText>
+                </TextView>
+              </TouchableOpacity>
+              <SliderView>
+                <CustomMultiSlider
+                  values={this.state.valence}
+                  onValuesChangeFinish={values =>
+                    this.paramsChange("valence", values)
+                  }
+                />
+              </SliderView>
+            </SliderContainer>
 
-        <SliderContainer style={{ marginBottom: 30 }}>
-          <TextView>
-            <SimpleLineIcons name="energy" size={22} color="#5f6fee" />
-            <SliderText>Energy</SliderText>
-          </TextView>
-          <SliderView>
-            <CustomMultiSlider
-              values={this.state.energy}
-              onValuesChangeFinish={values =>
-                this.paramsChange("energy", values)
-              }
-            />
-          </SliderView>
-        </SliderContainer>
-
+            <SliderContainer style={{ marginBottom: 30 }}>
+              <TouchableOpacity
+                onPress={() =>
+                  this.showParameterInfo(
+                    "Energy is a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the scale.",
+                    "energy"
+                  )
+                }
+              >
+                <TextView>
+                  <SimpleLineIcons name="energy" size={22} color="#5f6fee" />
+                  <SliderText>Energy</SliderText>
+                </TextView>
+              </TouchableOpacity>
+              <SliderView>
+                <CustomMultiSlider
+                  values={this.state.energy}
+                  onValuesChangeFinish={values =>
+                    this.paramsChange("energy", values)
+                  }
+                />
+              </SliderView>
+            </SliderContainer>
+          </ScrollView>
+        </ScrollContainer>
         <ModalButtons>
           <Button
             bgColor={"white"}
@@ -192,6 +268,13 @@ class FeaturesSliders extends Component {
             <Feather name="check-circle" size={24} color="white" />
           </Button>
         </ModalButtons>
+        <FlashMessage
+          ref="flashMessage"
+          position="bottom"
+          animated={true}
+          autoHide={false}
+          floating={true}
+        />
       </View>
     );
   }
