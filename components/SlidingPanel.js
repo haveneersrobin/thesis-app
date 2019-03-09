@@ -23,7 +23,11 @@ import {
   Entypo,
   MaterialCommunityIcons
 } from "@expo/vector-icons";
-import { responsiveFontSize } from "react-native-responsive-dimensions";
+import {
+  responsiveFontSize,
+  responsiveHeight,
+  responsiveWidth
+} from "react-native-responsive-dimensions";
 import { getUserID, getAccessToken } from "../api";
 
 import Analytics from "../Analytics";
@@ -32,13 +36,21 @@ import { SkypeIndicator } from "react-native-indicators";
 const window = Dimensions.get("window");
 
 const Container = posed.View({
-  open: { top: (1 / 6) * window.height, delay: 0 },
+  open: {
+    top:
+      window.height -
+      responsiveHeight(70) -
+      Header.HEIGHT -
+      StatusBar.currentHeight -
+      50,
+    delay: 0
+  },
   closed: {
     top: window.height - Header.HEIGHT - StatusBar.currentHeight - 50,
     delay: 0
   },
   bounceIn: {
-    top: (8 / 10) * window.height,
+    top: window.height - Header.HEIGHT - StatusBar.currentHeight - 88,
     transition: { type: "spring" }
   },
   bounceOut: {
@@ -49,15 +61,12 @@ const Container = posed.View({
 const StyledContainer = styled(Container)`
   position: absolute;
   width: ${window.width};
-  height: ${window.height -
-    Header.HEIGHT -
-    StatusBar.currentHeight -
-    (1 / 6) * window.height};
+  height: ${responsiveHeight(80)};
 `;
 
 const PanelHeader = styled(View)`
   flex-direction: row;
-  height: 50;
+  height: 51;
   background-color: #5f6fee;
   align-items: center;
   justify-content: space-between;
@@ -66,14 +75,14 @@ const PanelHeader = styled(View)`
   padding-left: 20px;
   padding-right: 20px;
 `;
-
+/*height: ${window.height -
+Header.HEIGHT -
+StatusBar.currentHeight -
+(1 / 6) * window.height -
+50};*/
 const SlidingContent = styled(View)`
   background-color: #f2f2f2;
-  height: ${window.height -
-    Header.HEIGHT -
-    StatusBar.currentHeight -
-    (1 / 6) * window.height -
-    40};
+  height: ${responsiveHeight(70)};
 `;
 
 const NoTracksView = styled(View)`
@@ -86,7 +95,7 @@ const NoTracksView = styled(View)`
 const NoTracksText = styled(MyText)`
   color: grey;
   text-align: center;
-  font-size: 20;
+  font-size: ${responsiveFontSize(2)};
 `;
 
 const TrackArtist = styled(MyText)`
@@ -119,6 +128,7 @@ const ExportButtonView = styled(View)`
   ${props => props.addMargin === "true" && "margin-top: 40px"}
   margin-right: 30px;
   margin-left: 30px;
+  padding-bottom: 10px;
 `;
 
 const ExportText = styled(Text)`
@@ -241,6 +251,7 @@ class SlidingPanel extends Component {
             </TouchableWithoutFeedback>
           </PanelHeader>
         </TouchableWithoutFeedback>
+
         <SlidingContent>
           {!this.props.selected ||
             (this.props.selected.length === 0 && (
@@ -285,7 +296,12 @@ class SlidingPanel extends Component {
                 {this.props.selected.map((track, idx) => (
                   <TrackView key={track.id}>
                     <TrackNumber>{idx + 1}.</TrackNumber>
-                    <View style={{ flexDirection: "column" }}>
+                    <View
+                      style={{
+                        flexDirection: "column",
+                        width: responsiveWidth(70)
+                      }}
+                    >
                       <TrackArtist numberOfLines={1}>
                         {track.artist}
                       </TrackArtist>

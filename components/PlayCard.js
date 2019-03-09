@@ -1,16 +1,24 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
-import { View, Image, Text, TouchableWithoutFeedback } from "react-native";
+import {
+  View,
+  Image,
+  Text,
+  TouchableNativeFeedback,
+  TouchableOpacity
+} from "react-native";
 import styled from "styled-components";
 import { ellipsize } from "../utils";
+import {
+  responsiveHeight,
+  responsiveWidth,
+  responsiveFontSize
+} from "react-native-responsive-dimensions";
 
 const SongView = styled(View)`
   flex-direction: row;
   flex-wrap: nowrap;
-  /*border-radius: 8;*/
-  /*background-color: #f8f8f8;*/
-  /*border: ${props =>
-    props.selected ? "2px solid #5f6fee" : "2px solid transparent"};*/
+  align-items: center;
   padding-left: 15;
   padding-right: 15;
   ${props => props.first === "true" && `margin-top: 16px;`}
@@ -19,6 +27,7 @@ const SongView = styled(View)`
 const TextView = styled(View)`
   flex-direction: column;
   justify-content: center;
+  width: ${responsiveWidth(55.5)};
 `;
 
 const ImageView = styled(View)`
@@ -33,27 +42,28 @@ const LineContainer = styled(View)`
   align-items: center;
   border-bottom-color: #eeeeee;
   border-bottom-width: 1px;
-  padding-top: 25;
-  padding-bottom: 15;
+  padding-top: 18;
+  padding-bottom: 18;
   margin-left: 10;
   margin-right: 10;
 `;
 
 const MaskedImage = styled(Image)`
-  border-radius: 50;
+  border-radius: 60;
   margin-right: 10px;
 `;
 
 const ArtistText = styled(Text)`
   font-family: "roboto-regular";
   padding-bottom: 2;
-  font-size: 19;
+  font-size: ${responsiveFontSize(2.2)};
 `;
 
 const TitleText = styled(Text)`
   font-family: "roboto-regular";
   color: #757575;
-  font-size: 17;
+  font-size: ${responsiveFontSize(1.9)};
+  width: ${responsiveWidth(55.5)};
 `;
 
 const ButtonView = styled(View)`
@@ -64,12 +74,13 @@ const ButtonView = styled(View)`
 `;
 
 const IconView = styled(View)`
-  padding: 3px;
+  padding: ${responsiveHeight(0.5)}px;
 `;
 
 const CheckView = styled(IconView)`
   background-color: #88a9fc;
   border-radius: 50;
+  padding: ${responsiveHeight(0.5)}px;
 `;
 
 const PlayCard = props => {
@@ -81,7 +92,10 @@ const PlayCard = props => {
     >
       <ImageView>
         <MaskedImage
-          style={{ width: 50, height: 50 }}
+          style={{
+            width: responsiveHeight(6.3),
+            height: responsiveHeight(6.3)
+          }}
           source={{
             uri: props.image.url || undefined
           }}
@@ -89,29 +103,42 @@ const PlayCard = props => {
       </ImageView>
       <LineContainer>
         <TextView>
-          <ArtistText>{ellipsize(props.artist)}</ArtistText>
-          <TitleText>{ellipsize(props.name)}</TitleText>
+          <ArtistText numberOfLines={1}>{ellipsize(props.artist)}</ArtistText>
+          <TitleText numberOfLines={1}>{props.name}</TitleText>
         </TextView>
         <ButtonView>
-          <TouchableWithoutFeedback onPress={props.onPress}>
+          <TouchableOpacity
+            hitSlop={{ top: 7, bottom: 7, left: 7, right: 7 }}
+            onPress={props.onPress}
+          >
             <Image
-              style={{ width: 36, height: 36, marginRight: 10 }}
+              style={{
+                width: responsiveHeight(4.9),
+                height: responsiveHeight(4.9),
+                marginRight: responsiveWidth(2)
+              }}
               source={
                 props.playing
                   ? require("../assets/img/pause2-bl.png")
                   : require("../assets/img/play2-bl.png")
               }
             />
-          </TouchableWithoutFeedback>
+          </TouchableOpacity>
           {!props.selected && (
-            <TouchableWithoutFeedback onPress={props.onLike}>
+            <TouchableOpacity
+              hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
+              onPress={props.onLike}
+            >
               <IconView>
                 <MaterialIcons name="playlist-add" size={24} color="#5f6fee" />
               </IconView>
-            </TouchableWithoutFeedback>
+            </TouchableOpacity>
           )}
           {props.selected && (
-            <TouchableWithoutFeedback onPress={props.onLike}>
+            <TouchableOpacity
+              hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
+              onPress={props.onLike}
+            >
               <CheckView>
                 <MaterialIcons
                   name="playlist-add-check"
@@ -119,7 +146,7 @@ const PlayCard = props => {
                   color="#5f6fee"
                 />
               </CheckView>
-            </TouchableWithoutFeedback>
+            </TouchableOpacity>
           )}
         </ButtonView>
       </LineContainer>
