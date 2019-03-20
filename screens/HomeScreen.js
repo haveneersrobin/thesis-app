@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, Image, NetInfo } from "react-native";
+import { View, Text, Image, NetInfo, Platform } from "react-native";
 import Analytics from "../Analytics";
 import styled from "styled-components";
 import Button from "../components/Button";
@@ -212,7 +212,7 @@ class HomeScreen extends Component {
 
   async continueWithoutLogin() {
     const userId = await getUserID();
-    Analytics.identify(userId, { id: userId });
+    Analytics.identify(userId);
     Analytics.track(Analytics.events.CONTINUE_NO_LOGIN, { id: userId });
     this.continue();
   }
@@ -234,7 +234,8 @@ class HomeScreen extends Component {
         <BottomContainer>
           {this.state.loading && <SkypeIndicator color={"#5F6FEE"} size={40} />}
 
-          {this.state.chrome_installed &&
+          {((Platform.OS === "android" && this.state.chrome_installed) ||
+            Platform.OS === "ios") &&
             this.state.connected &&
             !this.state.loading &&
             !this.state.accessToken &&
@@ -249,7 +250,8 @@ class HomeScreen extends Component {
               </Button>
             )}
 
-          {this.state.chrome_installed &&
+          {((Platform.OS === "android" && this.state.chrome_installed) ||
+            Platform.OS === "ios") &&
             this.state.connected &&
             !this.state.loading &&
             this.state.accessToken &&
@@ -311,7 +313,8 @@ class HomeScreen extends Component {
                 </ButtonView>
               </View>
             )}
-          {this.state.chrome_installed &&
+          {((Platform.OS === "android" && this.state.chrome_installed) ||
+            Platform.OS === "ios") &&
             !this.state.connected &&
             !this.state.loading && (
               <Text>
@@ -319,9 +322,13 @@ class HomeScreen extends Component {
               </Text>
             )}
 
-          {!this.state.chrome_installed && !this.state.loading && (
-            <Text>Please install Google Chrome to use this app.</Text>
-          )}
+          {Platform.OS === "android" &&
+            !this.state.chrome_installed &&
+            !this.state.loading && (
+              <Text style={{ textAlign: "center" }}>
+                Please install Google Chrome to use this app.
+              </Text>
+            )}
 
           {this.state.didError && <Text>{this.state.error}</Text>}
         </BottomContainer>

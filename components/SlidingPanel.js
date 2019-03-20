@@ -285,13 +285,13 @@ class SlidingPanel extends Component {
                   }}
                 >
                   <ExportText>
-                    Please select at least 5 songs before exporting.
+                    Please select at least 1 songs before exporting.
                   </ExportText>
                 </View>
               )}
 
               <StyledScrollView
-                addPadding={this.props.selected.length >= 5 ? "true" : "false"}
+                addPadding={this.props.selected.length >= 1 ? "true" : "false"}
               >
                 {this.props.selected.map((track, idx) => (
                   <TrackView key={track.id}>
@@ -326,14 +326,14 @@ class SlidingPanel extends Component {
                 ))}
               </StyledScrollView>
               <ExportButtonView
-                addMargin={this.props.selected.length >= 5 ? "true" : "false"}
+                addMargin={this.props.selected.length >= 1 ? "true" : "false"}
               >
                 {this.state.creatingPlaylist === "false" && (
                   <Button
                     color={"#049138"}
                     bgColor={"#C2F8CB"}
                     onPress={this.createAndAdd}
-                    disabled={this.props.selected.length < 5 && "true"}
+                    disabled={this.props.selected.length < 1 && "true"}
                     text={"Export to Spotify"}
                   >
                     <MaterialCommunityIcons
@@ -361,7 +361,7 @@ class SlidingPanel extends Component {
                 <Button
                   onPress={this.props.onDone}
                   disabled={
-                    this.props.selected.length < 5 &&
+                    this.props.selected.length < 1 &&
                     this.state.creatingPlaylist === "false" &&
                     "true"
                   }

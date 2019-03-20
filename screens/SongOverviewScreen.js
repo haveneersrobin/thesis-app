@@ -60,48 +60,18 @@ class SongOverviewScreen extends Component {
     let headerRight;
     if (Platform.OS === "android") {
       headerRight = (
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          {navigation.getParam("step") == 1 && (
-            <TouchableNativeFeedback
-              background={TouchableNativeFeedback.Ripple(
-                "rgba(255,255,255,0.8)",
-                true
-              )}
-              onPress={navigation.getParam("toggleModal")}
-            >
-              <View style={{ backgroundColor: "#5f6fee" }}>
-                <Feather name="sliders" color="white" size={24} />
-              </View>
-            </TouchableNativeFeedback>
+        <TouchableNativeFeedback
+          background={TouchableNativeFeedback.Ripple(
+            "rgba(255,255,255,0.8)",
+            true
           )}
-
-          <TouchableNativeFeedback
-            background={TouchableNativeFeedback.Ripple(
-              "rgba(255,255,255,0.8)",
-              true
-            )}
-            onPress={navigation.getParam("randomParameters")}
-          >
-            <View style={{ backgroundColor: "#5f6fee" }}>
-              <Ionicons
-                name="ios-shuffle"
-                color="white"
-                size={32}
-                style={{ paddingRight: 20, paddingLeft: 30 }}
-              />
-            </View>
-          </TouchableNativeFeedback>
-        </View>
+          onPress={navigation.getParam("toggleModal")}
+        >
+          <View style={{ backgroundColor: "#5f6fee", marginRight: 20 }}>
+            <Feather name="sliders" color="white" size={24} />
+          </View>
+        </TouchableNativeFeedback>
       );
-    } else {
-      <TouchableOpacity onPress={navigation.getParam("toggleModal")}>
-        <Feather
-          name="sliders"
-          color="white"
-          size={24}
-          style={{ paddingRight: 20 }}
-        />
-      </TouchableOpacity>;
     }
 
     return {
@@ -150,7 +120,6 @@ class SongOverviewScreen extends Component {
     this.afterExport = this.afterExport.bind(this);
     this.dismissAfterExportDialog = this.dismissAfterExportDialog.bind(this);
     this.continue = this.continue.bind(this);
-    this.randomParameters = this.randomParameters.bind(this);
   }
 
   continue = () => {
@@ -179,49 +148,10 @@ class SongOverviewScreen extends Component {
       part: this.props.navigation.getParam("step")
     });
     this.props.navigation.setParams({
-      toggleModal: this.toggleModal,
-      randomParameters: this.randomParameters
+      toggleModal: this.toggleModal
     });
     this.getRecommendations();
   }
-
-  randomParameters() {
-    const state = {
-      results: [],
-      acousticness: [
-        Math.floor(Math.random() * 51),
-        Math.floor(Math.random() * 51 + 50)
-      ],
-      instrumentalness: [
-        Math.floor(Math.random() * 51),
-        Math.floor(Math.random() * 51 + 50)
-      ],
-      danceability: [
-        Math.floor(Math.random() * 51),
-        Math.floor(Math.random() * 51 + 50)
-      ],
-      valence: [
-        Math.floor(Math.random() * 51),
-        Math.floor(Math.random() * 51 + 50)
-      ],
-      energy: [
-        Math.floor(Math.random() * 51),
-        Math.floor(Math.random() * 51 + 50)
-      ]
-    };
-    console.log(state);
-
-    Analytics.track(Analytics.events.RANDOM_PARAMETERS, {
-      acousticness: state.acousticness,
-      instrumentalness: state.instrumentalness,
-      danceability: state.danceability,
-      valence: state.valence,
-      energy: state.energy
-    });
-
-    this.setState(state, () => this.getRecommendations());
-  }
-
   componentWillUnmount() {
     Analytics.track(Analytics.events.EXIT_SONGS_SCREEN);
     this.setState({ modalVisible: false });
@@ -253,27 +183,28 @@ class SongOverviewScreen extends Component {
     this.setState({ afterExportDialogVisible: false });
   }
 
-  async getMultiplePreviewURL(id, accessToken) {
-    return await axios.get(
-      `https://api.spotify.com/v1/tracks/?ids=${id.join()}`,
+  async getAudioFeatures(ids, accesToken) {
+    const result = await axios.get(
+      `https://api.spotify.com/v1/audio-features/?ids=${ids.join()}`,
       {
         params: {
           market: "BE"
         },
         headers: {
-          Authorization: "Bearer " + accessToken
+          Authorization: "Bearer " + accesToken
         }
       }
     );
+    return result.data.audio_features;
   }
 
   async getPreviewURLs(ids, accessToken) {
-    let todo = ids;
+    let todo = _.clone(ids);
     const ops = [];
-    while (todo.length > 45) {
+    while (todo.length > 0) {
       ops.push(
         await axios.get(
-          `https://api.spotify.com/v1/tracks/?ids=${todo.slice(0, 3).join()}`,
+          `https://api.spotify.com/v1/tracks/?ids=${todo.slice(0, 50).join()}`,
           {
             params: {
               market: "BE"
@@ -284,7 +215,7 @@ class SongOverviewScreen extends Component {
           }
         )
       );
-      todo.splice(0, 3);
+      todo.splice(0, 50);
     }
     let res = await axios.all(ops);
     return _.flatten(res.map(res => res.data.tracks));
@@ -330,6 +261,16 @@ class SongOverviewScreen extends Component {
     });
   }
 
+  mergeObjects(tracks, features) {
+    let result = [];
+    tracks.forEach((value, idx) => {
+      let temp = _.clone(value);
+      temp.features = features[idx];
+      result[idx] = temp;
+    });
+    return result;
+  }
+
   getRecommendations() {
     const body = {
       limit: 100,
@@ -356,7 +297,12 @@ class SongOverviewScreen extends Component {
         })
         .then(async response => {
           const trackids = response.data.tracks.map(track => track.id);
-          const result = await this.getPreviewURLs(trackids, accessToken);
+          const tempResult = await this.getPreviewURLs(trackids, accessToken);
+          const audioFeatures = await this.getAudioFeatures(
+            trackids,
+            accessToken
+          );
+          const result = this.mergeObjects(tempResult, audioFeatures);
           const usefulResult = result
             .filter(result => result.preview_url !== null)
             .map(res => ({
@@ -365,10 +311,12 @@ class SongOverviewScreen extends Component {
               name: res.name,
               preview_url: res.preview_url,
               uri: res.uri,
+              features: res.features,
               image:
                 res.album.images[res.album.images.length - 2] ||
                 res.album.images[0]
             }));
+          console.log(usefulResult);
           this.setState({
             results: usefulResult
           });
@@ -484,29 +432,6 @@ class SongOverviewScreen extends Component {
           </Modal>
 
           <ScrollView style={{ marginBottom: 50 }}>
-            {this.state.results && this.state.results.length == 0 && (
-              <View style={{ marginTop: 30 }}>
-                <SkypeIndicator color={"#5F6FEE"} size={40} />
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    marginTop: 10
-                  }}
-                >
-                  <FontAwesome
-                    name="magic"
-                    color="rgba(0, 0, 0, 0.4)"
-                    style={{ marginRight: 10 }}
-                    size={20}
-                  />
-                  <LoadingText>
-                    Getting new recommendations with random parameters
-                  </LoadingText>
-                </View>
-              </View>
-            )}
             {!this.state.results && (
               <View style={{ marginTop: 30 }}>
                 <SkypeIndicator color={"#5F6FEE"} size={40} />
@@ -536,6 +461,7 @@ class SongOverviewScreen extends Component {
                   id={track.id}
                   artist={track.artist}
                   name={track.name}
+                  features={track.features}
                   onPress={() => this.playSound(track.id, track.preview_url)}
                   onLike={() => this.onLike(track)}
                   image={track.image}
