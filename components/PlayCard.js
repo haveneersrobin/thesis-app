@@ -31,7 +31,7 @@ const SongView = styled(View)`
 
 const TextView = styled(View)`
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   width: ${responsiveWidth(52)};
 `;
 
@@ -39,31 +39,37 @@ const ImageView = styled(View)`
   position: relative;
   align-items: center;
   justify-content: center;
+  ${props =>
+    props.selected
+      ? `border: 3px solid #88a9fc;`
+      : `border: 3px solid transparent;`}
+  border-radius: 30;
+  overflow: hidden;
+  margin-right: 20px;
 `;
 
 const LineContainer = styled(View)`
-  border-bottom-color: #eeeeee;
+  border-bottom-color: #e5e5e5;
   border-bottom-width: 1px;
   margin-bottom: 17;
   margin-left: 80;
 `;
 
 const MaskedImage = styled(Image)`
-  border-radius: 60;
-  margin-right: 10px;
+  border-radius: 30;
 `;
 
 const ArtistText = styled(Text)`
-  font-family: "roboto-regular";
+  font-family: "roboto-medium";
   padding-bottom: 2;
-  font-size: ${responsiveFontSize(2.2)};
+  font-size: ${responsiveFontSize(2.3)};
   width: ${responsiveWidth(52)};
 `;
 
 const TitleText = styled(Text)`
   font-family: "roboto-regular";
   color: #757575;
-  font-size: ${responsiveFontSize(1.9)};
+  font-size: ${responsiveFontSize(1.8)};
   width: ${responsiveWidth(52)};
 `;
 
@@ -79,8 +85,6 @@ const IconView = styled(View)`
 `;
 
 const CheckView = styled(IconView)`
-  background-color: #88a9fc;
-  border-radius: 50;
   padding: ${responsiveHeight(0.5)}px;
 `;
 
@@ -154,17 +158,16 @@ class PlayCard extends Component {
       <View>
         <SongView
           first={this.props.index === 0 ? "true" : "false"}
-          selected={this.props.selected}
           style={{
             height: this.state.expanded ? null : 70,
             overflow: "hidden"
           }}
         >
-          <ImageView>
+          <ImageView selected={this.props.selected}>
             <MaskedImage
               style={{
-                width: responsiveHeight(6.3),
-                height: responsiveHeight(6.3)
+                width: responsiveHeight(6),
+                height: responsiveHeight(6)
               }}
               source={{
                 uri: this.props.image.url || undefined
@@ -217,8 +220,8 @@ class PlayCard extends Component {
                 <IconView>
                   <MaterialIcons
                     name="playlist-add"
-                    size={24}
-                    color="#5f6fee"
+                    size={26}
+                    color="#cccccc"
                   />
                 </IconView>
               </TouchableOpacity>
@@ -231,7 +234,7 @@ class PlayCard extends Component {
                 <CheckView>
                   <MaterialIcons
                     name="playlist-add-check"
-                    size={24}
+                    size={26}
                     color="#5f6fee"
                   />
                 </CheckView>

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import {
   View,
   ScrollView,
-  TouchableWithoutFeedback,
+  Animated,
   TouchableNativeFeedback,
   Modal,
   Platform,
@@ -16,12 +16,14 @@ import PlayCard from "../components/PlayCard";
 import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 import FeaturesSliders from "../components/FeaturesSliders";
 import SlidingPanel from "../components/SlidingPanel";
-import { responsiveFontSize } from "react-native-responsive-dimensions";
+import {
+  responsiveFontSize,
+  responsiveHeight
+} from "react-native-responsive-dimensions";
 import _ from "lodash";
 import { AndroidBackHandler } from "react-navigation-backhandler";
 import Analytics from "../Analytics";
 import { SkypeIndicator } from "react-native-indicators";
-import withUnderscore from "react-navigation-underscore";
 
 const SongView = styled(View)`
   flex: 1;
@@ -30,7 +32,7 @@ const SongView = styled(View)`
 `;
 
 const LoadingText = styled(MyText)`
-  color: rgba(0, 0, 0, 0.4);
+  color: #5f6fee;
   font-size: ${responsiveFontSize(1.8)};
   font-family: "roboto-regular";
   text-align: center;
@@ -55,6 +57,27 @@ const ModalContent = styled(View)`
   border-radius: 15px;
 `;
 
+const FloatingView = styled(View)`
+  border-radius: 5px;
+  background-color: white;
+`;
+
+const FloatingContainer = styled(Animated.View)`
+  justify-content: center;
+  flex-direction: row;
+  padding-left: 9px;
+  padding-right: 10px;
+`;
+
+const ColouredRectangle = styled(Animated.View)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #5f6fee;
+  width: 100%;
+  overflow: visible;
+`;
+
 class SongOverviewScreen extends Component {
   static navigationOptions = ({ navigation }) => {
     let headerRight;
@@ -76,7 +99,12 @@ class SongOverviewScreen extends Component {
 
     return {
       headerRight: navigation.getParam("step") == 1 ? headerRight : undefined,
-      error: null
+      error: null,
+      title: "Songs",
+      headerTitleStyle: {
+        paddingLeft: 10,
+        fontFamily: "roboto-bold"
+      }
     };
   };
 
@@ -84,14 +112,14 @@ class SongOverviewScreen extends Component {
     super(props);
 
     this.state = {
-      artists: this.props.navigation.getParam("artists", undefined),
-      /*artists: [
+      //artists: this.props.navigation.getParam("artists", undefined),
+      artists: [
         "0rHFi0qKLbO72s40s0DZ2h",
         "4TrraAsitQKl821DQY42cZ",
         "5Q81rlcTFh3k6DQJXPdsot",
         "1zNqDE7qDGCsyzJwohVaoX",
         "0nJaMZM8paoA5HEUTUXPqi"
-      ],*/
+      ],
       visible: false,
       pose: "closed",
       modalVisible: false,
@@ -103,7 +131,9 @@ class SongOverviewScreen extends Component {
       danceability: [0, 100],
       valence: [0, 100],
       energy: [0, 100],
-      afterExportDialogVisible: false
+      afterExportDialogVisible: false,
+      viewOpacity: new Animated.Value(0),
+      animatedHeight: new Animated.Value(0)
     };
 
     this.audioPlayer = new Expo.Audio.Sound();
@@ -316,10 +346,24 @@ class SongOverviewScreen extends Component {
                 res.album.images[res.album.images.length - 2] ||
                 res.album.images[0]
             }));
-          console.log(usefulResult);
-          this.setState({
-            results: usefulResult
-          });
+          this.setState(
+            {
+              results: usefulResult
+            },
+            () => {
+              Animated.parallel([
+                Animated.timing(this.state.animatedHeight, {
+                  toValue: responsiveHeight(25),
+                  duration: 1000
+                }),
+                Animated.timing(this.state.viewOpacity, {
+                  toValue: 1,
+                  duration: 500,
+                  useNativeDriver: true
+                })
+              ]).start(() => {});
+            }
+          );
         })
         .catch(async err => {
           console.log(err);
@@ -430,60 +474,75 @@ class SongOverviewScreen extends Component {
               </ModalContent>
             </ModalContainer>
           </Modal>
-
-          <ScrollView style={{ marginBottom: 50 }}>
-            {!this.state.results && (
-              <View style={{ marginTop: 30 }}>
-                <SkypeIndicator color={"#5F6FEE"} size={40} />
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    marginTop: 10
-                  }}
-                >
-                  <FontAwesome
-                    name="magic"
-                    color="rgba(0, 0, 0, 0.4)"
-                    style={{ marginRight: 10 }}
-                    size={20}
-                  />
-                  <LoadingText>Crunching recommendations ...</LoadingText>
-                </View>
-              </View>
-            )}
-            {this.state.results &&
-              this.state.results.map((track, idx) => (
-                <PlayCard
-                  index={idx}
-                  key={track.id}
-                  id={track.id}
-                  artist={track.artist}
-                  name={track.name}
-                  features={track.features}
-                  onPress={() => this.playSound(track.id, track.preview_url)}
-                  onLike={() => this.onLike(track)}
-                  image={track.image}
-                  playing={this.state.playing === track.id}
-                  selected={this.state.selected.some(
-                    selected => selected.id === track.id
-                  )}
+          <ColouredRectangle
+            style={{
+              height: this.state.animatedHeight
+            }}
+          />
+          {!this.state.results && (
+            <View style={{ marginTop: 50 }}>
+              <SkypeIndicator color={"#5f6fee"} size={40} />
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: 50
+                }}
+              >
+                <FontAwesome
+                  name="magic"
+                  color="#5f6fee"
+                  style={{ marginRight: 10 }}
+                  size={20}
                 />
-              ))}
-          </ScrollView>
-          {this.state.results && (
-            <SlidingPanel
-              onDone={this.continue}
-              removeFromList={this.removeSongFromList}
-              onPressHeader={this.onPressHeader}
-              pose={this.state.pose}
-              visible={this.state.visible}
-              selected={this.state.selected}
-              afterExport={this.afterExport}
-            />
+                <LoadingText>Crunching recommendations ...</LoadingText>
+              </View>
+            </View>
           )}
+          <FloatingContainer
+            style={{
+              opacity: this.state.viewOpacity
+            }}
+          >
+            <FloatingView>
+              <ScrollView>
+                {this.state.results &&
+                  this.state.results.map((track, idx) => (
+                    <PlayCard
+                      index={idx}
+                      key={track.id}
+                      id={track.id}
+                      artist={track.artist}
+                      name={track.name}
+                      features={track.features}
+                      onPress={() =>
+                        this.playSound(track.id, track.preview_url)
+                      }
+                      onLike={() => this.onLike(track)}
+                      image={track.image}
+                      playing={this.state.playing === track.id}
+                      selected={this.state.selected.some(
+                        selected => selected.id === track.id
+                      )}
+                    />
+                  ))}
+              </ScrollView>
+            </FloatingView>
+          </FloatingContainer>
         </SongView>
+        {this.state.results && (
+          <SlidingPanel
+            animOpacity={this.state.viewOpacity}
+            onDone={this.continue}
+            removeFromList={this.removeSongFromList}
+            onPressHeader={this.onPressHeader}
+            pose={this.state.pose}
+            visible={this.state.visible}
+            selected={this.state.selected}
+            afterExport={this.afterExport}
+          />
+        )}
       </AndroidBackHandler>
     );
   }

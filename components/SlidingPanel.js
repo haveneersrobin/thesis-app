@@ -5,7 +5,8 @@ import {
   TouchableWithoutFeedback,
   StatusBar,
   ScrollView,
-  Text
+  Text,
+  Animated
 } from "react-native";
 import styled from "styled-components";
 import posed from "react-native-pose";
@@ -14,7 +15,6 @@ import { MyText } from "../styles";
 
 import moment from "moment";
 import axios from "axios";
-import querystring from "querystring";
 
 import Button from "../components/Button";
 import {
@@ -64,7 +64,7 @@ const StyledContainer = styled(Container)`
   height: ${responsiveHeight(80)};
 `;
 
-const PanelHeader = styled(View)`
+const PanelHeader = styled(Animated.View)`
   flex-direction: row;
   height: 51;
   background-color: #5f6fee;
@@ -229,7 +229,7 @@ class SlidingPanel extends Component {
     return (
       <StyledContainer pose={this.props.pose}>
         <TouchableWithoutFeedback onPress={this.props.onPressHeader}>
-          <PanelHeader>
+          <PanelHeader style={{ opacity: this.props.animOpacity }}>
             <MyText style={{ color: "#FFF" }}>
               {this.props.selected.length} songs selected
             </MyText>

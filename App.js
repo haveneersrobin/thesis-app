@@ -101,7 +101,8 @@ const RootNavigator = createAppContainer(
           defaultNavigationOptions: {
             headerVisible: true,
             headerStyle: {
-              backgroundColor: "#5f6fee"
+              backgroundColor: "#5f6fee",
+              elevation: 0
             },
             headerTintColor: "#fff",
             headerTitleStyle: {

@@ -52,9 +52,17 @@ const track = (event, options) => {
   }
 };
 
+const setUserProp = properties => {
+  initialize();
+  if (properties) {
+    Amplitude.setUserProperties(properties);
+  }
+};
+
 export default {
   events,
   track,
   identify,
-  logout
+  logout,
+  setUserProp
 };

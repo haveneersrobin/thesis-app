@@ -21,6 +21,8 @@ import {
   responsiveHeight
 } from "react-native-responsive-dimensions";
 
+import Dialog from "react-native-dialog";
+
 const StyledView = styled(View)`
   flex: 1;
   width: 100%;
@@ -149,7 +151,7 @@ class HomeScreen extends Component {
     });
   };
 
-  async componentDidMount() {
+  componentDidMount = async () => {
     const connection = await NetInfo.getConnectionInfo();
     const chrome_installed = await AppInstalledChecker.checkURLScheme(
       "googlechrome"
@@ -171,10 +173,10 @@ class HomeScreen extends Component {
         wifi: connection.type === "wifi"
       });
     }
-    this.setState({ loading: false });
-  }
+    this.setState({ loading: false, dialogVisible: true });
+  };
 
-  async handleSpotifyLogin() {
+  handleSpotifyLogin = async () => {
     let result;
     let userId;
     try {
@@ -197,30 +199,68 @@ class HomeScreen extends Component {
       alertError(result);
       alertError("[handle Spotify login] An unknown error has occured.");
     }
-  }
+  };
 
-  async logoutSpotify() {
+  logoutSpotify = async () => {
     this.setState({ profileInfo: null, accessToken: null });
     logout();
-  }
+  };
 
-  continue() {
+  continue = () => {
     this.props.navigation.navigate("PartScreen", {
       part: 1
     });
-  }
+  };
 
-  async continueWithoutLogin() {
+  continueWithoutLogin = async () => {
     const userId = await getUserID();
     Analytics.identify(userId);
     Analytics.track(Analytics.events.CONTINUE_NO_LOGIN, { id: userId });
     this.continue();
-  }
+  };
+
+  closeDialog = () => {
+    this.setState({ dialogVisible: false });
+  };
+
+  confirmDialog = () => {
+    this.setState({ dialogVisible: false });
+    Analytics.setUserProp({ expID: this.state.experimentID });
+  };
+
+  setExperimentID = id => {
+    this.setState({ experimentID: id });
+  };
 
   render() {
     return (
       <StyledView>
         <AndroidBackHandler onBackPress={this.onBackButtonPressAndroid} />
+        <View>
+          <Dialog.Container
+            useNativeDriver={true}
+            visible={this.state.dialogVisible}
+          >
+            <Dialog.Title style={{ fontFamily: "roboto-bold" }}>
+              Experiment ID
+            </Dialog.Title>
+            <Dialog.Description style={{ fontFamily: "roboto-regular" }}>
+              Please (carefully) enter your experiment ID given to you on paper.
+            </Dialog.Description>
+            <Dialog.Input
+              keyboardType="numeric"
+              style={{ fontFamily: "roboto-regular" }}
+              onChangeText={this.setExperimentID}
+              placeholder="ID"
+              underlineColorAndroid="#e0e0e0"
+            />
+            <Dialog.Button
+              style={{ fontFamily: "roboto-regular", color: "#5F6FEE" }}
+              label="Submit"
+              onPress={this.confirmDialog}
+            />
+          </Dialog.Container>
+        </View>
         <TitleContainer>
           <TitleText>Mispre</TitleText>
           <Pronounciation>
