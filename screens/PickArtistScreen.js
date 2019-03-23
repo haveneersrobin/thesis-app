@@ -219,7 +219,8 @@ class PickArtistScreen extends Component {
       this.props.navigation.navigate("SongOverviewScreen", {
         artists: this.state.selected,
         topArtists: this.state.artists,
-        step: this.props.navigation.getParam("step", undefined)
+        step: this.props.navigation.getParam("step", undefined),
+        version: this.props.navigation.getParam("version", undefined)
       });
     }
   }

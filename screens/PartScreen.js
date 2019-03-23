@@ -60,7 +60,8 @@ class PartScreen extends Component {
 
   continue() {
     this.props.navigation.navigate("PickArtist", {
-      step: this.props.navigation.getParam("part", undefined)
+      step: this.props.navigation.getParam("part", undefined),
+      version: this.props.navigation.getParam("version", undefined)
     });
   }
 
@@ -81,6 +82,7 @@ class PartScreen extends Component {
 
   render() {
     const part = this.props.navigation.getParam("part", 1);
+    const version = this.props.navigation.getParam("version", "A");
     return (
       <StyledView>
         <AndroidBackHandler onBackPress={this.onBackButtonPressAndroid} />
@@ -88,7 +90,11 @@ class PartScreen extends Component {
           <View>
             <TitleContainer>
               <TitleText>Part 1</TitleText>
-              <SubTitle>Control: artists + sliders</SubTitle>
+              <SubTitle>
+                {version == "A"
+                  ? "Control: artists + sliders"
+                  : "Control: artists"}
+              </SubTitle>
             </TitleContainer>
             <ButtonView>
               <Button text="Start" onPress={this.continue}>
@@ -102,7 +108,11 @@ class PartScreen extends Component {
           <View>
             <TitleContainer>
               <TitleText>Part 2</TitleText>
-              <SubTitle>Control: artists</SubTitle>
+              <SubTitle>
+                {version == "A"
+                  ? "Control: artists"
+                  : "Control: artists + sliders"}
+              </SubTitle>
             </TitleContainer>
             <ButtonView>
               <Button text="Start" onPress={this.continue}>

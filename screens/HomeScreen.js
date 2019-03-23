@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, Image, NetInfo, Platform } from "react-native";
+import { View, Text, Image, NetInfo, Platform, Switch } from "react-native";
 import Analytics from "../Analytics";
 import styled from "styled-components";
 import Button from "../components/Button";
@@ -90,6 +90,13 @@ const ButtonView = styled(View)`
   align-items: center;
 `;
 
+const SwitchView = styled(View)`
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+`;
+
 class HomeScreen extends Component {
   constructor(props) {
     super(props);
@@ -101,7 +108,8 @@ class HomeScreen extends Component {
       loading: true,
       connected: false,
       wifi: false,
-      chrome_installed: false
+      chrome_installed: false,
+      switchValue: false
     };
   }
 
@@ -207,8 +215,14 @@ class HomeScreen extends Component {
   };
 
   continue = () => {
+    Analytics.setUserProp({
+      expID: this.state.experimentID,
+      version: this.state.switchValue ? "B" : "A"
+    });
+    console.log(this.state.switchValue ? "B" : "A");
     this.props.navigation.navigate("PartScreen", {
-      part: 1
+      part: 1,
+      version: this.state.switchValue ? "B" : "A"
     });
   };
 
@@ -224,12 +238,17 @@ class HomeScreen extends Component {
   };
 
   confirmDialog = () => {
-    this.setState({ dialogVisible: false });
-    Analytics.setUserProp({ expID: this.state.experimentID });
+    if (this.state.experimentID) {
+      this.setState({ dialogVisible: false });
+    }
   };
 
   setExperimentID = id => {
     this.setState({ experimentID: id });
+  };
+
+  toggleSwitch = value => {
+    this.setState({ switchValue: value });
   };
 
   render() {
@@ -351,6 +370,32 @@ class HomeScreen extends Component {
                     </Button>
                   </View>
                 </ButtonView>
+                <SwitchView>
+                  <Text
+                    style={{
+                      fontFamily: "roboto-bold",
+                      marginRight: 10,
+                      fontSize: responsiveFontSize(1.4)
+                    }}
+                  >
+                    A
+                  </Text>
+                  <Switch
+                    onValueChange={this.toggleSwitch}
+                    value={this.state.switchValue}
+                    thumbColor={"#5F6FEE"}
+                    trackColor={{ false: "#a5afff", true: "#a5afff" }}
+                  />
+                  <Text
+                    style={{
+                      fontFamily: "roboto-bold",
+                      marginLeft: 10,
+                      fontSize: responsiveFontSize(1.4)
+                    }}
+                  >
+                    B
+                  </Text>
+                </SwitchView>
               </View>
             )}
           {((Platform.OS === "android" && this.state.chrome_installed) ||

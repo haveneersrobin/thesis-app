@@ -97,8 +97,14 @@ class SongOverviewScreen extends Component {
       );
     }
 
+    let header;
+    if (navigation.getParam("step") == 1) {
+      header = navigation.getParam("version") == "A" ? headerRight : undefined;
+    } else if (navigation.getParam("step") == 2) {
+      header = navigation.getParam("version") == "A" ? undefined : headerRight;
+    }
     return {
-      headerRight: navigation.getParam("step") == 1 ? headerRight : undefined,
+      headerRight: header,
       error: null,
       title: "Songs",
       headerTitleStyle: {
@@ -153,12 +159,15 @@ class SongOverviewScreen extends Component {
   }
 
   continue = () => {
+    let continue_to = this.props.navigation.getParam("step") == 1 ? 2 : 3;
     Analytics.track(Analytics.events.DONE, {
-      continue_to: this.props.navigation.getParam("step") == 1 ? 2 : "end"
+      continue_to
     });
+    console.log(continue_to);
     this.props.navigation.navigate("PartScreen", {
-      part: this.props.navigation.getParam("step") == 1 ? 2 : 3,
-      artists: this.props.navigation.getParam("topArtists", undefined)
+      part: continue_to,
+      artists: this.props.navigation.getParam("topArtists", undefined),
+      version: this.props.navigation.getParam("version")
     });
   };
 
