@@ -20,7 +20,7 @@ const ButtonView = styled(View)`
   padding: ${props =>
     props.borderColor
       ? `${responsiveFontSize(1.7)}px ${responsiveFontSize(1.9)}px`
-      : `${responsiveFontSize(1.6)}px ${responsiveFontSize(2)}px`};
+      : `${responsiveFontSize(1.8)}px ${responsiveFontSize(2)}px`};
   border: ${props =>
     props.borderColor
       ? `1px solid ${props.borderColor}`

@@ -140,6 +140,7 @@ class HomeScreen extends Component {
       "connectionChange",
       this.handleFirstConnectivityChange
     );
+    this.setState({ dialogVisible: false });
   }
 
   handleFirstConnectivityChange = connectionInfo => {
@@ -418,7 +419,7 @@ class HomeScreen extends Component {
         </BottomContainer>
 
         <VersionContainer>
-          <Text style={{ fontSize: responsiveFontSize(1) }}>Version 1.1.0</Text>
+          <Text style={{ fontSize: responsiveFontSize(1) }}>Version 2.0.0</Text>
         </VersionContainer>
         <FlashMessage
           ref="flashMessage"
