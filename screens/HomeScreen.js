@@ -48,6 +48,7 @@ const BottomContainer = styled(View)`
   align-items: center;
   border-top-color: #e0e0e0;
   border-top-width: 2;
+  padding-top: 10px;
 `;
 
 const VersionContainer = styled(View)`
@@ -59,7 +60,7 @@ const ProfileView = styled(View)`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  margin-bottom: ${responsiveHeight(3)};
+  margin-bottom: ${responsiveHeight(2)};
 `;
 
 const TitleText = styled(Text)`
@@ -94,7 +95,8 @@ const SwitchView = styled(View)`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  margin-top: 10px;
+
+  margin-bottom: ${responsiveHeight(2)};
 `;
 
 class HomeScreen extends Component {
@@ -341,6 +343,32 @@ class HomeScreen extends Component {
                     {this.state.profileInfo.name}
                   </Text>
                 </ProfileView>
+                <SwitchView>
+                  <Text
+                    style={{
+                      fontFamily: "roboto-bold",
+                      marginRight: 10,
+                      fontSize: responsiveFontSize(1.4)
+                    }}
+                  >
+                    A
+                  </Text>
+                  <Switch
+                    onValueChange={this.toggleSwitch}
+                    value={this.state.switchValue}
+                    thumbColor={"#5F6FEE"}
+                    trackColor={{ false: "#a5afff", true: "#a5afff" }}
+                  />
+                  <Text
+                    style={{
+                      fontFamily: "roboto-bold",
+                      marginLeft: 10,
+                      fontSize: responsiveFontSize(1.4)
+                    }}
+                  >
+                    B
+                  </Text>
+                </SwitchView>
                 <ButtonView>
                   <View style={{ marginRight: 6 }}>
                     <Button
@@ -370,32 +398,6 @@ class HomeScreen extends Component {
                     </Button>
                   </View>
                 </ButtonView>
-                <SwitchView>
-                  <Text
-                    style={{
-                      fontFamily: "roboto-bold",
-                      marginRight: 10,
-                      fontSize: responsiveFontSize(1.4)
-                    }}
-                  >
-                    A
-                  </Text>
-                  <Switch
-                    onValueChange={this.toggleSwitch}
-                    value={this.state.switchValue}
-                    thumbColor={"#5F6FEE"}
-                    trackColor={{ false: "#a5afff", true: "#a5afff" }}
-                  />
-                  <Text
-                    style={{
-                      fontFamily: "roboto-bold",
-                      marginLeft: 10,
-                      fontSize: responsiveFontSize(1.4)
-                    }}
-                  >
-                    B
-                  </Text>
-                </SwitchView>
               </View>
             )}
           {((Platform.OS === "android" && this.state.chrome_installed) ||
