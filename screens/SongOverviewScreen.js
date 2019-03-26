@@ -204,7 +204,9 @@ class SongOverviewScreen extends Component {
       {
         ...state,
         modalVisible: false,
-        results: null
+        results: null,
+        visible: false,
+        pose: "closed"
       },
       () =>
         Animated.timing(this.state.viewOpacity, {

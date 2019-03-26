@@ -5,7 +5,8 @@ import {
   StatusBar,
   Platform,
   TouchableNativeFeedback,
-  ScrollView
+  ScrollView,
+  Animated
 } from "react-native";
 import styled from "styled-components";
 import ArtistChip from "../components/ArtistChip";
@@ -58,14 +59,14 @@ const Border = styled(View)`
   border-radius: 5px;
 `;
 
-const MiddleContainer = styled(View)`
+const MiddleContainer = styled(Animated.View)`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
 `;
 
 const BottomContainer = styled(View)`
-  flex: 3 1 auto;
+  flex: 3;
   flex-direction: column;
   justify-content: flex-end;
   align-items: flex-end;
@@ -119,7 +120,8 @@ class PickArtistScreen extends Component {
     this.state = {
       index: 0,
       selected: [],
-      artists: []
+      artists: undefined,
+      visible: new Animated.Value(0)
     };
 
     this.fetchTopArtist = this.fetchTopArtist.bind(this);
@@ -155,11 +157,19 @@ class PickArtistScreen extends Component {
         alertError("Could not fetch top Belgium artists");
       }
     }
-    this.setState({
-      artists: artistsToUse.map(item =>
-        _.pick(item, ["external_urls", "name", "images", "id"])
-      )
-    });
+    this.setState(
+      {
+        artists: artistsToUse.map(item =>
+          _.pick(item, ["external_urls", "name", "images", "id"])
+        )
+      },
+      () =>
+        Animated.timing(this.state.visible, {
+          toValue: 1,
+          duration: 700,
+          useNativeDriver: true
+        }).start(() => {})
+    );
   }
 
   async getBelgiumTop50Artists() {
@@ -238,7 +248,7 @@ class PickArtistScreen extends Component {
 
   render() {
     return (
-      <SafeAreaView style={{ backgroundColor: "#f2f2f2", color: "black" }}>
+      <View style={{ backgroundColor: "#f2f2f2", color: "black" }}>
         <StatusBar
           barStyle={Platform.OS === "ios" ? "dark-content" : "light-content"}
         />
@@ -254,7 +264,10 @@ class PickArtistScreen extends Component {
             <TitleText>
               Pick up to 5 artists
               <Text
-                style={{ fontSize: responsiveFontSize(1.5), color: "#5F6FEE" }}
+                style={{
+                  fontSize: responsiveFontSize(1.5),
+                  color: "#5F6FEE"
+                }}
               >
                 .
               </Text>
@@ -262,14 +275,14 @@ class PickArtistScreen extends Component {
             <Border />
           </TitleContainer>
 
-          <MiddleContainer>
-            {this.state.artists.length == 0 && (
-              <SkypeIndicator color={"black"} size={30} />
-            )}
-            <SelectedContainer>
-              {this.state.artists &&
-                this.state.artists.length != 0 &&
-                this.state.selected.length !== 0 && (
+          {!this.state.artists && (
+            <SkypeIndicator color={"#5f6fee"} size={34} />
+          )}
+
+          {this.state.artists && (
+            <MiddleContainer style={{ opacity: this.state.visible }}>
+              <SelectedContainer>
+                {this.state.selected.length !== 0 && (
                   <ScrollView
                     horizontal={true}
                     contentContainerStyle={{
@@ -295,9 +308,7 @@ class PickArtistScreen extends Component {
                     />
                   </ScrollView>
                 )}
-              {this.state.artists &&
-                this.state.artists.length != 0 &&
-                this.state.selected.length === 0 && (
+                {this.state.selected.length === 0 && (
                   <View
                     style={{
                       flexDirection: "row",
@@ -315,8 +326,7 @@ class PickArtistScreen extends Component {
                     </NothingSelected>
                   </View>
                 )}
-            </SelectedContainer>
-            {this.state.artists && this.state.artists.length != 0 && (
+              </SelectedContainer>
               <SelectionContainer>
                 <ScrollView
                   horizontal={true}
@@ -353,64 +363,49 @@ class PickArtistScreen extends Component {
                       </View>
                     ))}
                 </ScrollView>
-                {/*<LinearGradient
-                  colors={["transparent", "rgba(255,255,255,0.6)"]}
-                  start={[0, 0]}
-                  end={[1, 0]}
-                  locations={[0.8, 0.95]}
-                  pointerEvents="none"
-                  style={{
-                    position: "absolute",
-                    left: 0,
-                    right: 0,
-                    top: 103,
-                    height: 374
-                  }}
-                />*/}
               </SelectionContainer>
-            )}
-            <SearchTextContainer>
-              <TouchableNativeFeedback
-                background={TouchableNativeFeedback.Ripple(
-                  "rgba(255,255,255,0.3)",
-                  false
-                )}
-                useForeground={true}
-                onPress={() =>
-                  this.props.navigation.navigate("Search", {
-                    addArtist: this.addArtist
-                  })
-                }
-              >
-                <View
-                  style={{
-                    width: 150,
-                    height: 40,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flexDirection: "row"
-                  }}
+              <SearchTextContainer>
+                <TouchableNativeFeedback
+                  background={TouchableNativeFeedback.Ripple(
+                    "rgba(255,255,255,0.3)",
+                    false
+                  )}
+                  useForeground={true}
+                  onPress={() =>
+                    this.props.navigation.navigate("Search", {
+                      addArtist: this.addArtist
+                    })
+                  }
                 >
-                  <MaterialIcons
-                    size={12}
-                    name="search"
-                    color="#616161"
-                    style={{ paddingRight: 10 }}
-                  />
-                  <Text
+                  <View
                     style={{
-                      color: "#616161",
-                      fontSize: 14,
-                      fontFamily: "roboto-medium"
+                      width: 150,
+                      height: 40,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      flexDirection: "row"
                     }}
                   >
-                    Search artist
-                  </Text>
-                </View>
-              </TouchableNativeFeedback>
-            </SearchTextContainer>
-          </MiddleContainer>
-
+                    <MaterialIcons
+                      size={12}
+                      name="search"
+                      color="#616161"
+                      style={{ paddingRight: 10 }}
+                    />
+                    <Text
+                      style={{
+                        color: "#616161",
+                        fontSize: 14,
+                        fontFamily: "roboto-medium"
+                      }}
+                    >
+                      Search artist
+                    </Text>
+                  </View>
+                </TouchableNativeFeedback>
+              </SearchTextContainer>
+            </MiddleContainer>
+          )}
           <BottomContainer>
             <Button
               onPress={this.continue}
@@ -426,7 +421,7 @@ class PickArtistScreen extends Component {
             </Button>
           </BottomContainer>
         </MainContainer>
-      </SafeAreaView>
+      </View>
     );
   }
 }
