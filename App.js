@@ -54,30 +54,6 @@ const handleCustomTransition = ({ scenes }) => {
 
 const RootNavigator = createAppContainer(
   createSwitchNavigator({
-    afterArtistSelection: {
-      screen: createStackNavigator(
-        {
-          SongOverviewScreen: { screen: SongOverviewScreen }
-        },
-        {
-          initialRouteName: "SongOverviewScreen",
-          headerMode: "screen",
-          gesturesEnabled: false,
-          transitionConfig: scenes => handleCustomTransition(scenes),
-          defaultNavigationOptions: {
-            headerVisible: true,
-            headerStyle: {
-              backgroundColor: "#5f6fee",
-              elevation: 0
-            },
-            headerTintColor: "#fff",
-            headerTitleStyle: {
-              fontFamily: "roboto-regular"
-            }
-          }
-        }
-      )
-    },
     loginFlow: {
       screen: createSwitchNavigator(
         {
@@ -108,6 +84,30 @@ const RootNavigator = createAppContainer(
           transitionConfig: scenes => handleCustomTransition(scenes),
           defaultNavigationOptions: {
             headerVisible: false
+          }
+        }
+      )
+    },
+    afterArtistSelection: {
+      screen: createStackNavigator(
+        {
+          SongOverviewScreen: { screen: SongOverviewScreen }
+        },
+        {
+          initialRouteName: "SongOverviewScreen",
+          headerMode: "screen",
+          gesturesEnabled: false,
+          transitionConfig: scenes => handleCustomTransition(scenes),
+          defaultNavigationOptions: {
+            headerVisible: true,
+            headerStyle: {
+              backgroundColor: "#5f6fee",
+              elevation: 0
+            },
+            headerTintColor: "#fff",
+            headerTitleStyle: {
+              fontFamily: "roboto-regular"
+            }
           }
         }
       )
