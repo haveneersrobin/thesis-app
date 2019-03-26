@@ -32,8 +32,8 @@ const SongView = styled(View)`
 `;
 
 const LoadingText = styled(MyText)`
-  color: #5f6fee;
-  font-size: ${responsiveFontSize(1.8)};
+  color: white;
+  font-size: ${responsiveFontSize(2)};
   font-family: "roboto-regular";
   text-align: center;
 `;
@@ -97,14 +97,8 @@ class SongOverviewScreen extends Component {
       );
     }
 
-    let header;
-    if (navigation.getParam("step") == 1) {
-      header = navigation.getParam("version") == "A" ? headerRight : undefined;
-    } else if (navigation.getParam("step") == 2) {
-      header = navigation.getParam("version") == "A" ? undefined : headerRight;
-    }
     return {
-      headerRight: header,
+      headerRight,
       error: null,
       title: "Songs",
       headerTitleStyle: {
@@ -163,7 +157,6 @@ class SongOverviewScreen extends Component {
     Analytics.track(Analytics.events.DONE, {
       continue_to
     });
-    console.log(continue_to);
     this.props.navigation.navigate("PartScreen", {
       part: continue_to,
       artists: this.props.navigation.getParam("topArtists", undefined),
@@ -204,9 +197,21 @@ class SongOverviewScreen extends Component {
   }
 
   onConfirm(state) {
-    Analytics.track(Analytics.events.CONFIRM_SLIDERS, { ...state });
-    this.setState({ ...state, modalVisible: false, results: null }, () =>
-      this.getRecommendations()
+    Analytics.track(Analytics.events.CONFIRM_SLIDERS, {
+      ..._.omit(state, "visible")
+    });
+    this.setState(
+      {
+        ...state,
+        modalVisible: false,
+        results: null
+      },
+      () =>
+        Animated.timing(this.state.viewOpacity, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: true
+        }).start(() => this.getRecommendations())
     );
   }
 
@@ -234,7 +239,21 @@ class SongOverviewScreen extends Component {
         }
       }
     );
-    return result.data.audio_features;
+    let filteredObject = result.data.audio_features.map(el =>
+      _.pick(el, [
+        "acousticness",
+        "danceability",
+        "energy",
+        "instrumentalness",
+        "valence"
+      ])
+    );
+    filteredObject.map((el, idx) => {
+      Object.keys(el).forEach(
+        key => (filteredObject[idx][key] = _.round(el[key] * 100, 4))
+      );
+    });
+    return filteredObject;
   }
 
   async getPreviewURLs(ids, accessToken) {
@@ -359,19 +378,12 @@ class SongOverviewScreen extends Component {
             {
               results: usefulResult
             },
-            () => {
-              Animated.parallel([
-                Animated.timing(this.state.animatedHeight, {
-                  toValue: responsiveHeight(25),
-                  duration: 1000
-                }),
-                Animated.timing(this.state.viewOpacity, {
-                  toValue: 1,
-                  duration: 500,
-                  useNativeDriver: true
-                })
-              ]).start(() => {});
-            }
+            () =>
+              Animated.timing(this.state.viewOpacity, {
+                toValue: 1,
+                duration: 1000,
+                useNativeDriver: true
+              }).start(() => {})
           );
         })
         .catch(async err => {
@@ -454,6 +466,8 @@ class SongOverviewScreen extends Component {
   }
 
   render() {
+    const part = this.props.navigation.getParam("step");
+    const version = this.props.navigation.getParam("version");
     return (
       <AndroidBackHandler onBackPress={this.onBackButtonPressAndroid}>
         <SongView>
@@ -485,12 +499,12 @@ class SongOverviewScreen extends Component {
           </Modal>
           <ColouredRectangle
             style={{
-              height: this.state.animatedHeight
+              height: responsiveHeight(25)
             }}
           />
           {!this.state.results && (
-            <View style={{ marginTop: 50 }}>
-              <SkypeIndicator color={"#5f6fee"} size={40} />
+            <View style={{ marginTop: 70 }}>
+              <SkypeIndicator color={"white"} size={45} />
               <View
                 style={{
                   flexDirection: "row",
@@ -501,9 +515,9 @@ class SongOverviewScreen extends Component {
               >
                 <FontAwesome
                   name="magic"
-                  color="#5f6fee"
+                  color="white"
                   style={{ marginRight: 10 }}
-                  size={20}
+                  size={26}
                 />
                 <LoadingText>Crunching recommendations ...</LoadingText>
               </View>
@@ -523,6 +537,17 @@ class SongOverviewScreen extends Component {
                       key={track.id}
                       id={track.id}
                       artist={track.artist}
+                      showInfo={
+                        (version == "A" && part == 1) ||
+                        (version == "B" && part == 2)
+                      }
+                      sliders={{
+                        acousticness: this.state.acousticness,
+                        instrumentalness: this.state.instrumentalness,
+                        danceability: this.state.danceability,
+                        valence: this.state.valence,
+                        energy: this.state.energy
+                      }}
                       name={track.name}
                       features={track.features}
                       onPress={() =>

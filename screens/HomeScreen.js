@@ -219,7 +219,6 @@ class HomeScreen extends Component {
       expID: this.state.experimentID,
       version: this.state.switchValue ? "B" : "A"
     });
-    console.log(this.state.switchValue ? "B" : "A");
     this.props.navigation.navigate("PartScreen", {
       part: 1,
       version: this.state.switchValue ? "B" : "A"

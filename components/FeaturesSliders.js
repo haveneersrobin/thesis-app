@@ -1,5 +1,11 @@
 import React, { Component } from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Animated
+} from "react-native";
 
 import {
   responsiveFontSize,
@@ -19,12 +25,13 @@ import {
 import FlashMessage from "react-native-flash-message";
 
 const SliderText = styled(Text)`
-  font-family: "roboto-medium";
   font-size: ${responsiveFontSize(1.5)};
-  color: #616161;
   padding-top: 5;
   padding-bottom: 5;
   margin-left: 10;
+  color: #5f6fee;
+  font-family: "roboto-bold";
+  letter-spacing: 1px;
 `;
 
 const ScrollContainer = styled(View)`
@@ -85,7 +92,8 @@ class FeaturesSliders extends Component {
       instrumentalness: this.props.instrumentalness || [0, 100],
       danceability: this.props.danceability || [0, 100],
       valence: this.props.valence || [0, 100],
-      energy: this.props.energy || [0, 100]
+      energy: this.props.energy || [0, 100],
+      visible: new Animated.Value(0)
     };
 
     this.paramsChange = this.paramsChange.bind(this);
@@ -94,6 +102,21 @@ class FeaturesSliders extends Component {
 
   paramsChange(key, values) {
     this.setState({ [key]: values });
+  }
+  componentDidMount() {
+    Animated.timing(this.state.visible, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true
+    }).start(() => {});
+  }
+
+  componentWillUnmount() {
+    Animated.timing(this.state.visible, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: true
+    }).start(() => {});
   }
 
   showParameterInfo(info, parameter) {
@@ -108,7 +131,7 @@ class FeaturesSliders extends Component {
 
   render() {
     return (
-      <View>
+      <Animated.View style={{ opacity: this.state.visible }}>
         <TitleView>
           <TitleText>Adjust parameters</TitleText>
         </TitleView>
@@ -129,7 +152,7 @@ class FeaturesSliders extends Component {
                     size={22}
                     color="#5f6fee"
                   />
-                  <SliderText>Acousticness</SliderText>
+                  <SliderText>ACOUSTICNESS</SliderText>
                 </TextView>
               </TouchableOpacity>
               <SliderView>
@@ -157,7 +180,7 @@ class FeaturesSliders extends Component {
                     size={22}
                     color="#5f6fee"
                   />
-                  <SliderText>Instrumentalness</SliderText>
+                  <SliderText>INSTRUMENTALNESS</SliderText>
                 </TextView>
               </TouchableOpacity>
               <SliderView>
@@ -185,7 +208,7 @@ class FeaturesSliders extends Component {
                     size={22}
                     color="#5f6fee"
                   />
-                  <SliderText>Danceability</SliderText>
+                  <SliderText>DANCEABILITY</SliderText>
                 </TextView>
               </TouchableOpacity>
               <SliderView>
@@ -213,7 +236,7 @@ class FeaturesSliders extends Component {
                     size={22}
                     color="#5f6fee"
                   />
-                  <SliderText>Valence</SliderText>
+                  <SliderText>VALENCE</SliderText>
                 </TextView>
               </TouchableOpacity>
               <SliderView>
@@ -237,7 +260,7 @@ class FeaturesSliders extends Component {
               >
                 <TextView>
                   <SimpleLineIcons name="energy" size={22} color="#5f6fee" />
-                  <SliderText>Energy</SliderText>
+                  <SliderText>ENERGY</SliderText>
                 </TextView>
               </TouchableOpacity>
               <SliderView>
@@ -275,7 +298,7 @@ class FeaturesSliders extends Component {
           autoHide={false}
           floating={true}
         />
-      </View>
+      </Animated.View>
     );
   }
 }

@@ -42,6 +42,7 @@ const TitleText = styled(Text)`
 const SubTitle = styled(Text)`
   font-size: ${responsiveFontSize(4)};
   font-family: "roboto-light";
+  text-align: center;
 `;
 
 const ButtonView = styled(View)`
@@ -92,8 +93,8 @@ class PartScreen extends Component {
               <TitleText>Part 1</TitleText>
               <SubTitle>
                 {version == "A"
-                  ? "Control: artists + sliders"
-                  : "Control: artists"}
+                  ? "Scrutable (control + explanations)"
+                  : "Control only"}
               </SubTitle>
             </TitleContainer>
             <ButtonView>
@@ -110,8 +111,8 @@ class PartScreen extends Component {
               <TitleText>Part 2</TitleText>
               <SubTitle>
                 {version == "A"
-                  ? "Control: artists"
-                  : "Control: artists + sliders"}
+                  ? "Control only"
+                  : "Scrutable (control + explanations)"}
               </SubTitle>
             </TitleContainer>
             <ButtonView>

@@ -1,4 +1,3 @@
-import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import React, { Component } from "react";
 import {
   View,
@@ -11,13 +10,21 @@ import {
   Animated
 } from "react-native";
 import styled from "styled-components";
-import { ellipsize } from "../utils";
+import {
+  SimpleLineIcons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+  Ionicons
+} from "@expo/vector-icons";
 import {
   responsiveHeight,
   responsiveWidth,
   responsiveFontSize
 } from "react-native-responsive-dimensions";
 
+import _ from "lodash";
+
+import Analytics from "../Analytics";
 const SongView = styled(View)`
   flex-direction: row;
   flex-wrap: wrap;
@@ -32,7 +39,7 @@ const SongView = styled(View)`
 const TextView = styled(View)`
   flex-direction: column;
   justify-content: space-between;
-  width: ${responsiveWidth(52)};
+  width: ${responsiveWidth(46)};
 `;
 
 const ImageView = styled(View)`
@@ -45,7 +52,7 @@ const ImageView = styled(View)`
       : `border: 3px solid transparent;`}
   border-radius: 30;
   overflow: hidden;
-  margin-right: 20px;
+  margin-right: 10px;
 `;
 
 const LineContainer = styled(View)`
@@ -63,14 +70,14 @@ const ArtistText = styled(Text)`
   font-family: "roboto-medium";
   padding-bottom: 2;
   font-size: ${responsiveFontSize(2.3)};
-  width: ${responsiveWidth(52)};
+  width: ${responsiveWidth(46)};
 `;
 
 const TitleText = styled(Text)`
   font-family: "roboto-regular";
   color: #757575;
   font-size: ${responsiveFontSize(1.8)};
-  width: ${responsiveWidth(52)};
+  width: ${responsiveWidth(46)};
 `;
 
 const ButtonView = styled(View)`
@@ -89,37 +96,54 @@ const CheckView = styled(IconView)`
 `;
 
 const FeatureView = styled(View)`
-  width: 100%;
-  flex-direction: column;
-  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-between;
+  align-self: flex-end;
+  align-items: center;
+  margin-bottom: 13px;
+`;
+
+const FeatureKeyContainer = styled(View)`
+  flex-direction: row;
+  align-self: flex-end;
+  justify-content: center;
+  align-items: center;
+  background-color: #e4e4e4;
+  padding: 5px 12px;
+  border-radius: 50;
 `;
 
 const FeatureText = styled(Text)`
-  text-align: center;
-  font-family: "roboto-regular";
-  font-size: ${responsiveFontSize(1.5)};
+  text-align: right;
+  font-family: "roboto-bold";
+  font-size: ${responsiveFontSize(1.9)};
+  color: ${props => (props.inInterval ? "green" : "red")};
 `;
 
 const FeatureKey = styled(Text)`
   text-align: center;
-  padding-bottom: 3px;
-  padding-top: 8px;
   color: #5f6fee;
   font-family: "roboto-bold";
-  text-transform: uppercase;
   letter-spacing: 1px;
   font-size: ${responsiveFontSize(1.3)};
+  margin-left: 12px;
 `;
 
 const FeatureContainer = styled(Animated.View)`
+  flex-direction: column;
   border: 1px solid #eeeeee;
   border-radius: 8px;
-  margin-left: 63px;
   margin-top: 10px;
-  margin-right: 40px;
   margin-bottom: 10px;
-  padding-top: 10px;
-  padding-bottom: 15px;
+  margin-left: 60px;
+  padding-top: 12px;
+  padding-left: 30px;
+  padding-right: 20px;
+  width: auto;
+`;
+
+const FeatureTextView = styled(View)`
+  width: 20%;
 `;
 
 class PlayCard extends Component {
@@ -136,6 +160,11 @@ class PlayCard extends Component {
   }
 
   changeLayout = () => {
+    if (!this.state.expanded) {
+      Analytics.track(Analytics.events.SEE_SONG_FEATURES, {
+        song: `${this.props.artist} - ${this.props.name}`
+      });
+    }
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     if (this.state.expanded) {
       Animated.timing(this.state.textOpacity, {
@@ -179,22 +208,24 @@ class PlayCard extends Component {
             <TitleText numberOfLines={1}>{this.props.name}</TitleText>
           </TextView>
           <ButtonView>
-            <TouchableOpacity
-              hitSlop={{ top: 7, bottom: 7, left: 7, right: 7 }}
-              onPress={this.changeLayout}
-            >
-              <IconView style={{ marginRight: 10 }}>
-                <Ionicons
-                  name={
-                    this.state.expanded
-                      ? "md-arrow-dropup-circle"
-                      : "md-information-circle"
-                  }
-                  size={32}
-                  color="#D3D3D3"
-                />
-              </IconView>
-            </TouchableOpacity>
+            {this.props.showInfo && (
+              <TouchableOpacity
+                hitSlop={{ top: 7, bottom: 7, left: 7, right: 7 }}
+                onPress={this.changeLayout}
+              >
+                <IconView style={{ marginRight: 10 }}>
+                  <Ionicons
+                    name={
+                      this.state.expanded
+                        ? "md-arrow-dropup-circle"
+                        : "md-information-circle"
+                    }
+                    size={32}
+                    color="#D3D3D3"
+                  />
+                </IconView>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
               hitSlop={{ top: 7, bottom: 7, left: 7, right: 7 }}
               onPress={this.props.onPress}
@@ -248,55 +279,123 @@ class PlayCard extends Component {
           >
             <View
               style={{
-                flexDirection: "row",
-                flexWrap: "wrap",
-                justifyContent: "flex-end"
+                flexDirection: "column"
               }}
             >
-              <View
-                style={{
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  width: "50%"
-                }}
-              >
-                <FeatureView>
+              <FeatureView>
+                <FeatureKeyContainer>
+                  <MaterialCommunityIcons
+                    name="guitar-acoustic"
+                    size={20}
+                    color="#5f6fee"
+                  />
                   <FeatureKey>ACOUSTICNESS</FeatureKey>
-                  <FeatureText>{this.props.features.acousticness}</FeatureText>
-                </FeatureView>
+                </FeatureKeyContainer>
 
-                <FeatureView>
-                  <FeatureKey>DANCEABILITY</FeatureKey>
-                  <FeatureText>
+                <FeatureTextView>
+                  <FeatureText
+                    noPadding={true}
+                    inInterval={
+                      this.props.features.acousticness >=
+                        this.props.sliders.acousticness[0] &&
+                      this.props.features.acousticness <=
+                        this.props.sliders.acousticness[1]
+                    }
+                  >
+                    {this.props.features.acousticness}
+                  </FeatureText>
+                </FeatureTextView>
+              </FeatureView>
+
+              <FeatureView>
+                <FeatureKeyContainer>
+                  <MaterialCommunityIcons
+                    name="voice"
+                    size={20}
+                    color="#5f6fee"
+                  />
+                  <FeatureKey>INSTRUMENTALNESS</FeatureKey>
+                </FeatureKeyContainer>
+
+                <FeatureTextView>
+                  <FeatureText
+                    inInterval={
+                      this.props.features.instrumentalness >=
+                        this.props.sliders.instrumentalness[0] &&
+                      this.props.features.instrumentalness <=
+                        this.props.sliders.instrumentalness[1]
+                    }
+                  >
                     {this.props.features.instrumentalness}
                   </FeatureText>
-                </FeatureView>
+                </FeatureTextView>
+              </FeatureView>
 
-                <FeatureView>
-                  <FeatureKey>INSTRUMENTALNESS</FeatureKey>
-                  <FeatureText>{this.props.features.danceability}</FeatureText>
-                </FeatureView>
-              </View>
+              <FeatureView>
+                <FeatureKeyContainer>
+                  <MaterialCommunityIcons
+                    name="shoe-heel"
+                    size={20}
+                    color="#5f6fee"
+                  />
+                  <FeatureKey>DANCEABILITY</FeatureKey>
+                </FeatureKeyContainer>
 
-              <View
-                style={{
-                  flexDirection: "column",
-                  justifyContent: "space-evenly",
-                  alignItems: "center",
-                  width: "50%"
-                }}
-              >
-                <FeatureView>
+                <FeatureTextView>
+                  <FeatureText
+                    inInterval={
+                      this.props.features.danceability >=
+                        this.props.sliders.danceability[0] &&
+                      this.props.features.danceability <=
+                        this.props.sliders.danceability[1]
+                    }
+                  >
+                    {this.props.features.danceability}
+                  </FeatureText>
+                </FeatureTextView>
+              </FeatureView>
+
+              <FeatureView>
+                <FeatureKeyContainer>
+                  <MaterialIcons
+                    name="sentiment-neutral"
+                    size={20}
+                    color="#5f6fee"
+                  />
                   <FeatureKey>VALENCE</FeatureKey>
-                  <FeatureText>{this.props.features.valence}</FeatureText>
-                </FeatureView>
+                </FeatureKeyContainer>
 
-                <FeatureView>
+                <FeatureTextView>
+                  <FeatureText
+                    inInterval={
+                      this.props.features.valence >=
+                        this.props.sliders.valence[0] &&
+                      this.props.features.valence <=
+                        this.props.sliders.valence[1]
+                    }
+                  >
+                    {this.props.features.valence}
+                  </FeatureText>
+                </FeatureTextView>
+              </FeatureView>
+
+              <FeatureView>
+                <FeatureKeyContainer>
+                  <SimpleLineIcons name="energy" size={20} color="#5f6fee" />
                   <FeatureKey>ENERGY</FeatureKey>
-                  <FeatureText>{this.props.features.energy}</FeatureText>
-                </FeatureView>
-              </View>
+                </FeatureKeyContainer>
+                <FeatureTextView>
+                  <FeatureText
+                    inInterval={
+                      this.props.features.energy >=
+                        this.props.sliders.energy[0] &&
+                      this.props.features.energy <= this.props.sliders.energy[1]
+                    }
+                  >
+                    {this.props.features.energy}
+                  </FeatureText>
+                </FeatureTextView>
+              </FeatureView>
             </View>
           </FeatureContainer>
         </SongView>

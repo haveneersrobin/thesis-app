@@ -125,7 +125,7 @@ const ExportButtonView = styled(View)`
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-end;
-  ${props => props.addMargin === "true" && "margin-top: 40px"}
+  margin-top: 40px;
   margin-right: 30px;
   margin-left: 30px;
   padding-bottom: 10px;
@@ -256,7 +256,10 @@ class SlidingPanel extends Component {
           {!this.props.selected ||
             (this.props.selected.length === 0 && (
               <NoTracksView>
-                <NoTracksText> No tracks selected. </NoTracksText>
+                <NoTracksText>
+                  {" "}
+                  Please select at least 1 track before exporting.{" "}
+                </NoTracksText>
                 <View
                   style={{
                     flexDirection: "row"
@@ -275,21 +278,6 @@ class SlidingPanel extends Component {
                 justifyContent: "space-between"
               }}
             >
-              {this.props.selected.length < 5 && (
-                <View
-                  style={{
-                    height: 40,
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    alignItems: "center"
-                  }}
-                >
-                  <ExportText>
-                    Please select at least 1 songs before exporting.
-                  </ExportText>
-                </View>
-              )}
-
               <StyledScrollView
                 addPadding={this.props.selected.length >= 1 ? "true" : "false"}
               >
@@ -325,9 +313,7 @@ class SlidingPanel extends Component {
                   </TrackView>
                 ))}
               </StyledScrollView>
-              <ExportButtonView
-                addMargin={this.props.selected.length >= 1 ? "true" : "false"}
-              >
+              <ExportButtonView>
                 {this.state.creatingPlaylist === "false" && (
                   <Button
                     color={"#049138"}
