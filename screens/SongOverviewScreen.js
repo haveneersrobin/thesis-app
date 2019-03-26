@@ -250,7 +250,7 @@ class SongOverviewScreen extends Component {
     );
     filteredObject.map((el, idx) => {
       Object.keys(el).forEach(
-        key => (filteredObject[idx][key] = _.round(el[key] * 100, 4))
+        key => (filteredObject[idx][key] = _.round(el[key] * 100, 3))
       );
     });
     return filteredObject;

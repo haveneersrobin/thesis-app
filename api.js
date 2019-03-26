@@ -63,10 +63,7 @@ const getAccessToken = async () => {
     accessToken = JSON.parse(await SecureStore.getItemAsync("access_token"));
     refreshToken = await SecureStore.getItemAsync("refresh_token");
   } catch (error) {
-    alertError(error);
-    alertError(
-      "Could not retrieve access token or refresh token from Secure Store. "
-    );
+    accessToken = undefined;
   }
 
   if (accessToken && moment(accessToken.expires) > moment())

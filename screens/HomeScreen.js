@@ -298,6 +298,38 @@ class HomeScreen extends Component {
           {((Platform.OS === "android" && this.state.chrome_installed) ||
             Platform.OS === "ios") &&
             this.state.connected &&
+            !this.state.loading && (
+              <SwitchView>
+                <Text
+                  style={{
+                    fontFamily: "roboto-bold",
+                    marginRight: 10,
+                    fontSize: responsiveFontSize(1.4)
+                  }}
+                >
+                  A
+                </Text>
+                <Switch
+                  onValueChange={this.toggleSwitch}
+                  value={this.state.switchValue}
+                  thumbColor={"#5F6FEE"}
+                  trackColor={{ false: "#a5afff", true: "#a5afff" }}
+                />
+                <Text
+                  style={{
+                    fontFamily: "roboto-bold",
+                    marginLeft: 10,
+                    fontSize: responsiveFontSize(1.4)
+                  }}
+                >
+                  B
+                </Text>
+              </SwitchView>
+            )}
+
+          {((Platform.OS === "android" && this.state.chrome_installed) ||
+            Platform.OS === "ios") &&
+            this.state.connected &&
             !this.state.loading &&
             !this.state.accessToken &&
             !this.state.profileInfo && (
@@ -343,32 +375,6 @@ class HomeScreen extends Component {
                     {this.state.profileInfo.name}
                   </Text>
                 </ProfileView>
-                <SwitchView>
-                  <Text
-                    style={{
-                      fontFamily: "roboto-bold",
-                      marginRight: 10,
-                      fontSize: responsiveFontSize(1.4)
-                    }}
-                  >
-                    A
-                  </Text>
-                  <Switch
-                    onValueChange={this.toggleSwitch}
-                    value={this.state.switchValue}
-                    thumbColor={"#5F6FEE"}
-                    trackColor={{ false: "#a5afff", true: "#a5afff" }}
-                  />
-                  <Text
-                    style={{
-                      fontFamily: "roboto-bold",
-                      marginLeft: 10,
-                      fontSize: responsiveFontSize(1.4)
-                    }}
-                  >
-                    B
-                  </Text>
-                </SwitchView>
                 <ButtonView>
                   <View style={{ marginRight: 6 }}>
                     <Button
