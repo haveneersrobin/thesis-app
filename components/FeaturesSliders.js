@@ -9,7 +9,8 @@ import {
 
 import {
   responsiveFontSize,
-  responsiveHeight
+  responsiveHeight,
+  responsiveWidth
 } from "react-native-responsive-dimensions";
 
 import styled from "styled-components";
@@ -35,7 +36,7 @@ const SliderText = styled(Text)`
 `;
 
 const ScrollContainer = styled(View)`
-  max-height: ${responsiveHeight(69.4)};
+  max-height: ${responsiveHeight(69)};
 `;
 
 const ModalButtons = styled(View)`
@@ -43,14 +44,13 @@ const ModalButtons = styled(View)`
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
-  margin-top: 20;
+  margin-top: ${responsiveHeight(3)};
 `;
 
 const SliderContainer = styled(View)`
   flex-direction: column;
   justify-content: center;
-  margin-top: 15;
-  margin-bottom: 15;
+  margin-top: ${responsiveHeight(2)};
 `;
 
 const TextView = styled(View)`
@@ -60,8 +60,8 @@ const TextView = styled(View)`
   border-radius: 50;
   overflow: hidden;
   background-color: #e4e4e4;
-  padding-top: 5;
-  padding-bottom: 5;
+  padding-top: ${responsiveHeight(1)};
+  padding-bottom: ${responsiveHeight(1)};
 `;
 
 const TitleText = styled(Text)`
@@ -70,18 +70,13 @@ const TitleText = styled(Text)`
   font-family: "roboto-black";
   border-bottom-color: #e0e0e0;
   border-bottom-width: 2px;
-  padding-bottom: 15px;
+  padding-top: ${responsiveHeight(1)};
+  padding-bottom: ${responsiveHeight(2)};
 `;
 
-const SliderView = styled(View)`
-  padding-left: 12px;
-  padding-right: 12px;
-`;
+const SliderView = styled(View)``;
 
-const TitleView = styled(View)`
-  margin-bottom: 15;
-  padding-top: 5;
-`;
+const TitleView = styled(View)``;
 
 class FeaturesSliders extends Component {
   constructor(props) {
@@ -149,7 +144,7 @@ class FeaturesSliders extends Component {
                 <TextView>
                   <MaterialCommunityIcons
                     name="guitar-acoustic"
-                    size={22}
+                    size={responsiveFontSize(2.4)}
                     color="#5f6fee"
                   />
                   <SliderText>ACOUSTICNESS</SliderText>
@@ -177,7 +172,7 @@ class FeaturesSliders extends Component {
                 <TextView>
                   <MaterialCommunityIcons
                     name="voice"
-                    size={22}
+                    size={responsiveFontSize(2.4)}
                     color="#5f6fee"
                   />
                   <SliderText>INSTRUMENTALNESS</SliderText>
@@ -205,7 +200,7 @@ class FeaturesSliders extends Component {
                 <TextView>
                   <MaterialCommunityIcons
                     name="shoe-heel"
-                    size={22}
+                    size={responsiveFontSize(2.4)}
                     color="#5f6fee"
                   />
                   <SliderText>DANCEABILITY</SliderText>
@@ -233,7 +228,7 @@ class FeaturesSliders extends Component {
                 <TextView>
                   <MaterialIcons
                     name="sentiment-neutral"
-                    size={22}
+                    size={responsiveFontSize(2.4)}
                     color="#5f6fee"
                   />
                   <SliderText>VALENCE</SliderText>
@@ -249,7 +244,7 @@ class FeaturesSliders extends Component {
               </SliderView>
             </SliderContainer>
 
-            <SliderContainer style={{ marginBottom: 30 }}>
+            <SliderContainer style={{ marginBottom: responsiveHeight(4) }}>
               <TouchableOpacity
                 onPress={() =>
                   this.showParameterInfo(
@@ -259,7 +254,11 @@ class FeaturesSliders extends Component {
                 }
               >
                 <TextView>
-                  <SimpleLineIcons name="energy" size={22} color="#5f6fee" />
+                  <SimpleLineIcons
+                    name="energy"
+                    size={responsiveFontSize(2.4)}
+                    color="#5f6fee"
+                  />
                   <SliderText>ENERGY</SliderText>
                 </TextView>
               </TouchableOpacity>
@@ -282,13 +281,21 @@ class FeaturesSliders extends Component {
             text={"Cancel"}
             onPress={this.props.onCancel}
           >
-            <MaterialIcons name="cancel" size={24} color="#5F6FEE" />
+            <MaterialIcons
+              name="cancel"
+              size={responsiveFontSize(2.4)}
+              color="#5F6FEE"
+            />
           </Button>
           <Button
             text={"Confirm"}
             onPress={() => this.props.onConfirm(this.state)}
           >
-            <Feather name="check-circle" size={24} color="white" />
+            <Feather
+              name="check-circle"
+              size={responsiveFontSize(2.4)}
+              color="white"
+            />
           </Button>
         </ModalButtons>
         <FlashMessage

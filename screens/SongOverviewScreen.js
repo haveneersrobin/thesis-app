@@ -18,7 +18,8 @@ import FeaturesSliders from "../components/FeaturesSliders";
 import SlidingPanel from "../components/SlidingPanel";
 import {
   responsiveFontSize,
-  responsiveHeight
+  responsiveHeight,
+  responsiveWidth
 } from "react-native-responsive-dimensions";
 import _ from "lodash";
 import { AndroidBackHandler } from "react-navigation-backhandler";
@@ -91,7 +92,11 @@ class SongOverviewScreen extends Component {
           onPress={navigation.getParam("toggleModal")}
         >
           <View style={{ backgroundColor: "#5f6fee", marginRight: 20 }}>
-            <Feather name="sliders" color="white" size={24} />
+            <Feather
+              name="sliders"
+              color="white"
+              size={responsiveFontSize(2.8)}
+            />
           </View>
         </TouchableNativeFeedback>
       );
@@ -102,8 +107,9 @@ class SongOverviewScreen extends Component {
       error: null,
       title: "Songs",
       headerTitleStyle: {
-        paddingLeft: 10,
-        fontFamily: "roboto-bold"
+        paddingLeft: responsiveWidth(2),
+        fontFamily: "roboto-bold",
+        fontSize: responsiveFontSize(2.2)
       }
     };
   };
@@ -112,14 +118,14 @@ class SongOverviewScreen extends Component {
     super(props);
 
     this.state = {
-      artists: this.props.navigation.getParam("artists", undefined),
-      /*artists: [
+      //artists: this.props.navigation.getParam("artists", undefined),
+      artists: [
         "0rHFi0qKLbO72s40s0DZ2h",
         "4TrraAsitQKl821DQY42cZ",
         "5Q81rlcTFh3k6DQJXPdsot",
         "1zNqDE7qDGCsyzJwohVaoX",
         "0nJaMZM8paoA5HEUTUXPqi"
-      ],*/
+      ],
       visible: false,
       pose: "closed",
       modalVisible: false,
@@ -505,21 +511,21 @@ class SongOverviewScreen extends Component {
             }}
           />
           {!this.state.results && (
-            <View style={{ marginTop: 70 }}>
-              <SkypeIndicator color={"white"} size={45} />
+            <View style={{ marginTop: responsiveHeight(8) }}>
+              <SkypeIndicator color={"white"} size={responsiveFontSize(6)} />
               <View
                 style={{
                   flexDirection: "row",
                   justifyContent: "center",
                   alignItems: "center",
-                  marginTop: 50
+                  marginTop: responsiveHeight(4)
                 }}
               >
                 <FontAwesome
                   name="magic"
                   color="white"
-                  style={{ marginRight: 10 }}
-                  size={26}
+                  style={{ marginRight: responsiveWidth(3) }}
+                  size={responsiveFontSize(2.6)}
                 />
                 <LoadingText>Crunching recommendations ...</LoadingText>
               </View>
@@ -540,6 +546,7 @@ class SongOverviewScreen extends Component {
                       id={track.id}
                       artist={track.artist}
                       showInfo={
+                        true ||
                         (version == "A" && part == 1) ||
                         (version == "B" && part == 2)
                       }

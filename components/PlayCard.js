@@ -29,11 +29,12 @@ const SongView = styled(View)`
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
-  padding-left: 15;
-  padding-right: 15;
-  margin-top: 5;
-  margin-bottom: 5;
-  ${props => props.first === "true" && `margin-top: 25 !important;`}
+  padding-left: ${responsiveWidth(3)};
+  padding-right: ${responsiveWidth(3)};
+  margin-top: ${responsiveHeight(1)};
+  margin-bottom: ${responsiveHeight(1)};
+  ${props =>
+    props.first === "true" && `margin-top: ${responsiveHeight(2)} !important;`}
 `;
 
 const TextView = styled(View)`
@@ -52,14 +53,15 @@ const ImageView = styled(View)`
       : `border: 3px solid transparent;`}
   border-radius: 30;
   overflow: hidden;
-  margin-right: 10px;
+  margin-right: ${responsiveWidth(3)};
 `;
 
 const LineContainer = styled(View)`
   border-bottom-color: #e5e5e5;
   border-bottom-width: 1px;
-  margin-bottom: 17;
-  margin-left: 80;
+  margin-bottom: ${responsiveHeight(1.6)};
+  margin-top: -${responsiveHeight(2)};
+  margin-left: ${responsiveWidth(19)};
 `;
 
 const MaskedImage = styled(Image)`
@@ -88,11 +90,17 @@ const ButtonView = styled(View)`
 `;
 
 const IconView = styled(View)`
-  padding: ${responsiveHeight(0.5)}px;
+  padding-top: ${responsiveHeight(0.5)};
+  padding-bottom: ${responsiveHeight(0.5)};
+  padding-right: ${responsiveHeight(0.5)};
+  padding-left: ${responsiveHeight(0.5)};
 `;
 
 const CheckView = styled(IconView)`
-  padding: ${responsiveHeight(0.5)}px;
+  padding-top: ${responsiveHeight(0.5)};
+  padding-bottom: ${responsiveHeight(0.5)};
+  padding-right: ${responsiveHeight(0.5)};
+  padding-left: ${responsiveHeight(0.5)};
 `;
 
 const FeatureView = styled(View)`
@@ -100,7 +108,10 @@ const FeatureView = styled(View)`
   justify-content: space-between;
   align-self: flex-end;
   align-items: center;
-  margin-bottom: 13px;
+  margin-bottom: ${props =>
+    props.last ? responsiveHeight(2) : responsiveHeight(1)};
+  margin-top: ${props =>
+    props.first ? responsiveHeight(2) : responsiveHeight(1)};
 `;
 
 const FeatureKeyContainer = styled(View)`
@@ -109,7 +120,10 @@ const FeatureKeyContainer = styled(View)`
   justify-content: center;
   align-items: center;
   background-color: #e4e4e4;
-  padding: 5px 12px;
+  padding-top: ${responsiveHeight(0.8)};
+  padding-bottom: ${responsiveHeight(0.8)};
+  padding-left: ${responsiveWidth(1.9)};
+  padding-right: ${responsiveWidth(1.9)};
   border-radius: 50;
 `;
 
@@ -126,19 +140,18 @@ const FeatureKey = styled(Text)`
   font-family: "roboto-bold";
   letter-spacing: 1px;
   font-size: ${responsiveFontSize(1.3)};
-  margin-left: 12px;
+  margin-left: ${responsiveWidth(3)};
 `;
 
 const FeatureContainer = styled(Animated.View)`
   flex-direction: column;
   border: 1px solid #eeeeee;
   border-radius: 8px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  margin-left: 60px;
-  padding-top: 12px;
-  padding-left: 30px;
-  padding-right: 20px;
+  margin-top: ${responsiveHeight(0.8)};
+  margin-bottom: ${responsiveHeight(3.2)};
+  margin-left: ${responsiveWidth(16)};
+  padding-left: ${responsiveWidth(5)};
+  padding-right: ${responsiveWidth(5)};
   width: auto;
 `;
 
@@ -220,7 +233,7 @@ class PlayCard extends Component {
                         ? "md-arrow-dropup-circle"
                         : "md-information-circle"
                     }
-                    size={32}
+                    size={responsiveFontSize(3.2)}
                     color="#D3D3D3"
                   />
                 </IconView>
@@ -232,8 +245,8 @@ class PlayCard extends Component {
             >
               <Image
                 style={{
-                  width: responsiveHeight(4.9),
-                  height: responsiveHeight(4.9),
+                  width: responsiveHeight(4.8),
+                  height: responsiveHeight(4.8),
                   marginRight: responsiveWidth(2)
                 }}
                 source={
@@ -251,7 +264,7 @@ class PlayCard extends Component {
                 <IconView>
                   <MaterialIcons
                     name="playlist-add"
-                    size={26}
+                    size={responsiveFontSize(3.2)}
                     color="#cccccc"
                   />
                 </IconView>
@@ -265,7 +278,7 @@ class PlayCard extends Component {
                 <CheckView>
                   <MaterialIcons
                     name="playlist-add-check"
-                    size={26}
+                    size={responsiveFontSize(3.2)}
                     color="#5f6fee"
                   />
                 </CheckView>
@@ -282,11 +295,11 @@ class PlayCard extends Component {
                 flexDirection: "column"
               }}
             >
-              <FeatureView>
+              <FeatureView first>
                 <FeatureKeyContainer>
                   <MaterialCommunityIcons
                     name="guitar-acoustic"
-                    size={20}
+                    size={responsiveFontSize(2.2)}
                     color="#5f6fee"
                   />
                   <FeatureKey>ACOUSTICNESS</FeatureKey>
@@ -311,7 +324,7 @@ class PlayCard extends Component {
                 <FeatureKeyContainer>
                   <MaterialCommunityIcons
                     name="voice"
-                    size={20}
+                    size={responsiveFontSize(2.2)}
                     color="#5f6fee"
                   />
                   <FeatureKey>INSTRUMENTALNESS</FeatureKey>
@@ -335,7 +348,7 @@ class PlayCard extends Component {
                 <FeatureKeyContainer>
                   <MaterialCommunityIcons
                     name="shoe-heel"
-                    size={20}
+                    size={responsiveFontSize(2.2)}
                     color="#5f6fee"
                   />
                   <FeatureKey>DANCEABILITY</FeatureKey>
@@ -359,7 +372,7 @@ class PlayCard extends Component {
                 <FeatureKeyContainer>
                   <MaterialIcons
                     name="sentiment-neutral"
-                    size={20}
+                    size={responsiveFontSize(2.2)}
                     color="#5f6fee"
                   />
                   <FeatureKey>VALENCE</FeatureKey>
@@ -379,9 +392,13 @@ class PlayCard extends Component {
                 </FeatureTextView>
               </FeatureView>
 
-              <FeatureView>
+              <FeatureView last>
                 <FeatureKeyContainer>
-                  <SimpleLineIcons name="energy" size={20} color="#5f6fee" />
+                  <SimpleLineIcons
+                    name="energy"
+                    size={responsiveFontSize(2.2)}
+                    color="#5f6fee"
+                  />
                   <FeatureKey>ENERGY</FeatureKey>
                 </FeatureKeyContainer>
                 <FeatureTextView>
