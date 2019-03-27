@@ -59,7 +59,16 @@ export const loadAssets = async () => {
   const imageAssets = _cacheImages([
     require("./assets/img/check.png"),
     require("./assets/img/play.png"),
-    require("./assets/img/pause.png")
+    require("./assets/img/pause.png"),
+    require("./assets/img/tutorial/1.png"),
+    require("./assets/img/tutorial/2.png"),
+    require("./assets/img/tutorial/3.png"),
+    require("./assets/img/tutorial/4.png"),
+    require("./assets/img/tutorial/5.png"),
+    require("./assets/img/tutorial/6.png"),
+    require("./assets/img/tutorial/2B.png"),
+    require("./assets/img/tutorial/3B.png"),
+    require("./assets/img/tutorial/6B.png")
   ]);
 
   const fontAssets = _cacheFonts([
