@@ -118,14 +118,14 @@ class SongOverviewScreen extends Component {
     super(props);
 
     this.state = {
-      //artists: this.props.navigation.getParam("artists", undefined),
-      artists: [
+      artists: this.props.navigation.getParam("artists", undefined),
+      /*artists: [
         "0rHFi0qKLbO72s40s0DZ2h",
         "4TrraAsitQKl821DQY42cZ",
         "5Q81rlcTFh3k6DQJXPdsot",
         "1zNqDE7qDGCsyzJwohVaoX",
         "0nJaMZM8paoA5HEUTUXPqi"
-      ],
+      ],*/
       visible: false,
       pose: "closed",
       modalVisible: false,
@@ -546,7 +546,6 @@ class SongOverviewScreen extends Component {
                       id={track.id}
                       artist={track.artist}
                       showInfo={
-                        true ||
                         (version == "A" && part == 1) ||
                         (version == "B" && part == 2)
                       }
