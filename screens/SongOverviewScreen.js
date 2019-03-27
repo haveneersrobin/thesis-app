@@ -518,7 +518,7 @@ class SongOverviewScreen extends Component {
                   flexDirection: "row",
                   justifyContent: "center",
                   alignItems: "center",
-                  marginTop: responsiveHeight(4)
+                  marginTop: responsiveHeight(6)
                 }}
               >
                 <FontAwesome

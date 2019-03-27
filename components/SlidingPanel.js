@@ -42,19 +42,31 @@ const Container = posed.View({
       responsiveHeight(70) -
       Header.HEIGHT -
       StatusBar.currentHeight -
-      50,
+      responsiveHeight(5.9),
     delay: 0
   },
   closed: {
-    top: window.height - Header.HEIGHT - StatusBar.currentHeight - 50,
+    top:
+      window.height -
+      Header.HEIGHT -
+      StatusBar.currentHeight -
+      responsiveHeight(6),
     delay: 0
   },
   bounceIn: {
-    top: window.height - Header.HEIGHT - StatusBar.currentHeight - 88,
+    top:
+      window.height -
+      Header.HEIGHT -
+      StatusBar.currentHeight -
+      responsiveHeight(12),
     transition: { type: "spring" }
   },
   bounceOut: {
-    top: window.height - Header.HEIGHT - StatusBar.currentHeight - 50
+    top:
+      window.height -
+      Header.HEIGHT -
+      StatusBar.currentHeight -
+      responsiveHeight(6)
   }
 });
 
@@ -66,14 +78,14 @@ const StyledContainer = styled(Container)`
 
 const PanelHeader = styled(Animated.View)`
   flex-direction: row;
-  height: 51;
+  height: ${responsiveHeight(6)};
   background-color: #5f6fee;
   align-items: center;
   justify-content: space-between;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: ${responsiveWidth(6)};
+  padding-right: ${responsiveWidth(6)};
 `;
 /*height: ${window.height -
 Header.HEIGHT -
@@ -88,8 +100,10 @@ const SlidingContent = styled(View)`
 const NoTracksView = styled(View)`
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
+  margin-top: ${responsiveHeight(3.4)};
   font-style: italic;
+  padding-left: ${responsiveWidth(2)};
+  padding-right: ${responsiveWidth(2)};
 `;
 
 const NoTracksText = styled(MyText)`
@@ -112,23 +126,23 @@ const TrackTitle = styled(MyText)`
 const TrackNumber = styled(Text)`
   color: #5f6fee;
   font-size: ${responsiveFontSize(2.3)};
-  padding-right: 5px;
+  padding-right: ${responsiveWidth(1)};
   font-family: "roboto-regular";
 `;
 
 const TrackView = styled(View)`
   flex-direction: row;
-  margin-bottom: 20px;
+  margin-bottom: ${responsiveHeight(3)};
 `;
 
 const ExportButtonView = styled(View)`
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-end;
-  margin-top: 40px;
-  margin-right: 30px;
-  margin-left: 30px;
-  padding-bottom: 10px;
+  margin-top: ${responsiveHeight(4)};
+  margin-right: ${responsiveWidth(4)};
+  margin-left: ${responsiveWidth(4)};
+  padding-bottom: ${responsiveHeight(2)};
 `;
 
 const ExportText = styled(Text)`
@@ -136,10 +150,11 @@ const ExportText = styled(Text)`
 `;
 
 const StyledScrollView = styled(ScrollView)`
-  padding-left: 30;
-  padding-right: 30;
+  padding-left: ${responsiveWidth(4)};
+  padding-right: ${responsiveWidth(4)};
   height: 80%;
-  ${props => props.addPadding === "true" && "padding-top: 15px"};
+  ${props =>
+    props.addPadding === "true" && `padding-top: ${responsiveHeight(4)}`};
 `;
 
 class SlidingPanel extends Component {
@@ -230,7 +245,9 @@ class SlidingPanel extends Component {
       <StyledContainer pose={this.props.pose}>
         <TouchableWithoutFeedback onPress={this.props.onPressHeader}>
           <PanelHeader style={{ opacity: this.props.animOpacity }}>
-            <MyText style={{ color: "#FFF" }}>
+            <MyText
+              style={{ color: "#FFF", fontSize: responsiveFontSize(1.7) }}
+            >
               {this.props.selected.length} songs selected
             </MyText>
             <TouchableWithoutFeedback onPress={this.props.onPressHeader}>
@@ -245,7 +262,7 @@ class SlidingPanel extends Component {
                   }}
                   color="white"
                   name="arrow-circle-up"
-                  size={24}
+                  size={responsiveFontSize(2.5)}
                 />
               </View>
             </TouchableWithoutFeedback>
@@ -257,16 +274,20 @@ class SlidingPanel extends Component {
             (this.props.selected.length === 0 && (
               <NoTracksView>
                 <NoTracksText>
-                  {" "}
-                  Please select at least 1 track before exporting.{" "}
+                  Please select at least 1 track before exporting.
                 </NoTracksText>
                 <View
                   style={{
-                    flexDirection: "row"
+                    flexDirection: "row",
+                    marginTop: responsiveHeight(3)
                   }}
                 >
                   <NoTracksText> Select tracks using </NoTracksText>
-                  <MaterialIcons name="playlist-add" size={23} color="grey" />
+                  <MaterialIcons
+                    name="playlist-add"
+                    size={responsiveFontSize(3)}
+                    color="grey"
+                  />
                 </View>
               </NoTracksView>
             ))}
@@ -324,7 +345,7 @@ class SlidingPanel extends Component {
                   >
                     <MaterialCommunityIcons
                       name="export"
-                      size={24}
+                      size={responsiveFontSize(2.4)}
                       color="#049138"
                     />
                   </Button>
@@ -340,7 +361,10 @@ class SlidingPanel extends Component {
                         paddingBottom: 4
                       }}
                     >
-                      <SkypeIndicator color={"#049138"} size={30} />
+                      <SkypeIndicator
+                        color={"#049138"}
+                        size={responsiveFontSize(2.4)}
+                      />
                     </View>
                   </Button>
                 )}
@@ -355,7 +379,11 @@ class SlidingPanel extends Component {
                   text="Done"
                 >
                   <View>
-                    <MaterialIcons name="done" size={24} color="white" />
+                    <MaterialIcons
+                      name="done"
+                      size={responsiveFontSize(2.4)}
+                      color="white"
+                    />
                   </View>
                 </Button>
               </ExportButtonView>

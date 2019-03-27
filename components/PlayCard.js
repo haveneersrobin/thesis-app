@@ -40,7 +40,7 @@ const SongView = styled(View)`
 const TextView = styled(View)`
   flex-direction: column;
   justify-content: space-between;
-  width: ${responsiveWidth(46)};
+  width: ${responsiveWidth(44.5)};
 `;
 
 const ImageView = styled(View)`
@@ -72,14 +72,14 @@ const ArtistText = styled(Text)`
   font-family: "roboto-medium";
   padding-bottom: 2;
   font-size: ${responsiveFontSize(2.3)};
-  width: ${responsiveWidth(46)};
+  width: ${responsiveWidth(44.5)};
 `;
 
 const TitleText = styled(Text)`
   font-family: "roboto-regular";
   color: #757575;
   font-size: ${responsiveFontSize(1.8)};
-  width: ${responsiveWidth(46)};
+  width: ${responsiveWidth(44.5)};
 `;
 
 const ButtonView = styled(View)`
