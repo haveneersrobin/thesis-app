@@ -50,10 +50,10 @@ const ModalContent = styled(View)`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-top: ${responsiveHeight(2)};
+  padding-bottom: ${responsiveHeight(2)};
+  padding-left: ${responsiveWidth(4)};
+  padding-right: ${responsiveWidth(4)};
   background-color: white;
   border-radius: 15px;
 `;
@@ -61,6 +61,7 @@ const ModalContent = styled(View)`
 const FloatingView = styled(View)`
   border-radius: 5px;
   background-color: white;
+  padding-bottom: ${responsiveHeight(6.2)};
 `;
 
 const FloatingContainer = styled(Animated.View)`
@@ -480,16 +481,14 @@ class SongOverviewScreen extends Component {
       <AndroidBackHandler onBackPress={this.onBackButtonPressAndroid}>
         <SongView>
           <Modal
-            animationType="slide"
-            transparent={false}
+            transparent={true}
+            animationType="fade"
             visible={this.state.modalVisible}
             onRequestClose={() => {
               this.setState(prevState => ({
                 modalVisible: !prevState.modalVisible
               }));
             }}
-            transparent={true}
-            animationType="fade"
           >
             <ModalContainer>
               <ModalContent elevation={3}>

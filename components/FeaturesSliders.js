@@ -27,8 +27,6 @@ import FlashMessage from "react-native-flash-message";
 
 const SliderText = styled(Text)`
   font-size: ${responsiveFontSize(1.5)};
-  padding-top: 5;
-  padding-bottom: 5;
   margin-left: 10;
   color: #5f6fee;
   font-family: "roboto-bold";
@@ -44,7 +42,7 @@ const ModalButtons = styled(View)`
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
-  margin-top: ${responsiveHeight(3)};
+  margin-top: ${responsiveHeight(1)};
 `;
 
 const SliderContainer = styled(View)`
@@ -60,8 +58,8 @@ const TextView = styled(View)`
   border-radius: 50;
   overflow: hidden;
   background-color: #e4e4e4;
-  padding-top: ${responsiveHeight(1)};
-  padding-bottom: ${responsiveHeight(1)};
+  padding-top: ${responsiveHeight(0.6)};
+  padding-bottom: ${responsiveHeight(0.6)};
 `;
 
 const TitleText = styled(Text)`
@@ -87,8 +85,7 @@ class FeaturesSliders extends Component {
       instrumentalness: this.props.instrumentalness || [0, 100],
       danceability: this.props.danceability || [0, 100],
       valence: this.props.valence || [0, 100],
-      energy: this.props.energy || [0, 100],
-      visible: new Animated.Value(0)
+      energy: this.props.energy || [0, 100]
     };
 
     this.paramsChange = this.paramsChange.bind(this);
@@ -97,21 +94,6 @@ class FeaturesSliders extends Component {
 
   paramsChange(key, values) {
     this.setState({ [key]: values });
-  }
-  componentDidMount() {
-    Animated.timing(this.state.visible, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true
-    }).start(() => {});
-  }
-
-  componentWillUnmount() {
-    Animated.timing(this.state.visible, {
-      toValue: 0,
-      duration: 500,
-      useNativeDriver: true
-    }).start(() => {});
   }
 
   showParameterInfo(info, parameter) {
@@ -126,7 +108,7 @@ class FeaturesSliders extends Component {
 
   render() {
     return (
-      <Animated.View style={{ opacity: this.state.visible }}>
+      <View>
         <TitleView>
           <TitleText>Adjust parameters</TitleText>
         </TitleView>
@@ -244,7 +226,7 @@ class FeaturesSliders extends Component {
               </SliderView>
             </SliderContainer>
 
-            <SliderContainer style={{ marginBottom: responsiveHeight(4) }}>
+            <SliderContainer>
               <TouchableOpacity
                 onPress={() =>
                   this.showParameterInfo(
@@ -305,7 +287,7 @@ class FeaturesSliders extends Component {
           autoHide={false}
           floating={true}
         />
-      </Animated.View>
+      </View>
     );
   }
 }

@@ -60,7 +60,7 @@ const LineContainer = styled(View)`
   border-bottom-color: #e5e5e5;
   border-bottom-width: 1px;
   margin-bottom: ${responsiveHeight(1.6)};
-  margin-top: -${responsiveHeight(2)};
+  margin-top: -${responsiveHeight(1.7)};
   margin-left: ${responsiveWidth(19)};
 `;
 
