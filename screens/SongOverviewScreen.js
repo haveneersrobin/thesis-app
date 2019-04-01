@@ -162,7 +162,7 @@ class SongOverviewScreen extends Component {
   continue = () => {
     let continue_to = this.props.navigation.getParam("step") == 1 ? 2 : 3;
     Analytics.track(Analytics.events.DONE, {
-      continue_to
+      continue_to, playlist_length: this.selected.length
     });
     this.props.navigation.navigate("PartScreen", {
       part: continue_to,

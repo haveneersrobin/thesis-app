@@ -22,7 +22,7 @@ const events = {
 };
 
 let isInitialized = false;
-const apiKey = "2cd7d0f8b6feafdc51bdf3ef1d61c18f";
+const apiKey = "f4d1f4e83184abd57c4a24150ffe0e1b";
 
 const logout = () => {
   if (isInitialized) {
