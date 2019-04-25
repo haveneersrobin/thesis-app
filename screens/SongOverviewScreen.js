@@ -162,7 +162,7 @@ class SongOverviewScreen extends Component {
   continue = () => {
     let continue_to = this.props.navigation.getParam("step") == 1 ? 2 : 3;
     Analytics.track(Analytics.events.DONE, {
-      continue_to, playlist_length: this.selected.length
+      continue_to, playlist_length: this.state.selected.length
     });
     this.props.navigation.navigate("PartScreen", {
       part: continue_to,
@@ -409,11 +409,12 @@ class SongOverviewScreen extends Component {
   }
 
   removeSongFromList(id) {
+    const song = this.state.selected.find(el => el.id == id);
+
     this.setState(prevState => ({
       selected: prevState.selected.filter(el => el.id !== id)
     }));
 
-    const song = this.state.results.find(el => el.id == id);
     Analytics.track(Analytics.events.REMOVE_TRACK_FROM_PLAYLIST, {
       song: `${song.artist} - ${song.name}`,
       from: "sliding panel"
